@@ -156,6 +156,10 @@ func writeType(md *strings.Builder, ty cty.Type) error {
 			return fmt.Errorf("unable to write element type for %q: %w", ty.FriendlyName(), err)
 		}
 		return nil
+	case ty.IsTupleType():
+		// TODO: write additional type info?
+		_, err := md.WriteString("Tuple")
+		return err
 	case ty.IsObjectType():
 		_, err := md.WriteString("Object")
 		return err

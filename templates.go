@@ -30,6 +30,7 @@ func newTemplate(name, text string) (*template.Template, error) {
 		"plainmarkdown": plainMarkdown,
 		"codefile":      codeFile,
 		"tffile": func(file string) (string, error) {
+			// TODO: omit comment handling
 			return codeFile("terraform", file)
 		},
 	}))
