@@ -274,7 +274,7 @@ provider %[1]q {
 		return nil, err
 	}
 
-	fmt.Println(string(schemaJSON))
+	// fmt.Println(string(schemaJSON))
 
 	var schemas *tfjson.ProviderSchemas
 	err = json.Unmarshal(schemaJSON, &schemas)
