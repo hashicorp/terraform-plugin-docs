@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"bytes"
@@ -15,11 +15,11 @@ type (
 	dataSourceTemplate string
 	providerTemplate   string
 
-	resourceFileTemplate   string
+	ResourceFileTemplate   string
 	dataSourceFileTemplate string
 	providerFileTemplate   string
 
-	docTemplate string
+	DocTemplate string
 )
 
 func newTemplate(name, text string) (*template.Template, error) {
@@ -69,7 +69,7 @@ func renderStringTemplate(name, text string, data interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-func (t docTemplate) Render(out io.Writer) error {
+func (t DocTemplate) Render(out io.Writer) error {
 	s := string(t)
 	if s == "" {
 		return nil
@@ -78,7 +78,7 @@ func (t docTemplate) Render(out io.Writer) error {
 	return renderTemplate("docTemplate", s, out, nil)
 }
 
-func (t resourceFileTemplate) Render(name, providerName string) (string, error) {
+func (t ResourceFileTemplate) Render(name, providerName string) (string, error) {
 	s := string(t)
 	if s == "" {
 		return "", nil
@@ -94,7 +94,7 @@ func (t resourceFileTemplate) Render(name, providerName string) (string, error) 
 		ShortName: resourceShortName(name, providerName),
 
 		ProviderName:      providerName,
-		ProviderShortName: providerShortName(providerName),
+		ProviderShortName: ProviderShortName(providerName),
 	})
 }
 
@@ -106,7 +106,7 @@ func (t providerFileTemplate) Render(name string) (string, error) {
 	return renderStringTemplate("providerFileTemplate", s, struct {
 		Name      string
 		ShortName string
-	}{name, providerShortName(name)})
+	}{name, ProviderShortName(name)})
 }
 
 func (t resourceTemplate) Render(name, providerName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
@@ -148,7 +148,7 @@ func (t resourceTemplate) Render(name, providerName, exampleFile, importFile str
 	})
 }
 
-const defaultResourceTemplate resourceTemplate = `---
+const DefaultResourceTemplate resourceTemplate = `---
 subcategory: ""
 layout: ""
 page_title: "{{.ProviderName}}: {{.Name}}"

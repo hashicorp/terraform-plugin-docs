@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // func copyFile(dst, src string, perm os.FileMode) error {
@@ -36,7 +37,7 @@ import (
 // 	return os.Rename(tmp.Name(), dst)
 // }
 
-func writeFile(path string, data string) error {
+func WriteFile(path string, data string) error {
 	dir, _ := filepath.Split(path)
 	err := os.MkdirAll(dir, 0755)
 	if err != nil {
@@ -51,7 +52,7 @@ func writeFile(path string, data string) error {
 	return nil
 }
 
-func runCmd(cmd *exec.Cmd) ([]byte, error) {
+func RunCmd(cmd *exec.Cmd) ([]byte, error) {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("error executing %q, %v", cmd.Path, cmd.Args)
@@ -61,23 +62,32 @@ func runCmd(cmd *exec.Cmd) ([]byte, error) {
 	return output, nil
 }
 
-func cp(src, dst string) error {
+func Cp(src, dst string) error {
 	cpCmd := exec.Command("cp", "-rf", src, dst)
-	_, err := runCmd(cpCmd)
+	_, err := RunCmd(cpCmd)
 	return err
 }
 
-func terraformCmd(tfpath, wd string, args ...string) ([]byte, error) {
+func TerraformCmd(tfpath, wd string, args ...string) ([]byte, error) {
 	cmd := exec.Command(tfpath, args...)
 	cmd.Dir = wd
 
-	return runCmd(cmd)
+	return RunCmd(cmd)
 }
 
-func fileExists(filename string) bool {
+func FileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
 		return false
 	}
 	return !info.IsDir()
+}
+
+func ProviderShortName(n string) string {
+	return strings.TrimPrefix(n, "terraform-provider-")
+}
+
+func resourceShortName(name, providerName string) string {
+	psn := ProviderShortName(providerName)
+	return strings.TrimPrefix(name, psn+"_")
 }
