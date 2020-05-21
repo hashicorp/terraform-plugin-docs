@@ -1,7 +1,11 @@
 package main
 
-import "github.com/hashicorp/tfproviderdocsgen/cmd"
+import (
+	"os"
+
+	"github.com/hashicorp/tfproviderdocsgen/cmd"
+)
 
 func main() {
-	cmd.Execute()
+	os.Exit(cmd.Run(os.Args[1:]))
 }
