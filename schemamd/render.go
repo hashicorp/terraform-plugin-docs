@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strings"
 
 	tfjson "github.com/hashicorp/terraform-json"
 )
@@ -67,7 +68,7 @@ func writeAttribute(w io.Writer, name string, att *tfjson.SchemaAttribute) error
 	return nil
 }
 
-func writeBlockType(w io.Writer, name string, block *tfjson.SchemaBlockType) error {
+func writeBlockType(w io.Writer, name, anchorID string, block *tfjson.SchemaBlockType) error {
 	_, err := io.WriteString(w, "- **"+name+"** ")
 	if err != nil {
 		return err
@@ -78,7 +79,7 @@ func writeBlockType(w io.Writer, name string, block *tfjson.SchemaBlockType) err
 		return fmt.Errorf("unable to write block description for %q: %w", name, err)
 	}
 
-	_, err = io.WriteString(w, " (see below for nested schema)\n")
+	_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))\n")
 	if err != nil {
 		return err
 	}
@@ -87,10 +88,10 @@ func writeBlockType(w io.Writer, name string, block *tfjson.SchemaBlockType) err
 }
 
 func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
-	return writeBlockChildren(w, block, rootGroupFilters)
+	return writeBlockChildren(w, nil, block, rootGroupFilters)
 }
 
-func writeBlockChildren(w io.Writer, block *tfjson.SchemaBlock, groupFilters []groupFilter) error {
+func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock, groupFilters []groupFilter) error {
 	names := []string{}
 	for n := range block.Attributes {
 		names = append(names, n)
@@ -115,8 +116,9 @@ func writeBlockChildren(w io.Writer, block *tfjson.SchemaBlock, groupFilters []g
 	}
 
 	type nestedType struct {
-		name  string
-		block *tfjson.SchemaBlock
+		anchorID string
+		path     []string
+		block    *tfjson.SchemaBlock
 	}
 
 	nestedTypes := []nestedType{}
@@ -135,11 +137,19 @@ func writeBlockChildren(w io.Writer, block *tfjson.SchemaBlock, groupFilters []g
 
 		for _, name := range sortedNames {
 			if block, ok := block.NestedBlocks[name]; ok {
-				err = writeBlockType(w, name, block)
+				path := append(parents, name)
+				anchorID := "nestedschema--" + strings.Join(path, "--")
+
+				err = writeBlockType(w, name, anchorID, block)
 				if err != nil {
 					return fmt.Errorf("unable to render block %q: %w", name, err)
 				}
-				nestedTypes = append(nestedTypes, nestedType{name, block.Block})
+
+				nestedTypes = append(nestedTypes, nestedType{
+					anchorID,
+					path,
+					block.Block,
+				})
 				continue
 			}
 
@@ -161,12 +171,17 @@ func writeBlockChildren(w io.Writer, block *tfjson.SchemaBlock, groupFilters []g
 	}
 
 	for _, nt := range nestedTypes {
-		_, err := io.WriteString(w, "### Nested Schema for `"+nt.name+"`\n\n")
+		_, err := io.WriteString(w, "<a id=\""+nt.anchorID+"\"></a>\n")
 		if err != nil {
 			return err
 		}
 
-		err = writeBlockChildren(w, nt.block, nestedGroupFilters)
+		_, err = io.WriteString(w, "### Nested Schema for `"+strings.Join(nt.path, ".")+"`\n\n")
+		if err != nil {
+			return err
+		}
+
+		err = writeBlockChildren(w, nt.path, nt.block, nestedGroupFilters)
 		if err != nil {
 			return err
 		}
