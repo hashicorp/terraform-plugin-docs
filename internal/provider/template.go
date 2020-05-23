@@ -1,4 +1,4 @@
-package lib
+package provider
 
 import (
 	"bytes"
@@ -8,18 +8,18 @@ import (
 	"text/template"
 
 	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/hashicorp/terraform-plugin-docs/internal/tmplfuncs"
+	"github.com/hashicorp/terraform-plugin-docs/schemamd"
 )
 
 type (
-	resourceTemplate   string
-	dataSourceTemplate string
-	providerTemplate   string
+	resourceTemplate string
+	providerTemplate string
 
-	ResourceFileTemplate   string
-	dataSourceFileTemplate string
-	providerFileTemplate   string
+	resourceFileTemplate string
+	providerFileTemplate string
 
-	DocTemplate string
+	docTemplate string
 )
 
 func newTemplate(name, text string) (*template.Template, error) {
@@ -27,11 +27,11 @@ func newTemplate(name, text string) (*template.Template, error) {
 
 	tmpl.Funcs(template.FuncMap(map[string]interface{}{
 		"trimspace":     strings.TrimSpace,
-		"plainmarkdown": plainMarkdown,
-		"codefile":      codeFile,
+		"plainmarkdown": tmplfuncs.PlainMarkdown,
+		"codefile":      tmplfuncs.CodeFile,
 		"tffile": func(file string) (string, error) {
 			// TODO: omit comment handling
-			return codeFile("terraform", file)
+			return tmplfuncs.CodeFile("terraform", file)
 		},
 	}))
 
@@ -69,7 +69,7 @@ func renderStringTemplate(name, text string, data interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-func (t DocTemplate) Render(out io.Writer) error {
+func (t docTemplate) Render(out io.Writer) error {
 	s := string(t)
 	if s == "" {
 		return nil
@@ -78,7 +78,7 @@ func (t DocTemplate) Render(out io.Writer) error {
 	return renderTemplate("docTemplate", s, out, nil)
 }
 
-func (t ResourceFileTemplate) Render(name, providerName string) (string, error) {
+func (t resourceFileTemplate) Render(name, providerName string) (string, error) {
 	s := string(t)
 	if s == "" {
 		return "", nil
@@ -94,7 +94,7 @@ func (t ResourceFileTemplate) Render(name, providerName string) (string, error) 
 		ShortName: resourceShortName(name, providerName),
 
 		ProviderName:      providerName,
-		ProviderShortName: ProviderShortName(providerName),
+		ProviderShortName: providerShortName(providerName),
 	})
 }
 
@@ -106,11 +106,12 @@ func (t providerFileTemplate) Render(name string) (string, error) {
 	return renderStringTemplate("providerFileTemplate", s, struct {
 		Name      string
 		ShortName string
-	}{name, ProviderShortName(name)})
+	}{name, providerShortName(name)})
 }
 
 func (t resourceTemplate) Render(name, providerName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
-	schemaMD, err := renderSchema(schema)
+	schemaBuffer := bytes.NewBuffer(nil)
+	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
 		return "", fmt.Errorf("unable to render schema: %w", err)
 	}
@@ -144,11 +145,11 @@ func (t resourceTemplate) Render(name, providerName, exampleFile, importFile str
 
 		ProviderName: providerName,
 
-		SchemaMarkdown: schemaMD,
+		SchemaMarkdown: schemaBuffer.String(),
 	})
 }
 
-const DefaultResourceTemplate resourceTemplate = `---
+const defaultResourceTemplate resourceTemplate = `---
 subcategory: ""
 layout: ""
 page_title: "{{.ProviderName}}: {{.Name}}"

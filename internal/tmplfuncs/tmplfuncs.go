@@ -1,4 +1,4 @@
-package lib
+package tmplfuncs
 
 import (
 	"fmt"
@@ -8,13 +8,12 @@ import (
 	"strings"
 )
 
-// github.com/russross/blackfriday
-
-func plainMarkdown(md string) (string, error) {
+func PlainMarkdown(md string) (string, error) {
+	// TODO: github.com/russross/blackfriday
 	return md, nil
 }
 
-func codeFile(format, file string) (string, error) {
+func CodeFile(format, file string) (string, error) {
 	// paths are relative to the rendering process work dir, which
 	// may be undesirable, probably need to think about it
 	wd, err := os.Getwd()

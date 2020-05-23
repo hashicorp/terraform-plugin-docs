@@ -1,4 +1,4 @@
-module github.com/hashicorp/tfproviderdocsgen
+module github.com/hashicorp/terraform-plugin-docs
 
 go 1.14
 

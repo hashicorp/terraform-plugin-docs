@@ -1,4 +1,4 @@
-package lib
+package schemamd_test
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/zclconf/go-cty/cty"
+
+	"github.com/hashicorp/terraform-plugin-docs/schemamd"
 )
 
 func TestWriteType(t *testing.T) {
@@ -43,7 +45,7 @@ func TestWriteType(t *testing.T) {
 	} {
 		t.Run(fmt.Sprintf("%s %s", c.ty.FriendlyName(), c.expected), func(t *testing.T) {
 			b := &strings.Builder{}
-			err := writeType(b, c.ty)
+			err := schemamd.WriteType(b, c.ty)
 			if err != nil {
 				t.Fatal(err)
 			}
