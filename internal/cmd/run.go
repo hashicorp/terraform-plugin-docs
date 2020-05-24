@@ -9,17 +9,7 @@ import (
 )
 
 type commonCmd struct {
-	ui       cli.Ui
-	help     string
-	synopsis string
-}
-
-func (cmd *commonCmd) Help() string {
-	return cmd.help
-}
-
-func (cmd *commonCmd) Synopsis() string {
-	return cmd.synopsis
+	ui cli.Ui
 }
 
 func (cmd *commonCmd) run(r func() error) int {
@@ -36,9 +26,7 @@ func initCommands(ui cli.Ui) map[string]cli.CommandFactory {
 	generateFactory := func() (cli.Command, error) {
 		return &generateCmd{
 			commonCmd: commonCmd{
-				ui:       ui,
-				help:     "Generates a plugin website from schema and templates in the repository.",
-				synopsis: "Generates a plugin website.",
+				ui: ui,
 			},
 		}, nil
 	}

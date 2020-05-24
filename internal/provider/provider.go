@@ -48,11 +48,15 @@ func resourceShortName(name, providerName string) string {
 }
 
 type generator struct {
+	legacySidebar bool
+
 	infof func(format string, a ...interface{})
 }
 
-func Generate(infof func(format string, a ...interface{})) error {
+func Generate(legacySidebar bool, infof func(format string, a ...interface{})) error {
 	g := &generator{
+		legacySidebar: legacySidebar,
+
 		infof: infof,
 	}
 
@@ -114,6 +118,11 @@ func (g *generator) Generate() error {
 	err = g.renderStaticWebsite()
 	if err != nil {
 		return err
+	}
+
+	if g.legacySidebar {
+		g.infof("rendering legacy sidebar...")
+		g.infof("TODO...!")
 	}
 
 	return nil
