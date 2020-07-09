@@ -28,7 +28,7 @@ var (
 	examplesResourceFileTemplate   = resourceFileTemplate("resources/{{.Name}}/resource.tf")
 	examplesResourceImportTemplate = resourceFileTemplate("resources/{{.Name}}/import.sh")
 	examplesDataSourceFileTemplate = resourceFileTemplate("data-sources/{{ .Name }}/data-source.tf")
-	// examplesProviderFileTemplate = providerFileTemplate("provider/provider.tf")
+	examplesProviderFileTemplate   = providerFileTemplate("provider/provider.tf")
 
 	// templated website directory defaults
 	websiteTmp = ""
@@ -58,17 +58,14 @@ var (
 		resourceFileTemplate("d/{{ .ShortName }}.html.markdown"),
 		resourceFileTemplate("d/{{ .ShortName }}.html.md"),
 	}
-	// websiteProviderFileTemplate = providerFileTemplate("index.html.markdown.tmpl")
+	websiteProviderFileTemplate = providerFileTemplate("index.md.tmpl")
+	websiteProviderFileStatic   = []providerFileTemplate{
+		providerFileTemplate("index.markdown"),
+		providerFileTemplate("index.md"),
+		providerFileTemplate("index.html.markdown"),
+		providerFileTemplate("index.html.md"),
+	}
 )
-
-func providerShortName(n string) string {
-	return strings.TrimPrefix(n, "terraform-provider-")
-}
-
-func resourceShortName(name, providerName string) string {
-	psn := providerShortName(providerName)
-	return strings.TrimPrefix(name, psn+"_")
-}
 
 type generator struct {
 	legacySidebar bool
@@ -236,6 +233,54 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 	return nil
 }
 
+func (g *generator) renderMissingProviderDoc(providerName string, schema *tfjson.Schema, websiteFileTemplate providerFileTemplate, websiteStaticCandidateTemplates []providerFileTemplate, examplesFileTemplate providerFileTemplate) error {
+	tmplPath, err := websiteFileTemplate.Render(providerName)
+	if err != nil {
+		return fmt.Errorf("unable to render path for provider %q: %w", providerName, err)
+	}
+	tmplPath = filepath.Join(websiteTmp, websiteSourceDir, tmplPath)
+	if fileExists(tmplPath) {
+		g.infof("provider %q template exists, skipping", providerName)
+		return nil
+	}
+
+	for _, candidate := range websiteStaticCandidateTemplates {
+		candidatePath, err := candidate.Render(providerName)
+		if err != nil {
+			return fmt.Errorf("unable to render path for provider %q: %w", providerName, err)
+		}
+		candidatePath = filepath.Join(websiteTmp, websiteSourceDir, candidatePath)
+		if fileExists(candidatePath) {
+			g.infof("provider %q static file exists, skipping", providerName)
+			return nil
+		}
+	}
+
+	examplePath, err := examplesFileTemplate.Render(providerName)
+	if err != nil {
+		return fmt.Errorf("unable to render example file path for %q: %w", providerName, err)
+	}
+	if examplePath != "" {
+		examplePath = filepath.Join(examplesDir, examplePath)
+	}
+	if !fileExists(examplePath) {
+		examplePath = ""
+	}
+
+	g.infof("generating template for %q", providerName)
+	md, err := defaultProviderTemplate.Render(providerName, examplePath, schema)
+	if err != nil {
+		return fmt.Errorf("unable to render template for %q: %w", providerName, err)
+	}
+
+	err = writeFile(tmplPath, md)
+	if err != nil {
+		return fmt.Errorf("unable to write file %q: %w", tmplPath, err)
+	}
+
+	return nil
+}
+
 func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjson.ProviderSchema) error {
 	g.infof("generating missing resource content")
 	for name, schema := range providerSchema.ResourceSchemas {
@@ -262,7 +307,14 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 	}
 
 	g.infof("generating missing provider content")
-	g.warnf("TODO!!!")
+	err := g.renderMissingProviderDoc(providerName, providerSchema.ConfigSchema,
+		websiteProviderFileTemplate,
+		websiteProviderFileStatic,
+		examplesProviderFileTemplate,
+	)
+	if err != nil {
+		return fmt.Errorf("unable to render provider doc: %w", err)
+	}
 
 	return nil
 }
@@ -346,6 +398,7 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 
 	g.infof("compiling provider %q", shortName)
 	buildCmd := exec.Command("go", "build", "-o", filepath.Join(tmpDir, "plugins/registry.terraform.io/hashicorp/"+shortName+"/0.0.1/linux_amd64", fmt.Sprintf("terraform-provider-%s", shortName)))
+	// TODO: constrain env here to make it a little safer?
 	_, err = runCmd(buildCmd)
 	if err != nil {
 		return nil, err

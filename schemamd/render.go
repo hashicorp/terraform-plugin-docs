@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/zclconf/go-cty/cty"
 )
 
 func Render(schema *tfjson.Schema, w io.Writer) error {
@@ -43,48 +44,96 @@ var (
 	}
 )
 
-func writeAttribute(w io.Writer, name string, att *tfjson.SchemaAttribute) error {
+type nestedType struct {
+	anchorID string
+	path     []string
+	block    *tfjson.SchemaBlock
+	att      *cty.Type
+}
+
+func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute) ([]nestedType, error) {
+	name := path[len(path)-1]
+
 	_, err := io.WriteString(w, "- **"+name+"** ")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = WriteAttributeDescription(w, att)
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if att.AttributeType.IsTupleType() {
+		return nil, fmt.Errorf("TODO: tuples are not yet supported")
+	}
+
+	anchorID := "nestedatt--" + strings.Join(path, "--")
+	nestedTypes := []nestedType{}
+	switch {
+	case att.AttributeType.IsObjectType():
+		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		if err != nil {
+			return nil, err
+		}
+
+		nestedTypes = append(nestedTypes, nestedType{
+			anchorID: anchorID,
+			path:     path,
+			att:      &att.AttributeType,
+		})
+	case att.AttributeType.IsCollectionType() && att.AttributeType.ElementType().IsObjectType():
+		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		if err != nil {
+			return nil, err
+		}
+
+		nt := att.AttributeType.ElementType()
+		nestedTypes = append(nestedTypes, nestedType{
+			anchorID: anchorID,
+			path:     path,
+			att:      &nt,
+		})
 	}
 
 	_, err = io.WriteString(w, "\n")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if att.AttributeType.IsObjectType() ||
-		(att.AttributeType.IsCollectionType() && att.AttributeType.ElementType().IsObjectType()) {
-		// TODO: if this is an object or collection of objects, render the nested attributes here
-		return fmt.Errorf("TODO: expand on nested cty structure")
-	}
-
-	return nil
+	return nestedTypes, nil
 }
 
-func writeBlockType(w io.Writer, name, anchorID string, block *tfjson.SchemaBlockType) error {
+func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) ([]nestedType, error) {
+	name := path[len(path)-1]
+
 	_, err := io.WriteString(w, "- **"+name+"** ")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = WriteBlockTypeDescription(w, block)
 	if err != nil {
-		return fmt.Errorf("unable to write block description for %q: %w", name, err)
+		return nil, fmt.Errorf("unable to write block description for %q: %w", name, err)
 	}
 
-	_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))\n")
+	anchorID := "nestedblock--" + strings.Join(path, "--")
+	nt := nestedType{
+		anchorID: anchorID,
+		path:     path,
+		block:    block.Block,
+	}
+
+	_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	_, err = io.WriteString(w, "\n")
+	if err != nil {
+		return nil, err
+	}
+
+	return []nestedType{nt}, nil
 }
 
 func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
@@ -115,12 +164,6 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 	NextName:
 	}
 
-	type nestedType struct {
-		anchorID string
-		path     []string
-		block    *tfjson.SchemaBlock
-	}
-
 	nestedTypes := []nestedType{}
 
 	for i, gf := range groupFilters {
@@ -136,28 +179,25 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 		}
 
 		for _, name := range sortedNames {
-			if block, ok := block.NestedBlocks[name]; ok {
-				path := append(parents, name)
-				anchorID := "nestedschema--" + strings.Join(path, "--")
+			path := append(parents, name)
 
-				err = writeBlockType(w, name, anchorID, block)
+			if block, ok := block.NestedBlocks[name]; ok {
+				nt, err := writeBlockType(w, path, block)
 				if err != nil {
 					return fmt.Errorf("unable to render block %q: %w", name, err)
 				}
 
-				nestedTypes = append(nestedTypes, nestedType{
-					anchorID,
-					path,
-					block.Block,
-				})
+				nestedTypes = append(nestedTypes, nt...)
 				continue
 			}
 
 			if att, ok := block.Attributes[name]; ok {
-				err = writeAttribute(w, name, att)
+				nt, err := writeAttribute(w, path, att)
 				if err != nil {
 					return fmt.Errorf("unable to render attribute %q: %w", name, err)
 				}
+
+				nestedTypes = append(nestedTypes, nt...)
 				continue
 			}
 
@@ -170,6 +210,15 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 		}
 	}
 
+	err := writeNestedTypes(w, nestedTypes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
 	for _, nt := range nestedTypes {
 		_, err := io.WriteString(w, "<a id=\""+nt.anchorID+"\"></a>\n")
 		if err != nil {
@@ -181,15 +230,117 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 			return err
 		}
 
-		err = writeBlockChildren(w, nt.path, nt.block, nestedGroupFilters)
-		if err != nil {
-			return err
+		switch {
+		case nt.block != nil:
+			err = writeBlockChildren(w, nt.path, nt.block, nestedGroupFilters)
+			if err != nil {
+				return err
+			}
+		case nt.att != nil:
+			err = writeObjectChildren(w, nt.path, *nt.att)
+			if err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("missing information on nested block: %v", nt.path)
 		}
 
 		_, err = io.WriteString(w, "\n")
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func writeObjectAttribute(w io.Writer, path []string, att cty.Type) ([]nestedType, error) {
+	name := path[len(path)-1]
+
+	_, err := io.WriteString(w, "- **"+name+"** (")
+	if err != nil {
+		return nil, err
+	}
+
+	err = WriteType(w, att)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = io.WriteString(w, ")")
+	if err != nil {
+		return nil, err
+	}
+
+	if att.IsTupleType() {
+		return nil, fmt.Errorf("TODO: tuples are not yet supported")
+	}
+
+	anchorID := "nestedobjatt--" + strings.Join(path, "--")
+	nestedTypes := []nestedType{}
+	switch {
+	case att.IsObjectType():
+		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		if err != nil {
+			return nil, err
+		}
+
+		nestedTypes = append(nestedTypes, nestedType{
+			anchorID: anchorID,
+			path:     path,
+			att:      &att,
+		})
+	case att.IsCollectionType() && att.ElementType().IsObjectType():
+		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		if err != nil {
+			return nil, err
+		}
+
+		nt := att.ElementType()
+		nestedTypes = append(nestedTypes, nestedType{
+			anchorID: anchorID,
+			path:     path,
+			att:      &nt,
+		})
+	}
+
+	_, err = io.WriteString(w, "\n")
+	if err != nil {
+		return nil, err
+	}
+
+	return nestedTypes, nil
+}
+
+func writeObjectChildren(w io.Writer, parents []string, ty cty.Type) error {
+	atts := ty.AttributeTypes()
+	sortedNames := []string{}
+	for n := range atts {
+		sortedNames = append(sortedNames, n)
+	}
+	sort.Strings(sortedNames)
+	nestedTypes := []nestedType{}
+
+	for _, name := range sortedNames {
+		att := atts[name]
+		path := append(parents, name)
+
+		nt, err := writeObjectAttribute(w, path, att)
+		if err != nil {
+			return fmt.Errorf("unable to render attribute %q: %w", name, err)
+		}
+
+		nestedTypes = append(nestedTypes, nt...)
+	}
+
+	_, err := io.WriteString(w, "\n")
+	if err != nil {
+		return err
+	}
+
+	err = writeNestedTypes(w, nestedTypes)
+	if err != nil {
+		return err
 	}
 
 	return nil

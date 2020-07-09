@@ -7,7 +7,17 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
+
+func providerShortName(n string) string {
+	return strings.TrimPrefix(n, "terraform-provider-")
+}
+
+func resourceShortName(name, providerName string) string {
+	psn := providerShortName(providerName)
+	return strings.TrimPrefix(name, psn+"_")
+}
 
 // func copyFile(dst, src string, perm os.FileMode) error {
 // 	in, err := os.Open(src)

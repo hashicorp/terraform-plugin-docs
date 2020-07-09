@@ -111,6 +111,45 @@ func (t providerFileTemplate) Render(name string) (string, error) {
 	}{name, providerShortName(name)})
 }
 
+func (t providerTemplate) Render(providerName, exampleFile string, schema *tfjson.Schema) (string, error) {
+	schemaBuffer := bytes.NewBuffer(nil)
+	err := schemamd.Render(schema, schemaBuffer)
+	if err != nil {
+		return "", fmt.Errorf("unable to render schema: %w", err)
+	}
+
+	s := string(t)
+	if s == "" {
+		return "", nil
+	}
+	return renderStringTemplate("providerTemplate", s, struct {
+		Type        string
+		Name        string
+		Description string
+
+		HasExample  bool
+		ExampleFile string
+
+		HasImport  bool
+		ImportFile string
+
+		ProviderName      string
+		ProviderShortName string
+
+		SchemaMarkdown string
+	}{
+		Description: schema.Block.Description,
+
+		HasExample:  exampleFile != "",
+		ExampleFile: exampleFile,
+
+		ProviderName:      providerName,
+		ProviderShortName: providerShortName(providerName),
+
+		SchemaMarkdown: schemaBuffer.String(),
+	})
+}
+
 func (t resourceTemplate) Render(name, providerName, typeName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
@@ -133,7 +172,8 @@ func (t resourceTemplate) Render(name, providerName, typeName, exampleFile, impo
 		HasImport  bool
 		ImportFile string
 
-		ProviderName string
+		ProviderName      string
+		ProviderShortName string
 
 		SchemaMarkdown string
 	}{
@@ -147,7 +187,8 @@ func (t resourceTemplate) Render(name, providerName, typeName, exampleFile, impo
 		HasImport:  importFile != "",
 		ImportFile: importFile,
 
-		ProviderName: providerName,
+		ProviderName:      providerName,
+		ProviderShortName: providerShortName(providerName),
 
 		SchemaMarkdown: schemaBuffer.String(),
 	})
@@ -185,12 +226,14 @@ Import is supported using the following syntax:
 const defaultProviderTemplate providerTemplate = `---
 subcategory: ""
 layout: ""
-page_title: "{{.ProviderName}} Provider"
+page_title: "{{.ProviderShortName}} Provider"
 description: |-
-  Terraform Provider for {{.ProviderName}}
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
-# {{.ProviderName}} Provider
+# {{.ProviderShortName}} Provider
+
+{{ .Description | trimspace }}
 
 {{ if .HasExample -}}
 ## Example Usage
