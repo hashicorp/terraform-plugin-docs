@@ -8,9 +8,8 @@ import (
 	"strings"
 )
 
-func PlainMarkdown(md string) (string, error) {
-	// TODO: github.com/russross/blackfriday
-	return md, nil
+func PrefixLines(prefix, text string) string {
+	return prefix + strings.Join(strings.Split(text, "\n"), "\n"+prefix)
 }
 
 func CodeFile(format, file string) (string, error) {

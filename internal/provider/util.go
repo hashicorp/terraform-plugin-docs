@@ -67,13 +67,6 @@ func cp(src, dst string) error {
 	return err
 }
 
-func terraformCmd(tfpath, wd string, args ...string) ([]byte, error) {
-	cmd := exec.Command(tfpath, args...)
-	cmd.Dir = wd
-
-	return runCmd(cmd)
-}
-
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {

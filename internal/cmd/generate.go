@@ -39,9 +39,7 @@ func (cmd *generateCmd) Run(args []string) int {
 }
 
 func (cmd *generateCmd) runInternal() error {
-	err := provider.Generate(cmd.flagLegacySidebar, func(format string, a ...interface{}) {
-		cmd.ui.Info(fmt.Sprintf(format, a...))
-	})
+	err := provider.Generate(cmd.ui, cmd.flagLegacySidebar)
 	if err != nil {
 		return fmt.Errorf("unable to generate website: %w", err)
 	}

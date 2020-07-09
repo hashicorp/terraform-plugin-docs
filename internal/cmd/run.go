@@ -31,16 +31,32 @@ func initCommands(ui cli.Ui) map[string]cli.CommandFactory {
 		}, nil
 	}
 
+	validateFactory := func() (cli.Command, error) {
+		return &validateCmd{
+			commonCmd: commonCmd{
+				ui: ui,
+			},
+		}, nil
+	}
+
 	return map[string]cli.CommandFactory{
-		"": generateFactory,
+		"":         generateFactory,
+		"generate": generateFactory,
+		"validate": validateFactory,
+		//"serve": serveFactory,
 	}
 }
 
 func Run(name, version string, args []string, stdin io.Reader, stdout, stderr io.Writer) int {
-	ui := &cli.BasicUi{
-		Reader:      stdin,
-		Writer:      stdout,
-		ErrorWriter: stderr,
+	var ui cli.Ui = &cli.ColoredUi{
+		ErrorColor: cli.UiColorRed,
+		WarnColor:  cli.UiColorYellow,
+
+		Ui: &cli.BasicUi{
+			Reader:      stdin,
+			Writer:      stdout,
+			ErrorWriter: stderr,
+		},
 	}
 
 	commands := initCommands(ui)

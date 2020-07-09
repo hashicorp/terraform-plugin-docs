@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/hashicorp/terraform-plugin-docs/internal/mdplain"
 	"github.com/hashicorp/terraform-plugin-docs/internal/tmplfuncs"
 	"github.com/hashicorp/terraform-plugin-docs/schemamd"
 )
@@ -26,13 +27,14 @@ func newTemplate(name, text string) (*template.Template, error) {
 	tmpl := template.New(name)
 
 	tmpl.Funcs(template.FuncMap(map[string]interface{}{
-		"trimspace":     strings.TrimSpace,
-		"plainmarkdown": tmplfuncs.PlainMarkdown,
 		"codefile":      tmplfuncs.CodeFile,
+		"plainmarkdown": mdplain.PlainMarkdown,
+		"prefixlines":   tmplfuncs.PrefixLines,
 		"tffile": func(file string) (string, error) {
 			// TODO: omit comment handling
 			return tmplfuncs.CodeFile("terraform", file)
 		},
+		"trimspace": strings.TrimSpace,
 	}))
 
 	var err error
@@ -109,7 +111,7 @@ func (t providerFileTemplate) Render(name string) (string, error) {
 	}{name, providerShortName(name)})
 }
 
-func (t resourceTemplate) Render(name, providerName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
+func (t resourceTemplate) Render(name, providerName, typeName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -121,6 +123,7 @@ func (t resourceTemplate) Render(name, providerName, exampleFile, importFile str
 		return "", nil
 	}
 	return renderStringTemplate("resourceTemplate", s, struct {
+		Type        string
 		Name        string
 		Description string
 
@@ -134,6 +137,7 @@ func (t resourceTemplate) Render(name, providerName, exampleFile, importFile str
 
 		SchemaMarkdown string
 	}{
+		Type:        typeName,
 		Name:        name,
 		Description: schema.Block.Description,
 
@@ -152,12 +156,12 @@ func (t resourceTemplate) Render(name, providerName, exampleFile, importFile str
 const defaultResourceTemplate resourceTemplate = `---
 subcategory: ""
 layout: ""
-page_title: "{{.ProviderName}}: {{.Name}}"
+page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 description: |-
-  {{ .Description | plainmarkdown | trimspace }}
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
-# Resource: ` + "`{{.Name}}`" + `
+# {{.Type}} ` + "`{{.Name}}`" + `
 
 {{ .Description | trimspace }}
 
@@ -176,4 +180,23 @@ Import is supported using the following syntax:
 
 {{ printf "{{codefile \"shell\" %q}}" .ImportFile }}
 {{- end }}
+`
+
+const defaultProviderTemplate providerTemplate = `---
+subcategory: ""
+layout: ""
+page_title: "{{.ProviderName}} Provider"
+description: |-
+  Terraform Provider for {{.ProviderName}}
+---
+
+# {{.ProviderName}} Provider
+
+{{ if .HasExample -}}
+## Example Usage
+
+{{ printf "{{tffile %q}}" .ExampleFile }}
+{{- end }}
+
+{{ .SchemaMarkdown | trimspace }}
 `

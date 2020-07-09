@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,33 +9,56 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/hashicorp/terraform-exec/tfexec"
+	"github.com/hashicorp/terraform-exec/tfinstall"
 	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/mitchellh/cli"
 )
 
 // TODO: convert these to flags?
 var (
-	tfpath = "/home/paul/go/bin/terraform"
-
 	providerName string
 
 	// rendered website dir
-	renderedWebsiteDir = "website"
+	renderedWebsiteDir = "docs"
 
 	// examples directory defaults
 	examplesDir = "examples"
 	// relative to examples dir
 	examplesResourceFileTemplate   = resourceFileTemplate("resources/{{.Name}}/resource.tf")
 	examplesResourceImportTemplate = resourceFileTemplate("resources/{{.Name}}/import.sh")
-	examplesDataSourceFileTemplate = resourceFileTemplate("datasources/{{ .Name }}/datasource.tf")
+	examplesDataSourceFileTemplate = resourceFileTemplate("data-sources/{{ .Name }}/data-source.tf")
 	// examplesProviderFileTemplate = providerFileTemplate("provider/provider.tf")
 
 	// templated website directory defaults
 	websiteTmp = ""
 
-	websiteSourceDir              = "docs" // used for override content
-	websiteResourceFileTemplate   = resourceFileTemplate("docs/r/{{ .ShortName }}.html.markdown.tmpl")
-	websiteDataSourceFileTemplate = resourceFileTemplate("docs/d/{{ .ShortName }}.html.markdown.tmpl")
-	// websiteProviderFileTemplate = providerFileTemplate("docs/index.html.markdown.tmpl")
+	websiteSourceDir            = "templates" // used for override content
+	websiteResourceFileTemplate = resourceFileTemplate("resources/{{ .ShortName }}.md.tmpl")
+	websiteResourceFileStatic   = []resourceFileTemplate{
+		resourceFileTemplate("resources/{{ .ShortName }}.md"),
+		// TODO: warn for all of these, as they won't render? massage them to the proper output file name?
+		resourceFileTemplate("resources/{{ .ShortName }}.markdown"),
+		resourceFileTemplate("resources/{{ .ShortName }}.html.markdown"),
+		resourceFileTemplate("resources/{{ .ShortName }}.html.md"),
+		resourceFileTemplate("r/{{ .ShortName }}.markdown"),
+		resourceFileTemplate("r/{{ .ShortName }}.md"),
+		resourceFileTemplate("r/{{ .ShortName }}.html.markdown"),
+		resourceFileTemplate("r/{{ .ShortName }}.html.md"),
+	}
+	websiteDataSourceFileTemplate = resourceFileTemplate("data-sources/{{ .ShortName }}.md.tmpl")
+	websiteDataSourceFileStatic   = []resourceFileTemplate{
+		resourceFileTemplate("data-sources/{{ .ShortName }}.md"),
+		// TODO: warn for all of these, as they won't render? massage them to the proper output file name?
+		resourceFileTemplate("data-sources/{{ .ShortName }}.markdown"),
+		resourceFileTemplate("data-sources/{{ .ShortName }}.html.markdown"),
+		resourceFileTemplate("data-sources/{{ .ShortName }}.html.md"),
+		resourceFileTemplate("d/{{ .ShortName }}.markdown"),
+		resourceFileTemplate("d/{{ .ShortName }}.md"),
+		resourceFileTemplate("d/{{ .ShortName }}.html.markdown"),
+		resourceFileTemplate("d/{{ .ShortName }}.html.md"),
+	}
+	// websiteProviderFileTemplate = providerFileTemplate("index.html.markdown.tmpl")
 )
 
 func providerShortName(n string) string {
@@ -50,20 +73,30 @@ func resourceShortName(name, providerName string) string {
 type generator struct {
 	legacySidebar bool
 
-	infof func(format string, a ...interface{})
+	ui cli.Ui
 }
 
-func Generate(legacySidebar bool, infof func(format string, a ...interface{})) error {
+func (g *generator) infof(format string, a ...interface{}) {
+	g.ui.Info(fmt.Sprintf(format, a...))
+}
+
+func (g *generator) warnf(format string, a ...interface{}) {
+	g.ui.Warn(fmt.Sprintf(format, a...))
+}
+
+func Generate(ui cli.Ui, legacySidebar bool) error {
 	g := &generator{
 		legacySidebar: legacySidebar,
 
-		infof: infof,
+		ui: ui,
 	}
 
-	return g.Generate()
+	ctx := context.Background()
+
+	return g.Generate(ctx)
 }
 
-func (g *generator) Generate() error {
+func (g *generator) Generate(ctx context.Context) error {
 	var err error
 
 	wd, err := os.Getwd()
@@ -98,14 +131,26 @@ func (g *generator) Generate() error {
 		}
 	}
 
-	g.infof("copying any existing content to tmp dir")
-	err = cp(websiteSourceDir, websiteTmp)
-	if err != nil {
+	websiteSourceDirInfo, err := os.Stat(websiteSourceDir)
+	switch {
+	case os.IsNotExist(err):
+		// do nothing, no template dir
+	case err != nil:
 		return err
+	default:
+		if !websiteSourceDirInfo.IsDir() {
+			return fmt.Errorf("template path is not a directory: %s", websiteSourceDir)
+		}
+
+		g.infof("copying any existing content to tmp dir")
+		err = cp(websiteSourceDir, websiteTmp)
+		if err != nil {
+			return err
+		}
 	}
 
 	g.infof("exporting schema from Terraform")
-	providerSchema, err := g.terraformProviderSchema(tfpath, providerName)
+	providerSchema, err := g.terraformProviderSchema(ctx, providerName)
 	if err != nil {
 		return err
 	}
@@ -120,23 +165,36 @@ func (g *generator) Generate() error {
 		return err
 	}
 
+	// TODO: may not ever need this, unsure on when this will go live
 	if g.legacySidebar {
 		g.infof("rendering legacy sidebar...")
-		g.infof("TODO...!")
+		g.warnf("TODO...!")
 	}
 
 	return nil
 }
 
-func (g *generator) renderMissingResourceDoc(providerName, name string, schema *tfjson.Schema, websiteFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
+func (g *generator) renderMissingResourceDoc(providerName, name, typeName string, schema *tfjson.Schema, websiteFileTemplate resourceFileTemplate, websiteStaticCandidateTemplates []resourceFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
 	tmplPath, err := websiteFileTemplate.Render(name, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render path for resource %q: %w", name, err)
 	}
-	tmplPath = filepath.Join(websiteTmp, tmplPath)
+	tmplPath = filepath.Join(websiteTmp, websiteSourceDir, tmplPath)
 	if fileExists(tmplPath) {
 		g.infof("resource %q template exists, skipping", name)
 		return nil
+	}
+
+	for _, candidate := range websiteStaticCandidateTemplates {
+		candidatePath, err := candidate.Render(name, providerName)
+		if err != nil {
+			return fmt.Errorf("unable to render path for resource %q: %w", name, err)
+		}
+		candidatePath = filepath.Join(websiteTmp, websiteSourceDir, candidatePath)
+		if fileExists(candidatePath) {
+			g.infof("resource %q static file exists, skipping", name)
+			return nil
+		}
 	}
 
 	examplePath, err := examplesFileTemplate.Render(name, providerName)
@@ -165,7 +223,7 @@ func (g *generator) renderMissingResourceDoc(providerName, name string, schema *
 	}
 
 	g.infof("generating template for %q", name)
-	md, err := defaultResourceTemplate.Render(name, providerName, examplePath, importPath, schema)
+	md, err := defaultResourceTemplate.Render(name, providerName, typeName, examplePath, importPath, schema)
 	if err != nil {
 		return fmt.Errorf("unable to render template for %q: %w", name, err)
 	}
@@ -181,8 +239,9 @@ func (g *generator) renderMissingResourceDoc(providerName, name string, schema *
 func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjson.ProviderSchema) error {
 	g.infof("generating missing resource content")
 	for name, schema := range providerSchema.ResourceSchemas {
-		err := g.renderMissingResourceDoc(providerName, name, schema,
+		err := g.renderMissingResourceDoc(providerName, name, "Resource", schema,
 			websiteResourceFileTemplate,
+			websiteResourceFileStatic,
 			examplesResourceFileTemplate,
 			&examplesResourceImportTemplate)
 		if err != nil {
@@ -192,8 +251,9 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 
 	g.infof("generating missing data source content")
 	for name, schema := range providerSchema.DataSourceSchemas {
-		err := g.renderMissingResourceDoc(providerName, name, schema,
+		err := g.renderMissingResourceDoc(providerName, name, "Data Source", schema,
 			websiteDataSourceFileTemplate,
+			websiteDataSourceFileStatic,
 			examplesDataSourceFileTemplate,
 			nil)
 		if err != nil {
@@ -202,7 +262,7 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 	}
 
 	g.infof("generating missing provider content")
-	g.infof("TODO!!!")
+	g.warnf("TODO!!!")
 
 	return nil
 }
@@ -222,7 +282,7 @@ func (g *generator) renderStaticWebsite() error {
 			return nil
 		}
 
-		rel, err := filepath.Rel(websiteTmp, path)
+		rel, err := filepath.Rel(filepath.Join(websiteTmp, websiteSourceDir), path)
 		if err != nil {
 			return err
 		}
@@ -268,7 +328,7 @@ func (g *generator) renderStaticWebsite() error {
 	return nil
 }
 
-func (g *generator) terraformProviderSchema(tfpath, providerName string) (*tfjson.ProviderSchema, error) {
+func (g *generator) terraformProviderSchema(ctx context.Context, providerName string) (*tfjson.ProviderSchema, error) {
 	var err error
 
 	shortName := providerShortName(providerName)
@@ -299,20 +359,22 @@ provider %[1]q {
 		return nil, err
 	}
 
-	_, err = terraformCmd(tfpath, tmpDir, "init", "-get-plugins=false", "-get=false", "-plugin-dir=./plugins")
+	tfBin, err := tfinstall.Find(tfinstall.LookPath(), tfinstall.ExactVersion("0.13.0-beta3", tmpDir))
 	if err != nil {
 		return nil, err
 	}
 
-	schemaJSON, err := terraformCmd(tfpath, tmpDir, "providers", "schema", "-json")
+	tf, err := tfexec.NewTerraform(tmpDir, tfBin)
 	if err != nil {
 		return nil, err
 	}
 
-	// fmt.Println(string(schemaJSON))
+	err = tf.Init(ctx, tfexec.GetPlugins(false), tfexec.Get(false), tfexec.PluginDir("./plugins"))
+	if err != nil {
+		return nil, err
+	}
 
-	var schemas *tfjson.ProviderSchemas
-	err = json.Unmarshal(schemaJSON, &schemas)
+	schemas, err := tf.ProvidersSchema(ctx)
 	if err != nil {
 		return nil, err
 	}

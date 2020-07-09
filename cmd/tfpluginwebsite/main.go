@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 
+	"github.com/mattn/go-colorable"
+
 	"github.com/hashicorp/terraform-plugin-docs/internal/cmd"
 )
 
@@ -23,6 +25,8 @@ func main() {
 		name,
 		version,
 		os.Args[1:],
-		os.Stdin, os.Stdout, os.Stderr,
+		os.Stdin,
+		colorable.NewColorableStdout(),
+		colorable.NewColorableStderr(),
 	))
 }
