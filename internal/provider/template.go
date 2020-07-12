@@ -195,9 +195,8 @@ func (t resourceTemplate) Render(name, providerName, typeName, exampleFile, impo
 }
 
 const defaultResourceTemplate resourceTemplate = `---
-subcategory: ""
-layout: ""
 page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
+subcategory: ""
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
@@ -224,9 +223,8 @@ Import is supported using the following syntax:
 `
 
 const defaultProviderTemplate providerTemplate = `---
-subcategory: ""
-layout: ""
 page_title: "{{.ProviderShortName}} Provider"
+subcategory: ""
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
