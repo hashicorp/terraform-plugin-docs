@@ -2,8 +2,6 @@ module github.com/hashicorp/terraform-plugin-docs
 
 go 1.14
 
-replace github.com/hashicorp/terraform-exec => ../terraform-exec/
-
 require (
 	github.com/hashicorp/terraform-exec v0.0.0-00010101000000-000000000000
 	github.com/hashicorp/terraform-json v0.5.0
