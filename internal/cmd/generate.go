@@ -14,11 +14,11 @@ type generateCmd struct {
 }
 
 func (cmd *generateCmd) Synopsis() string {
-	return "generates a plugin website from schema and templates for the current directory."
+	return "generates a plugin website from code, templates, and examples for the current directory"
 }
 
 func (cmd *generateCmd) Help() string {
-	return "TODO: help"
+	return `Usage: tfpluginwebsite generate`
 }
 
 func (cmd *generateCmd) Flags() *flag.FlagSet {

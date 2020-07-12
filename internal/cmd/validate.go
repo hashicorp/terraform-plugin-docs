@@ -12,11 +12,11 @@ type validateCmd struct {
 }
 
 func (cmd *validateCmd) Synopsis() string {
-	return "validates a plugin website for the current directory."
+	return "validates a plugin website for the current directory"
 }
 
 func (cmd *validateCmd) Help() string {
-	return "TODO: help"
+	return `Usage: tfpluginwebsite validate`
 }
 
 func (cmd *validateCmd) Flags() *flag.FlagSet {

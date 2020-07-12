@@ -23,10 +23,22 @@ func (cmd *commonCmd) run(r func() error) int {
 }
 
 func initCommands(ui cli.Ui) map[string]cli.CommandFactory {
+
 	generateFactory := func() (cli.Command, error) {
 		return &generateCmd{
 			commonCmd: commonCmd{
 				ui: ui,
+			},
+		}, nil
+	}
+
+	defaultFactory := func() (cli.Command, error) {
+		return &defaultCmd{
+			synopsis: "the generate command is run by default",
+			Command: &generateCmd{
+				commonCmd: commonCmd{
+					ui: ui,
+				},
 			},
 		}, nil
 	}
@@ -40,11 +52,20 @@ func initCommands(ui cli.Ui) map[string]cli.CommandFactory {
 	}
 
 	return map[string]cli.CommandFactory{
-		"":         generateFactory,
+		"":         defaultFactory,
 		"generate": generateFactory,
 		"validate": validateFactory,
 		//"serve": serveFactory,
 	}
+}
+
+type defaultCmd struct {
+	cli.Command
+	synopsis string
+}
+
+func (cmd *defaultCmd) Synopsis() string {
+	return cmd.synopsis
 }
 
 func Run(name, version string, args []string, stdin io.Reader, stdout, stderr io.Writer) int {
