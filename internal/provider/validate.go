@@ -58,8 +58,8 @@ func validateTemplates(ui cli.Ui, dir string) error {
 		),
 		checkAllowedDirs(
 			"data-sources",
-			"resources",
 			"guides",
+			"resources",
 		),
 		checkBlockedExtensions(
 			".html.md.tmpl",
@@ -87,7 +87,39 @@ func validateTemplates(ui cli.Ui, dir string) error {
 }
 
 func validateStaticDocs(ui cli.Ui, dir string) error {
-	panic("not implemented")
+	checks := []check{
+		checkAllowedFiles(
+			"index.md",
+		),
+		checkAllowedDirs(
+			"data-sources",
+			"guides",
+			"resources",
+		),
+		checkBlockedExtensions(
+			".html.md.tmpl",
+			".html.md",
+			".md.tmpl",
+		),
+		checkAllowedExtensions(
+			".md",
+		),
+	}
+	issues := []issue{}
+	for _, c := range checks {
+		checkIssues, err := c(dir)
+		if err != nil {
+			return err
+		}
+		issues = append(issues, checkIssues...)
+	}
+	for _, issue := range issues {
+		ui.Warn(fmt.Sprintf("%s: %s", issue.file, issue.message))
+	}
+	if len(issues) > 0 {
+		return fmt.Errorf("invalid templates directory")
+	}
+	return nil
 }
 
 func validateLegacyWebsite(ui cli.Ui, dir string) error {
