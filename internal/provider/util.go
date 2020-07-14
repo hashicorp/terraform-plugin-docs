@@ -46,6 +46,16 @@ func resourceShortName(name, providerName string) string {
 // 	return os.Rename(tmp.Name(), dst)
 // }
 
+func removeAllExt(file string) string {
+	for {
+		ext := filepath.Ext(file)
+		if ext == "" || ext == file {
+			return file
+		}
+		file = strings.TrimSuffix(file, ext)
+	}
+}
+
 func writeFile(path string, data string) error {
 	dir, _ := filepath.Split(path)
 	err := os.MkdirAll(dir, 0755)
