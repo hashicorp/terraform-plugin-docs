@@ -19,6 +19,8 @@ When you run `tfpluginwebsite` from root directory of the provider the tool take
 * Copy all non-template files to the output website directory
 * Process all the remaining templates to generate files for the output website directory
 
+You can see an example of the templates and output in [paultyng/terraform-provider-unifi](https://github.com/paultyng/terraform-provider-unifi) and browse the generated docs in the [Terraform Registry](https://registry.terraform.io/providers/paultyng/unifi/latest/docs).
+
 ### Conventional Paths
 
 The generation of missing documentation is based on a number of assumptions / conventional paths:
