@@ -54,3 +54,7 @@ TBD
 ### Installation
 
 You can install a copy of the binary manually from the releases, or you can optionally use the [tools.go model](https://github.com/go-modules-by-example/index/blob/master/010_tools/README.md) for tool installation.
+
+## Disclaimer
+
+This experimental repository contains software which is still being developed and in the alpha testing stage. It is not ready for production use.
