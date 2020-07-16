@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/hashicorp/terraform-exec/tfexec"
@@ -444,7 +445,8 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 	// fmt.Printf("[DEBUG] tmpdir %q\n", tmpDir)
 
 	g.infof("compiling provider %q", shortName)
-	buildCmd := exec.Command("go", "build", "-o", filepath.Join(tmpDir, "plugins/registry.terraform.io/hashicorp/"+shortName+"/0.0.1/linux_amd64", fmt.Sprintf("terraform-provider-%s", shortName)))
+	providerPath := fmt.Sprintf("plugins/registry.terraform.io/hashicorp/%s/0.0.1/%s_%s", shortName, runtime.GOOS, runtime.GOARCH)
+	buildCmd := exec.Command("go", "build", "-o", filepath.Join(tmpDir, providerPath, fmt.Sprintf("terraform-provider-%s", shortName)))
 	// TODO: constrain env here to make it a little safer?
 	_, err = runCmd(buildCmd)
 	if err != nil {
