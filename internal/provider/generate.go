@@ -208,7 +208,7 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 
 	importPath := ""
 	if examplesImportTemplate != nil {
-		importPath, err := examplesImportTemplate.Render(name, providerName)
+		importPath, err = examplesImportTemplate.Render(name, providerName)
 		if err != nil {
 			return fmt.Errorf("unable to render example import file path for %q: %w", name, err)
 		}
