@@ -446,7 +446,12 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 
 	g.infof("compiling provider %q", shortName)
 	providerPath := fmt.Sprintf("plugins/registry.terraform.io/hashicorp/%s/0.0.1/%s_%s", shortName, runtime.GOOS, runtime.GOARCH)
-	buildCmd := exec.Command("go", "build", "-o", filepath.Join(tmpDir, providerPath, fmt.Sprintf("terraform-provider-%s", shortName)))
+	outFile := filepath.Join(tmpDir, providerPath, fmt.Sprintf("terraform-provider-%s", shortName))
+	switch runtime.GOOS {
+	case "windows":
+		outFile = outFile + ".exe"
+	}
+	buildCmd := exec.Command("go", "build", "-o", outFile)
 	// TODO: constrain env here to make it a little safer?
 	_, err = runCmd(buildCmd)
 	if err != nil {
@@ -461,7 +466,7 @@ provider %[1]q {
 		return nil, err
 	}
 
-	tfBin, err := tfinstall.Find(tfinstall.ExactVersion("0.13.0-beta3", tmpDir))
+	tfBin, err := tfinstall.Find(tfinstall.ExactVersion("0.13.0", tmpDir))
 	if err != nil {
 		return nil, err
 	}
