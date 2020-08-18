@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -19,32 +20,27 @@ func resourceShortName(name, providerName string) string {
 	return strings.TrimPrefix(name, psn+"_")
 }
 
-// func copyFile(dst, src string, perm os.FileMode) error {
-// 	in, err := os.Open(src)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer in.Close()
-// 	tmp, err := TempFile(filepath.Dir(dst), "")
-// 	if err != nil {
-// 		return err
-// 	}
-// 	_, err = io.Copy(tmp, in)
-// 	if err != nil {
-// 		tmp.Close()
-// 		os.Remove(tmp.Name())
-// 		return err
-// 	}
-// 	if err = tmp.Close(); err != nil {
-// 		os.Remove(tmp.Name())
-// 		return err
-// 	}
-// 	if err = os.Chmod(tmp.Name(), perm); err != nil {
-// 		os.Remove(tmp.Name())
-// 		return err
-// 	}
-// 	return os.Rename(tmp.Name(), dst)
-// }
+func copyFile(srcPath, dstPath string, mode os.FileMode) error {
+	srcFile, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
+	// If the destination file already exists, we shouldn't blow it away
+	dstFile, err := os.OpenFile(dstPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, mode)
+	if err != nil {
+		return err
+	}
+	defer dstFile.Close()
+
+	_, err = io.Copy(dstFile, srcFile)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func removeAllExt(file string) string {
 	for {
@@ -81,9 +77,34 @@ func runCmd(cmd *exec.Cmd) ([]byte, error) {
 	return output, nil
 }
 
-func cp(src, dst string) error {
-	cpCmd := exec.Command("cp", "-rf", src, dst)
-	_, err := runCmd(cpCmd)
+func cp(srcDir, dstDir string) error {
+	err := filepath.Walk(srcDir, func(srcPath string, f os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		relPath, err := filepath.Rel(srcDir, srcPath)
+		if err != nil {
+			return err
+		}
+
+		dstPath := filepath.Join(dstDir, relPath)
+
+		switch mode := f.Mode(); {
+		case mode.IsDir():
+			if err := os.Mkdir(dstPath, f.Mode()); err != nil && !os.IsExist(err) {
+				return err
+			}
+		case mode.IsRegular():
+			if err := copyFile(srcPath, dstPath, mode); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unknown file type (%d / %s) for %s", f.Mode(), f.Mode().String(), srcPath)
+		}
+
+		return nil
+	})
 	return err
 }
 

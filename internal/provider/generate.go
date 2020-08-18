@@ -141,7 +141,7 @@ func (g *generator) Generate(ctx context.Context) error {
 		}
 
 		g.infof("copying any existing content to tmp dir")
-		err = cp(websiteSourceDir, websiteTmp)
+		err = cp(websiteSourceDir, filepath.Join(websiteTmp, "templates"))
 		if err != nil {
 			return err
 		}
