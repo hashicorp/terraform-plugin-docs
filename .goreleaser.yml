@@ -35,6 +35,5 @@ checksum:
 #       - "--detach-sign"
 #       - "${artifact}"
 release:
-  draft: true
 changelog:
   skip: true
