@@ -466,7 +466,7 @@ provider %[1]q {
 		return nil, err
 	}
 
-	tfBin, err := tfinstall.Find(tfinstall.ExactVersion("0.13.0", tmpDir))
+	tfBin, err := tfinstall.Find(ctx, tfinstall.ExactVersion("0.13.2", tmpDir))
 	if err != nil {
 		return nil, err
 	}
