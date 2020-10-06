@@ -16,7 +16,7 @@ func (cmd *validateCmd) Synopsis() string {
 }
 
 func (cmd *validateCmd) Help() string {
-	return `Usage: tfpluginwebsite validate`
+	return `Usage: tfplugindocs validate`
 }
 
 func (cmd *validateCmd) Flags() *flag.FlagSet {
