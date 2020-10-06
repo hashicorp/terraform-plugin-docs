@@ -327,6 +327,8 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		return err
 	}
 
+	shortName := providerShortName(providerName)
+
 	g.infof("rendering templated website to static markdown")
 
 	err = filepath.Walk(websiteTmp, func(path string, info os.FileInfo, err error) error {
@@ -368,9 +370,10 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		g.infof("rendering %q", rel)
 
 		relDir, relFile := filepath.Split(rel)
+		relDir = filepath.ToSlash(relDir)
 		switch relDir {
-		case "data-sources":
-			resName := removeAllExt(relFile)
+		case "data-sources/":
+			resName := shortName + "_" + removeAllExt(relFile)
 			resSchema, ok := providerSchema.DataSourceSchemas[resName]
 			if ok {
 				tmpl := resourceTemplate(tmplData)
@@ -384,8 +387,8 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 				}
 				return nil
 			}
-		case "resources":
-			resName := removeAllExt(relFile)
+		case "resources/":
+			resName := shortName + "_" + removeAllExt(relFile)
 			resSchema, ok := providerSchema.ResourceSchemas[resName]
 			if ok {
 				tmpl := resourceTemplate(tmplData)
