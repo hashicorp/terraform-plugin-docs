@@ -1,6 +1,6 @@
 # terraform-plugin-docs
 
-This repository contains tools and packages for creating Terraform plugin docs (currently only provider plugins). The primary way users will interact with this is the **tfpluginwebsite** CLI tool to generate and validate plugin documentation.
+This repository contains tools and packages for creating Terraform plugin docs (currently only provider plugins). The primary way users will interact with this is the **tfplugindocs** CLI tool to generate and validate plugin documentation.
 
 ## tfplugindocs
 
