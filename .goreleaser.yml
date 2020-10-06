@@ -1,6 +1,6 @@
-project_name: tfpluginwebsite
+project_name: tfplugindocs
 builds:
-- main: ./cmd/tfpluginwebsite
+- main: ./cmd/tfplugindocs
   env:
   - CGO_ENABLED=0
   mod_timestamp: '{{ .CommitTimestamp }}'
