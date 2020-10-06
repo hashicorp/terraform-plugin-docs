@@ -2,13 +2,13 @@
 
 This repository contains tools and packages for creating Terraform plugin docs (currently only provider plugins). The primary way users will interact with this is the **tfpluginwebsite** CLI tool to generate and validate plugin documentation.
 
-## tfpluginwebsite
+## tfplugindocs
 
-The **tfpluginwebsite** CLI has two main commands, `validate` and `generate` (`generate` is the default). This tool will let you generate documentation for your provider from live example .tf files and markdown templates. It will also export schema information from the provider (using `terraform providers schema -json`), and sync the schema with the reference documents. If your documentation only consists of simple examples and schema information, the tool can also generate missing template files to make website creation extremely simple for most providers.
+The **tfplugindocs** CLI has two main commands, `validate` and `generate` (`generate` is the default). This tool will let you generate documentation for your provider from live example .tf files and markdown templates. It will also export schema information from the provider (using `terraform providers schema -json`), and sync the schema with the reference documents. If your documentation only consists of simple examples and schema information, the tool can also generate missing template files to make website creation extremely simple for most providers.
 
 ### How it Works
 
-When you run `tfpluginwebsite` from root directory of the provider the tool takes the following actions:
+When you run `tfplugindocs` from root directory of the provider the tool takes the following actions:
 
 * Copy all the templates and static files to a temporary directory
 * Build (`go build`) a temporary binary of the provider source code
