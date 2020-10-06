@@ -18,7 +18,7 @@ func (cmd *generateCmd) Synopsis() string {
 }
 
 func (cmd *generateCmd) Help() string {
-	return `Usage: tfpluginwebsite generate`
+	return `Usage: tfplugindocs generate`
 }
 
 func (cmd *generateCmd) Flags() *flag.FlagSet {
