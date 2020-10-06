@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	name := "tfpluginwebsite"
+	name := "tfplugindocs"
 	version := name + " Version " + version
 	if commit != "" {
 		version += " from commit " + commit
