@@ -61,7 +61,7 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 		att.Description = "The ID of this resource."
 	}
 
-	err = WriteAttributeDescription(w, att)
+	err = WriteAttributeDescription(w, att, false)
 	if err != nil {
 		return nil, err
 	}
