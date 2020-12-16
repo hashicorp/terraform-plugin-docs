@@ -33,6 +33,16 @@ func TestWriteAttributeDescription(t *testing.T) {
 				Deprecated:    true,
 			},
 		},
+		{
+			"(String, Required, Sensitive, Deprecated) This is an attribute.",
+			&tfjson.SchemaAttribute{
+				AttributeType: cty.String,
+				Required:      true,
+				Description:   "This is an attribute.",
+				Deprecated:    true,
+				Sensitive:     true,
+			},
+		},
 
 		// optional
 		{
@@ -71,6 +81,17 @@ func TestWriteAttributeDescription(t *testing.T) {
 				Deprecated:    true,
 			},
 		},
+		{
+			"(String, Optional, Sensitive, Deprecated) This is an attribute.",
+			&tfjson.SchemaAttribute{
+				AttributeType: cty.String,
+				Optional:      true,
+				Computed:      true,
+				Description:   "This is an attribute.",
+				Deprecated:    true,
+				Sensitive:     true,
+			},
+		},
 
 		// computed
 		{
@@ -88,6 +109,16 @@ func TestWriteAttributeDescription(t *testing.T) {
 				Computed:      true,
 				Description:   "This is an attribute.",
 				Deprecated:    true,
+			},
+		},
+		{
+			"(String, Read-only, Sensitive, Deprecated) This is an attribute.",
+			&tfjson.SchemaAttribute{
+				AttributeType: cty.String,
+				Computed:      true,
+				Description:   "This is an attribute.",
+				Deprecated:    true,
+				Sensitive:     true,
 			},
 		},
 
@@ -119,7 +150,7 @@ func TestWriteAttributeDescription(t *testing.T) {
 	} {
 		t.Run(c.expected, func(t *testing.T) {
 			b := &strings.Builder{}
-			err := schemamd.WriteAttributeDescription(b, c.att)
+			err := schemamd.WriteAttributeDescription(b, c.att, true)
 			if err != nil {
 				t.Fatal(err)
 			}
