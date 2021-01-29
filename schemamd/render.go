@@ -166,7 +166,9 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 				goto NextName
 			}
 		}
-		return fmt.Errorf("no match for %q", n)
+		return fmt.Errorf("no match for %q, this can happen if you have incompatible schema defined, for example an "+
+			"optional block where all the child attributes are computed, in which case the block itself should also "+
+			"be marked computed", n)
 	NextName:
 	}
 
