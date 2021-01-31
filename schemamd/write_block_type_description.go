@@ -49,7 +49,7 @@ func WriteBlockTypeDescription(w io.Writer, block *tfjson.SchemaBlockType) error
 				return err
 			}
 		case childIsReadOnly(block, nil):
-			_, err = io.WriteString(w, ", Read-only")
+			_, err = io.WriteString(w, ", Read-Only")
 			if err != nil {
 				return err
 			}

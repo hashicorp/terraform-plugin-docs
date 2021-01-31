@@ -34,9 +34,10 @@ var (
 	// templated website directory defaults
 	websiteTmp = ""
 
-	websiteSourceDir            = "templates" // used for override content
-	websiteResourceFileTemplate = resourceFileTemplate("resources/{{ .ShortName }}.md.tmpl")
-	websiteResourceFileStatic   = []resourceFileTemplate{
+	websiteSourceDir                    = "templates" // used for override content
+	websiteResourceFileTemplate         = resourceFileTemplate("resources/{{ .ShortName }}.md.tmpl")
+	websiteResourceFallbackFileTemplate = resourceFileTemplate("resources.md.tmpl")
+	websiteResourceFileStatic           = []resourceFileTemplate{
 		resourceFileTemplate("resources/{{ .ShortName }}.md"),
 		// TODO: warn for all of these, as they won't render? massage them to the proper output file name?
 		resourceFileTemplate("resources/{{ .ShortName }}.markdown"),
@@ -47,8 +48,9 @@ var (
 		resourceFileTemplate("r/{{ .ShortName }}.html.markdown"),
 		resourceFileTemplate("r/{{ .ShortName }}.html.md"),
 	}
-	websiteDataSourceFileTemplate = resourceFileTemplate("data-sources/{{ .ShortName }}.md.tmpl")
-	websiteDataSourceFileStatic   = []resourceFileTemplate{
+	websiteDataSourceFileTemplate         = resourceFileTemplate("data-sources/{{ .ShortName }}.md.tmpl")
+	websiteDataSourceFallbackFileTemplate = resourceFileTemplate("data-sources.md.tmpl")
+	websiteDataSourceFileStatic           = []resourceFileTemplate{
 		resourceFileTemplate("data-sources/{{ .ShortName }}.md"),
 		// TODO: warn for all of these, as they won't render? massage them to the proper output file name?
 		resourceFileTemplate("data-sources/{{ .ShortName }}.markdown"),
@@ -172,7 +174,7 @@ func (g *generator) Generate(ctx context.Context) error {
 	return nil
 }
 
-func (g *generator) renderMissingResourceDoc(providerName, name, typeName string, schema *tfjson.Schema, websiteFileTemplate resourceFileTemplate, websiteStaticCandidateTemplates []resourceFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
+func (g *generator) renderMissingResourceDoc(providerName, name, typeName string, schema *tfjson.Schema, websiteFileTemplate resourceFileTemplate, fallbackWebsiteFileTemplate resourceFileTemplate, websiteStaticCandidateTemplates []resourceFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
 	tmplPath, err := websiteFileTemplate.Render(name, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render path for resource %q: %w", name, err)
@@ -220,8 +222,24 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 		}
 	}
 
+	targetResourceTemplate := defaultResourceTemplate
+
+	fallbackTmplPath, err := fallbackWebsiteFileTemplate.Render(name, providerName)
+	if err != nil {
+		return fmt.Errorf("unable to render path for resource %q: %w", name, err)
+	}
+	fallbackTmplPath = filepath.Join(websiteTmp, websiteSourceDir, fallbackTmplPath)
+	if fileExists(fallbackTmplPath) {
+		g.infof("resource %q fallback template exists", name)
+		tmplData, err := ioutil.ReadFile(fallbackTmplPath)
+		if err != nil {
+			return fmt.Errorf("unable to read file %q: %w", fallbackTmplPath, err)
+		}
+		targetResourceTemplate = resourceTemplate(tmplData)
+	}
+
 	g.infof("generating template for %q", name)
-	md, err := defaultResourceTemplate.Render(name, providerName, typeName, examplePath, importPath, schema)
+	md, err := targetResourceTemplate.Render(name, providerName, typeName, examplePath, importPath, schema)
 	if err != nil {
 		return fmt.Errorf("unable to render template for %q: %w", name, err)
 	}
@@ -287,6 +305,7 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 	for name, schema := range providerSchema.ResourceSchemas {
 		err := g.renderMissingResourceDoc(providerName, name, "Resource", schema,
 			websiteResourceFileTemplate,
+			websiteResourceFallbackFileTemplate,
 			websiteResourceFileStatic,
 			examplesResourceFileTemplate,
 			&examplesResourceImportTemplate)
@@ -299,6 +318,7 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 	for name, schema := range providerSchema.DataSourceSchemas {
 		err := g.renderMissingResourceDoc(providerName, name, "Data Source", schema,
 			websiteDataSourceFileTemplate,
+			websiteDataSourceFallbackFileTemplate,
 			websiteDataSourceFileStatic,
 			examplesDataSourceFileTemplate,
 			nil)
@@ -342,6 +362,14 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			return err
 		}
 
+		relDir, relFile := filepath.Split(rel)
+		relDir = filepath.ToSlash(relDir)
+
+		// skip special top-level generic resource and data source templates
+		if relDir == "" && (relFile == "resources.md.tmpl" || relFile == "data-sources.md.tmpl") {
+			return nil
+		}
+
 		renderedPath := filepath.Join(renderedWebsiteDir, rel)
 		err = os.MkdirAll(filepath.Dir(renderedPath), 0755)
 		if err != nil {
@@ -368,9 +396,6 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		defer out.Close()
 
 		g.infof("rendering %q", rel)
-
-		relDir, relFile := filepath.Split(rel)
-		relDir = filepath.ToSlash(relDir)
 		switch relDir {
 		case "data-sources/":
 			resName := shortName + "_" + removeAllExt(relFile)

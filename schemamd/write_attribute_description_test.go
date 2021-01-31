@@ -95,7 +95,7 @@ func TestWriteAttributeDescription(t *testing.T) {
 
 		// computed
 		{
-			"(String, Read-only) This is an attribute.",
+			"(String, Read-Only) This is an attribute.",
 			&tfjson.SchemaAttribute{
 				AttributeType: cty.String,
 				Computed:      true,
@@ -103,7 +103,7 @@ func TestWriteAttributeDescription(t *testing.T) {
 			},
 		},
 		{
-			"(String, Read-only, Deprecated) This is an attribute.",
+			"(String, Read-Only, Deprecated) This is an attribute.",
 			&tfjson.SchemaAttribute{
 				AttributeType: cty.String,
 				Computed:      true,
@@ -112,7 +112,7 @@ func TestWriteAttributeDescription(t *testing.T) {
 			},
 		},
 		{
-			"(String, Read-only, Sensitive, Deprecated) This is an attribute.",
+			"(String, Read-Only, Sensitive, Deprecated) This is an attribute.",
 			&tfjson.SchemaAttribute{
 				AttributeType: cty.String,
 				Computed:      true,

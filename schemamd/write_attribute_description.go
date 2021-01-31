@@ -31,7 +31,7 @@ func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, include
 				return err
 			}
 		case att.Computed:
-			_, err = io.WriteString(w, ", Read-only")
+			_, err = io.WriteString(w, ", Read-Only")
 			if err != nil {
 				return err
 			}
