@@ -208,7 +208,7 @@ description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
-# {{.Name}} {{.Type}}
+# {{.Name}} ({{.Type}})
 
 {{ .Description | trimspace }}
 
