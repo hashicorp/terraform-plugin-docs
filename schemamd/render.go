@@ -36,7 +36,7 @@ var (
 	groupFilters = []groupFilter{
 		{"### Required", "Required:", childIsRequired},
 		{"### Optional", "Optional:", childIsOptional},
-		{"### Read-only", "Read-only:", childIsReadOnly},
+		{"### Read-Only", "Read-Only:", childIsReadOnly},
 	}
 )
 
