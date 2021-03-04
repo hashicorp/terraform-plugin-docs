@@ -58,10 +58,6 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 		return nil, err
 	}
 
-	if name == "id" && att.Description == "" {
-		att.Description = "The ID of this resource."
-	}
-
 	err = WriteAttributeDescription(w, att, false)
 	if err != nil {
 		return nil, err
@@ -164,6 +160,7 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 		for i, gf := range groupFilters {
 			if n == "id" && childAtt.Description == "" {
 				if gf.name == "Read Only" {
+					childAtt.Description = "The ID of this resource."
 					groups[i] = append(groups[i], n)
 					goto NextName
 				}
