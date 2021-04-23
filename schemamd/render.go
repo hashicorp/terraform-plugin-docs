@@ -192,7 +192,9 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 		}
 
 		for _, name := range sortedNames {
-			path := append(parents, name)
+			path := make([]string, len(parents), len(parents)+1)
+			copy(path, parents)
+			path = append(path, name)
 
 			if block, ok := block.NestedBlocks[name]; ok {
 				nt, err := writeBlockType(w, path, block)
