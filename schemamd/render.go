@@ -25,6 +25,7 @@ func Render(schema *tfjson.Schema, w io.Writer) error {
 }
 
 type groupFilter struct {
+	name          string
 	topLevelTitle string
 	nestedTitle   string
 
@@ -34,9 +35,9 @@ type groupFilter struct {
 
 var (
 	groupFilters = []groupFilter{
-		{"### Required", "Required:", childIsRequired},
-		{"### Optional", "Optional:", childIsOptional},
-		{"### Read-Only", "Read-Only:", childIsReadOnly},
+		{"Required", "### Required", "Required:", childIsRequired},
+		{"Optional", "### Optional", "Optional:", childIsOptional},
+		{"Read Only", "### Read-Only", "Read-Only:", childIsReadOnly},
 	}
 )
 
@@ -55,10 +56,6 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 	_, err := io.WriteString(w, "- **"+name+"** ")
 	if err != nil {
 		return nil, err
-	}
-
-	if name == "id" && att.Description == "" {
-		att.Description = "The ID of this resource."
 	}
 
 	err = WriteAttributeDescription(w, att, false)
@@ -161,7 +158,13 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 		childBlock := block.NestedBlocks[n]
 		childAtt := block.Attributes[n]
 		for i, gf := range groupFilters {
-			if gf.filter(childBlock, childAtt) {
+			if n == "id" && childAtt.Description == "" {
+				if gf.name == "Read Only" {
+					childAtt.Description = "The ID of this resource."
+					groups[i] = append(groups[i], n)
+					goto NextName
+				}
+			} else if gf.filter(childBlock, childAtt) {
 				groups[i] = append(groups[i], n)
 				goto NextName
 			}
