@@ -15,3 +15,6 @@ tfproviderdocsgen
 
 # OS generated files
 .DS_Store
+
+.idea
+vendor
