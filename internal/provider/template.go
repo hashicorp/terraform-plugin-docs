@@ -40,6 +40,7 @@ func newTemplate(name, text string) (*template.Template, error) {
 			return tmplfuncs.CodeFile("terraform", file)
 		},
 		"trimspace": strings.TrimSpace,
+		"split":     strings.Split,
 	}))
 
 	var err error
