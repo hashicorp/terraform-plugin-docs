@@ -1,10 +1,12 @@
 package schemamd
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
 	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/zclconf/go-cty/cty"
 )
 
 func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, includeRW bool) error {
@@ -13,9 +15,18 @@ func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, include
 		return err
 	}
 
-	err = WriteType(w, att.AttributeType)
-	if err != nil {
-		return err
+	switch {
+	case att.AttributeNestedType != nil:
+		if _, err := io.WriteString(w, "Object"); err != nil {
+			return err
+		}
+	case att.AttributeType != cty.Type{}:
+		err = WriteType(w, att.AttributeType)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unknown attribute type: %+v", att)
 	}
 
 	if includeRW {
