@@ -85,20 +85,31 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 
 			group: group,
 		})
-	case att.AttributeType.IsCollectionType() && att.AttributeType.ElementType().IsObjectType():
+	case att.AttributeType.IsCollectionType() && att.AttributeType.ElementType().IsObjectType() || att.AttributeNestedType != nil:
 		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
 		if err != nil {
 			return nil, err
 		}
 
-		nt := att.AttributeType.ElementType()
-		nestedTypes = append(nestedTypes, nestedType{
-			anchorID: anchorID,
-			path:     path,
-			object:   &nt,
+		if att.AttributeNestedType == nil {
+			nt := att.AttributeType.ElementType()
+			nestedTypes = append(nestedTypes, nestedType{
+				anchorID: anchorID,
+				path:     path,
+				object:   &nt,
 
-			group: group,
-		})
+				group: group,
+			})
+		} else {
+			nestedTypes = append(nestedTypes, nestedType{
+				anchorID: anchorID,
+				path:     path,
+				object:   convertNestedToObject(att),
+
+				group: group,
+			})
+
+		}
 	}
 
 	_, err = io.WriteString(w, "\n")
@@ -107,6 +118,18 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 	}
 
 	return nestedTypes, nil
+}
+
+func convertNestedToObject(nested *tfjson.SchemaAttribute) *cty.Type {
+	objectMap := map[string]cty.Type{}
+	for name, att := range nested.AttributeNestedType.Attributes {
+
+		if att.AttributeNestedType == nil {
+			objectMap[name] = att.AttributeType
+		}
+	}
+	obj := cty.Object(objectMap)
+	return &obj
 }
 
 func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) ([]nestedType, error) {
