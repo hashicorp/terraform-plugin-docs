@@ -7,18 +7,7 @@ import (
 // childIsRequired returns true for blocks with min items > 0 or explicitly required
 // attributes
 func childIsRequired(block *tfjson.SchemaBlockType, att *tfjson.SchemaAttribute) bool {
-	if att.AttributeNestedType != nil {
-		block = &tfjson.SchemaBlockType{
-			NestingMode: att.AttributeNestedType.NestingMode,
-			Block: &tfjson.SchemaBlock{
-				Attributes: att.AttributeNestedType.Attributes,
-			},
-			MinItems: att.AttributeNestedType.MinItems,
-			MaxItems: att.AttributeNestedType.MaxItems,
-		}
-	}
-
-	if att != nil && att.AttributeNestedType == nil {
+	if att != nil {
 		return att.Required
 	}
 
@@ -28,18 +17,7 @@ func childIsRequired(block *tfjson.SchemaBlockType, att *tfjson.SchemaAttribute)
 // childIsOptional returns true for blocks with with min items 0, but any required or
 // optional children, or explicitly optional attributes
 func childIsOptional(block *tfjson.SchemaBlockType, att *tfjson.SchemaAttribute) bool {
-	if att.AttributeNestedType != nil {
-		block = &tfjson.SchemaBlockType{
-			NestingMode: att.AttributeNestedType.NestingMode,
-			Block: &tfjson.SchemaBlock{
-				Attributes: att.AttributeNestedType.Attributes,
-			},
-			MinItems: att.AttributeNestedType.MinItems,
-			MaxItems: att.AttributeNestedType.MaxItems,
-		}
-	}
-
-	if att != nil && att.AttributeNestedType == nil {
+	if att != nil {
 		return att.Optional
 	}
 
@@ -71,18 +49,7 @@ func childIsOptional(block *tfjson.SchemaBlockType, att *tfjson.SchemaAttribute)
 // childIsReadOnly returns true for blocks where all leaves are read only (computed
 // but not optional)
 func childIsReadOnly(block *tfjson.SchemaBlockType, att *tfjson.SchemaAttribute) bool {
-	if att.AttributeNestedType != nil {
-		block = &tfjson.SchemaBlockType{
-			NestingMode: att.AttributeNestedType.NestingMode,
-			Block: &tfjson.SchemaBlock{
-				Attributes: att.AttributeNestedType.Attributes,
-			},
-			MinItems: att.AttributeNestedType.MinItems,
-			MaxItems: att.AttributeNestedType.MaxItems,
-		}
-	}
-
-	if att != nil && att.AttributeNestedType == nil {
+	if att != nil {
 		// these shouldn't be able to be required, but just in case
 		return att.Computed && !att.Optional && !att.Required
 	}
