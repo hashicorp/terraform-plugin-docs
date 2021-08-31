@@ -57,9 +57,6 @@ func WriteType(w io.Writer, ty cty.Type) error {
 	case ty.IsObjectType():
 		_, err := io.WriteString(w, "Object")
 		return err
-	case ty.IsCapsuleType():
-		_, err := io.WriteString(w, "Capsule")
-		return err
 	}
-	return fmt.Errorf("unexpected type %+v", ty)
+	return fmt.Errorf("unexpected type %q", ty.FriendlyName())
 }
