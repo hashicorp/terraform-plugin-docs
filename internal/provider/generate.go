@@ -497,7 +497,7 @@ provider %[1]q {
 	}
 
 	g.infof("getting Terraform binary")
-	tfBin, err := tfinstall.Find(ctx, tfinstall.ExactVersion("1.0.1", tmpDir))
+	tfBin, err := tfinstall.Find(ctx, tfinstall.ExactVersion("1.0.5", tmpDir))
 	if err != nil {
 		return nil, err
 	}
@@ -513,7 +513,7 @@ provider %[1]q {
 		return nil, err
 	}
 
-	g.infof("getting privder schema")
+	g.infof("getting provider schema")
 	schemas, err := tf.ProvidersSchema(ctx)
 	if err != nil {
 		return nil, err
