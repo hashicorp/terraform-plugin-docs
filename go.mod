@@ -8,5 +8,5 @@ require (
 	github.com/mattn/go-colorable v0.1.8
 	github.com/mitchellh/cli v1.1.2
 	github.com/russross/blackfriday v1.6.0
-	github.com/zclconf/go-cty v1.8.4
+	github.com/zclconf/go-cty v1.9.1
 )
