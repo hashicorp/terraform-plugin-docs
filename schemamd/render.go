@@ -31,7 +31,7 @@ func Render(schema *tfjson.Schema, w io.Writer) error {
 	return nil
 }
 
-//
+// Group by Attribute/Block characteristics.
 type groupFilter struct {
 	topLevelTitle string
 	nestedTitle   string
@@ -41,6 +41,10 @@ type groupFilter struct {
 }
 
 var (
+	// Attributes and Blocks are in one of 3 characteristic groups:
+	// * Required
+	// * Optional
+	// * Read-Only
 	groupFilters = []groupFilter{
 		{"### Required", "Required:", childAttributeIsRequired, childBlockIsRequired},
 		{"### Optional", "Optional:", childAttributeIsOptional, childBlockIsOptional},
@@ -191,6 +195,7 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 
 	groups := map[int][]string{}
 
+	// Group Attributes/Blocks by characteristics.
 nameLoop:
 	for _, n := range names {
 		if childBlock, ok := block.NestedBlocks[n]; ok {
@@ -216,6 +221,28 @@ nameLoop:
 
 	nestedTypes := []nestedType{}
 
+	// For each characteristic group
+	//   If Attribute
+	//     Write out summary including characteristic and type (if primitive type or collection of primitives)
+	//     If Object type or collection of Objects, add to list of nested types
+	//   ElseIf Block
+	//     Write out summary including characteristic
+	//     Add block to list of nested types
+	//   End
+	// End
+	// For each nested type:
+	//   Write out heading
+	//   If Block
+	//     Recursively call this function (writeBlockChildren)
+	//   ElseIf Object
+	//     Call writeObjectChildren, which
+	//       For each Object Attribute
+	//         Write out summary including characteristic and type (if primitive type or collection of primitives)
+	//         If Object type or collection of Objects, add to list of nested types
+	//       End
+	//       Recursively do nested type functionality
+	//   End
+	// End
 	for i, gf := range groupFilters {
 		sortedNames := groups[i]
 		if len(sortedNames) == 0 {
@@ -409,3 +436,8 @@ func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group group
 
 	return nil
 }
+
+// TODO
+// TODO I think it will be sufficient to treat nested Attributes similar to Attributes of Object or collection of Object type.
+// TODO We'll need to add writeNestedAttributeChildren (similar to writeObjectChildren) and writeNestedAttribute (similar to writeObjectAttribute).
+// TODO
