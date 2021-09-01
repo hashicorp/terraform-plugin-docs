@@ -86,7 +86,7 @@ func TestWriteNestedAttributeTypeDescription(t *testing.T) {
 	} {
 		t.Run(c.expected, func(t *testing.T) {
 			b := &strings.Builder{}
-			err := schemamd.WriteNestedAttributeTypeDescription(b, c.att)
+			err := schemamd.WriteNestedAttributeTypeDescription(b, c.att, true)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -73,7 +73,11 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 		att.Description = "The ID of this resource."
 	}
 
-	err = WriteAttributeDescription(w, att, false)
+	if att.AttributeNestedType == nil {
+		err = WriteAttributeDescription(w, att, false)
+	} else {
+		err = WriteNestedAttributeTypeDescription(w, att, false)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -263,18 +267,16 @@ nameLoop:
 		for _, name := range sortedNames {
 			path := append(parents, name)
 
-			if block, ok := block.NestedBlocks[name]; ok {
-				nt, err := writeBlockType(w, path, block)
+			if childBlock, ok := block.NestedBlocks[name]; ok {
+				nt, err := writeBlockType(w, path, childBlock)
 				if err != nil {
 					return fmt.Errorf("unable to render block %q: %w", name, err)
 				}
 
 				nestedTypes = append(nestedTypes, nt...)
 				continue
-			}
-
-			if att, ok := block.Attributes[name]; ok {
-				nt, err := writeAttribute(w, path, att, gf)
+			} else if childAtt, ok := block.Attributes[name]; ok {
+				nt, err := writeAttribute(w, path, childAtt, gf)
 				if err != nil {
 					return fmt.Errorf("unable to render attribute %q: %w", name, err)
 				}

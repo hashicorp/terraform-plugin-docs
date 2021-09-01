@@ -8,7 +8,7 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
-func WriteNestedAttributeTypeDescription(w io.Writer, att *tfjson.SchemaAttribute) error {
+func WriteNestedAttributeTypeDescription(w io.Writer, att *tfjson.SchemaAttribute, includeRW bool) error {
 	nestedAttributeType := att.AttributeNestedType
 	if nestedAttributeType == nil {
 		return fmt.Errorf("AttributeNestedType is nil")
@@ -43,24 +43,26 @@ func WriteNestedAttributeTypeDescription(w io.Writer, att *tfjson.SchemaAttribut
 	}
 
 	if nestingMode == tfjson.SchemaNestingModeSingle {
-		switch {
-		case childAttributeIsRequired(att):
-			_, err = io.WriteString(w, ", Required")
-			if err != nil {
-				return err
+		if includeRW {
+			switch {
+			case childAttributeIsRequired(att):
+				_, err = io.WriteString(w, ", Required")
+				if err != nil {
+					return err
+				}
+			case childAttributeIsOptional(att):
+				_, err = io.WriteString(w, ", Optional")
+				if err != nil {
+					return err
+				}
+			case childAttributeIsReadOnly(att):
+				_, err = io.WriteString(w, ", Read-only")
+				if err != nil {
+					return err
+				}
+			default:
+				return fmt.Errorf("attribute does not match any filter states")
 			}
-		case childAttributeIsOptional(att):
-			_, err = io.WriteString(w, ", Optional")
-			if err != nil {
-				return err
-			}
-		case childAttributeIsReadOnly(att):
-			_, err = io.WriteString(w, ", Read-only")
-			if err != nil {
-				return err
-			}
-		default:
-			return fmt.Errorf("attribute does not match any filter states")
 		}
 	} else {
 		if nestedAttributeType.MinItems > 0 {
@@ -73,6 +75,13 @@ func WriteNestedAttributeTypeDescription(w io.Writer, att *tfjson.SchemaAttribut
 
 	if nestedAttributeType.MaxItems > 0 {
 		_, err = io.WriteString(w, fmt.Sprintf(", Max: %d", nestedAttributeType.MaxItems))
+		if err != nil {
+			return err
+		}
+	}
+
+	if att.Sensitive {
+		_, err := io.WriteString(w, ", Sensitive")
 		if err != nil {
 			return err
 		}

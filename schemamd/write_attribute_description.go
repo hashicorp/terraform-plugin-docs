@@ -1,6 +1,7 @@
 package schemamd
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
@@ -20,21 +21,23 @@ func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, include
 
 	if includeRW {
 		switch {
-		case att.Required:
+		case childAttributeIsRequired(att):
 			_, err = io.WriteString(w, ", Required")
 			if err != nil {
 				return err
 			}
-		case att.Optional:
+		case childAttributeIsOptional(att):
 			_, err = io.WriteString(w, ", Optional")
 			if err != nil {
 				return err
 			}
-		case att.Computed:
+		case childAttributeIsReadOnly(att):
 			_, err = io.WriteString(w, ", Read-only")
 			if err != nil {
 				return err
 			}
+		default:
+			return fmt.Errorf("attribute does not match any filter states")
 		}
 	}
 
