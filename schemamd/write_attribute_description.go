@@ -13,16 +13,9 @@ func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, include
 		return err
 	}
 
-	if att.AttributeNestedType != nil {
-		err = WriteNestedType(w, att.AttributeNestedType)
-		if err != nil {
-			return err
-		}
-	} else {
-		err = WriteType(w, att.AttributeType)
-		if err != nil {
-			return err
-		}
+	err = WriteType(w, att.AttributeType)
+	if err != nil {
+		return err
 	}
 
 	if includeRW {

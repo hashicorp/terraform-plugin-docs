@@ -149,74 +149,74 @@ func TestWriteAttributeDescription(t *testing.T) {
 		},
 
 		// nested attributes
-		{
-			"(Object, Required) This is an attribute.",
-			&tfjson.SchemaAttribute{
-				AttributeNestedType: &tfjson.SchemaNestedAttributeType{
-					Attributes: map[string]*tfjson.SchemaAttribute{
-						"nested_1": {
-							AttributeType: cty.String,
-							Required:      true,
-							Description:   "This is a nested attribute.",
-						},
-					},
-					NestingMode: tfjson.SchemaNestingModeSingle,
-				},
-				Required:    true,
-				Description: "This is an attribute.",
-			},
-		},
-		{
-			"(List, Required) This is an attribute.",
-			&tfjson.SchemaAttribute{
-				AttributeNestedType: &tfjson.SchemaNestedAttributeType{
-					Attributes: map[string]*tfjson.SchemaAttribute{
-						"nested_1": {
-							AttributeType: cty.String,
-							Required:      true,
-							Description:   "This is a nested attribute.",
-						},
-					},
-					NestingMode: tfjson.SchemaNestingModeList,
-				},
-				Required:    true,
-				Description: "This is an attribute.",
-			},
-		},
-		{
-			"(Set, Required) This is an attribute.",
-			&tfjson.SchemaAttribute{
-				AttributeNestedType: &tfjson.SchemaNestedAttributeType{
-					Attributes: map[string]*tfjson.SchemaAttribute{
-						"nested_1": {
-							AttributeType: cty.String,
-							Required:      true,
-							Description:   "This is a nested attribute.",
-						},
-					},
-					NestingMode: tfjson.SchemaNestingModeSet,
-				},
-				Required:    true,
-				Description: "This is an attribute.",
-			},
-		},
-		{
-			"(Map, Required) This is an attribute.",
-			&tfjson.SchemaAttribute{
-				AttributeNestedType: &tfjson.SchemaNestedAttributeType{
-					Attributes: map[string]*tfjson.SchemaAttribute{
-						"nested_1": {
-							AttributeType: cty.String,
-							Required:      true,
-							Description:   "This is a nested attribute.",
-						},
-					},
-					NestingMode: tfjson.SchemaNestingModeMap,
-				},
-				Required:    true,
-				Description: "This is an attribute.",
-			},
-		},
+		// {
+		// 	"(Object, Required) This is an attribute.",
+		// 	&tfjson.SchemaAttribute{
+		// 		AttributeNestedType: &tfjson.SchemaNestedAttributeType{
+		// 			Attributes: map[string]*tfjson.SchemaAttribute{
+		// 				"nested_1": {
+		// 					AttributeType: cty.String,
+		// 					Required:      true,
+		// 					Description:   "This is a nested attribute.",
+		// 				},
+		// 			},
+		// 			NestingMode: tfjson.SchemaNestingModeSingle,
+		// 		},
+		// 		Required:    true,
+		// 		Description: "This is an attribute.",
+		// 	},
+		// },
+		// {
+		// 	"(List, Required) This is an attribute.",
+		// 	&tfjson.SchemaAttribute{
+		// 		AttributeNestedType: &tfjson.SchemaNestedAttributeType{
+		// 			Attributes: map[string]*tfjson.SchemaAttribute{
+		// 				"nested_1": {
+		// 					AttributeType: cty.String,
+		// 					Required:      true,
+		// 					Description:   "This is a nested attribute.",
+		// 				},
+		// 			},
+		// 			NestingMode: tfjson.SchemaNestingModeList,
+		// 		},
+		// 		Required:    true,
+		// 		Description: "This is an attribute.",
+		// 	},
+		// },
+		// {
+		// 	"(Set, Required) This is an attribute.",
+		// 	&tfjson.SchemaAttribute{
+		// 		AttributeNestedType: &tfjson.SchemaNestedAttributeType{
+		// 			Attributes: map[string]*tfjson.SchemaAttribute{
+		// 				"nested_1": {
+		// 					AttributeType: cty.String,
+		// 					Required:      true,
+		// 					Description:   "This is a nested attribute.",
+		// 				},
+		// 			},
+		// 			NestingMode: tfjson.SchemaNestingModeSet,
+		// 		},
+		// 		Required:    true,
+		// 		Description: "This is an attribute.",
+		// 	},
+		// },
+		// {
+		// 	"(Map, Required) This is an attribute.",
+		// 	&tfjson.SchemaAttribute{
+		// 		AttributeNestedType: &tfjson.SchemaNestedAttributeType{
+		// 			Attributes: map[string]*tfjson.SchemaAttribute{
+		// 				"nested_1": {
+		// 					AttributeType: cty.String,
+		// 					Required:      true,
+		// 					Description:   "This is a nested attribute.",
+		// 				},
+		// 			},
+		// 			NestingMode: tfjson.SchemaNestingModeMap,
+		// 		},
+		// 		Required:    true,
+		// 		Description: "This is an attribute.",
+		// 	},
+		// },
 	} {
 		t.Run(c.expected, func(t *testing.T) {
 			b := &strings.Builder{}

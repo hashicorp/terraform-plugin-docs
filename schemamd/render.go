@@ -10,6 +10,7 @@ import (
 	"github.com/zclconf/go-cty/cty"
 )
 
+// Render writes a Markdown formatted Schema definition to the specified writer.
 func Render(schema *tfjson.Schema, w io.Writer) error {
 	_, err := io.WriteString(w, "## Schema\n\n")
 	if err != nil {
