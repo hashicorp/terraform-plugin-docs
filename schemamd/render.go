@@ -11,6 +11,12 @@ import (
 )
 
 // Render writes a Markdown formatted Schema definition to the specified writer.
+// A Schema contains a Version and the root Block, for example:
+// "aws_accessanalyzer_analyzer": {
+//   "block": {
+//   },
+// 	 "version": 0
+// },
 func Render(schema *tfjson.Schema, w io.Writer) error {
 	_, err := io.WriteString(w, "## Schema\n\n")
 	if err != nil {
@@ -25,19 +31,20 @@ func Render(schema *tfjson.Schema, w io.Writer) error {
 	return nil
 }
 
+//
 type groupFilter struct {
 	topLevelTitle string
 	nestedTitle   string
 
-	// only one of these will be passed depending on the type of child
-	filter func(block *tfjson.SchemaBlockType, att *tfjson.SchemaAttribute) bool
+	filterAttribute func(att *tfjson.SchemaAttribute) bool
+	filterBlock     func(block *tfjson.SchemaBlockType) bool
 }
 
 var (
 	groupFilters = []groupFilter{
-		{"### Required", "Required:", childIsRequired},
-		{"### Optional", "Optional:", childIsOptional},
-		{"### Read-Only", "Read-Only:", childIsReadOnly},
+		{"### Required", "Required:", childAttributeIsRequired, childBlockIsRequired},
+		{"### Optional", "Optional:", childAttributeIsOptional, childBlockIsOptional},
+		{"### Read-Only", "Read-Only:", childAttributeIsReadOnly, childBlockIsReadOnly},
 	}
 )
 
@@ -147,6 +154,32 @@ func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
 	return writeBlockChildren(w, nil, block, true)
 }
 
+// A Block contains:
+// * Attributes (arbitrarily nested)
+// * Nested Blocks (with nesting mode, max and min items)
+// * Description(Kind)
+// * Deprecated flag
+// For example:
+// "block": {
+//   "attributes": {
+//     "certificate_arn": {
+// 	     "description_kind": "plain",
+// 	     "required": true,
+// 	     "type": "string"
+//     }
+// 	 },
+// 	 "block_types": {
+//     "timeouts": {
+// 	     "block": {
+// 		   "attributes": {
+// 		   },
+// 		   "description_kind": "plain"
+// 	     },
+// 	     "nesting_mode": "single"
+//     }
+// 	 },
+// 	 "description_kind": "plain"
+// },
 func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock, root bool) error {
 	names := []string{}
 	for n := range block.Attributes {
@@ -158,19 +191,27 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 
 	groups := map[int][]string{}
 
+nameLoop:
 	for _, n := range names {
-		childBlock := block.NestedBlocks[n]
-		childAtt := block.Attributes[n]
-		for i, gf := range groupFilters {
-			if gf.filter(childBlock, childAtt) {
-				groups[i] = append(groups[i], n)
-				goto NextName
+		if childBlock, ok := block.NestedBlocks[n]; ok {
+			for i, gf := range groupFilters {
+				if gf.filterBlock(childBlock) {
+					groups[i] = append(groups[i], n)
+					continue nameLoop
+				}
+			}
+		} else if childAtt, ok := block.Attributes[n]; ok {
+			for i, gf := range groupFilters {
+				if gf.filterAttribute(childAtt) {
+					groups[i] = append(groups[i], n)
+					continue nameLoop
+				}
 			}
 		}
+
 		return fmt.Errorf("no match for %q, this can happen if you have incompatible schema defined, for example an "+
 			"optional block where all the child attributes are computed, in which case the block itself should also "+
 			"be marked computed", n)
-	NextName:
 	}
 
 	nestedTypes := []nestedType{}
