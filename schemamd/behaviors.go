@@ -4,10 +4,6 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
-// TODO
-// TODO The Attribute variants have to deal with arbitrarily nested Attributes.
-// TODO
-
 func childAttributeIsRequired(att *tfjson.SchemaAttribute) bool {
 	return att.Required
 }
