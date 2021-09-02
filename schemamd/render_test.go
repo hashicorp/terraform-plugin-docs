@@ -21,6 +21,11 @@ func TestRender(t *testing.T) {
 			"testdata/aws_route_table_association.schema.json",
 			"testdata/aws_route_table_association.md",
 		},
+		{
+			"aws_acm_certificate",
+			"testdata/aws_acm_certificate.schema.json",
+			"testdata/aws_acm_certificate.md",
+		},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			input, err := os.ReadFile(c.inputFile)
@@ -48,7 +53,7 @@ func TestRender(t *testing.T) {
 
 			// Remove trailing newlines before comparing (some text editors remove them).
 			if expected, actual := strings.TrimRight(string(expected), "\n"), strings.TrimRight(b.String(), "\n"); expected != actual {
-				t.Fatalf("expected:\n%q\ngot:\n%q\n", expected, actual)
+				t.Fatalf("expected:\n%s\ngot:\n%s\n", expected, actual)
 			}
 		})
 	}
