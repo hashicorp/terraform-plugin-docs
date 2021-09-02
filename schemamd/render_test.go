@@ -2,6 +2,7 @@ package schemamd_test
 
 import (
 	"encoding/json"
+	"os"
 	"strings"
 	"testing"
 
@@ -11,62 +12,30 @@ import (
 
 func TestRender(t *testing.T) {
 	for _, c := range []struct {
-		name     string
-		input    string
-		expected string
+		name         string
+		inputFile    string
+		expectedFile string
 	}{
 		{
 			"aws_route_table_association",
-			`
-{
-	"block": {
-		"attributes": {
-			"gateway_id": {
-				"description_kind": "plain",
-				"optional": true,
-				"type": "string"
-			},
-			"id": {
-				"computed": true,
-				"description_kind": "plain",
-				"optional": true,
-				"type": "string"
-			},
-			"route_table_id": {
-				"description_kind": "plain",
-				"required": true,
-				"type": "string"
-			},
-			"subnet_id": {
-				"description_kind": "plain",
-				"optional": true,
-				"type": "string"
-			}
-		},
-		"description_kind": "plain"
-	},
-	"version": 0
-}
-			`,
-			`## Schema
-
-### Required
-
-- **route_table_id** (String)
-
-### Optional
-
-- **gateway_id** (String)
-- **id** (String) The ID of this resource.
-- **subnet_id** (String)
-
-`,
+			"testdata/aws_route_table_association.schema.json",
+			"testdata/aws_route_table_association.md",
 		},
 	} {
 		t.Run(c.name, func(t *testing.T) {
+			input, err := os.ReadFile(c.inputFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expected, err := os.ReadFile(c.expectedFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			var schema tfjson.Schema
 
-			err := json.Unmarshal([]byte(c.input), &schema)
+			err = json.Unmarshal(input, &schema)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -77,9 +46,9 @@ func TestRender(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			actual := b.String()
-			if c.expected != actual {
-				t.Fatalf("expected:\n%q\ngot:\n%q\n", c.expected, actual)
+			// Remove trailing newlines before comparing (some text editors remove them).
+			if expected, actual := strings.TrimRight(string(expected), "\n"), strings.TrimRight(b.String(), "\n"); expected != actual {
+				t.Fatalf("expected:\n%q\ngot:\n%q\n", expected, actual)
 			}
 		})
 	}
