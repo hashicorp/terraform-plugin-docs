@@ -1,0 +1,40 @@
+{
+    "block": {
+        "attributes": {
+            "arn": {
+                "computed": true,
+                "description": "The CloudWatch log group ARN.",
+                "description_kind": "plain",
+                "type": "string"
+            },
+            "id": {
+                "computed": true,
+                "description": "Uniquely identifies the resource.",
+                "description_kind": "plain",
+                "type": "string"
+            },
+            "kms_key_id": {
+                "description": "The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.",
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+            },
+            "log_group_name": {
+                "computed": true,
+                "description": "The name of the log group. If you don't specify a name, AWS CloudFormation generates a unique ID for the log group.",
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+            },
+            "retention_in_days": {
+                "description": "The number of days to retain the log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.",
+                "description_kind": "plain",
+                "optional": true,
+                "type": "number"
+            }
+        },
+        "description": "Resource schema for AWS::Logs::LogGroup",
+        "description_kind": "plain"
+    },
+    "version": 1
+}
