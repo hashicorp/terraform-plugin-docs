@@ -57,6 +57,7 @@ type nestedType struct {
 	path     []string
 	block    *tfjson.SchemaBlock
 	object   *cty.Type
+	attrs    *tfjson.SchemaNestedAttributeType
 
 	group groupFilter
 }
@@ -88,6 +89,19 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 	anchorID := "nestedatt--" + strings.Join(path, "--")
 	nestedTypes := []nestedType{}
 	switch {
+	case att.AttributeNestedType != nil:
+		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		if err != nil {
+			return nil, err
+		}
+
+		nestedTypes = append(nestedTypes, nestedType{
+			anchorID: anchorID,
+			path:     path,
+			attrs:    att.AttributeNestedType,
+
+			group: group,
+		})
 	case att.AttributeType.IsObjectType():
 		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
 		if err != nil {
@@ -228,7 +242,7 @@ nameLoop:
 	// For each characteristic group
 	//   If Attribute
 	//     Write out summary including characteristic and type (if primitive type or collection of primitives)
-	//     If Object type or collection of Objects, add to list of nested types
+	//     If NestedAttribute type, Object type or collection of Objects, add to list of nested types
 	//   ElseIf Block
 	//     Write out summary including characteristic
 	//     Add block to list of nested types
@@ -243,6 +257,13 @@ nameLoop:
 	//       For each Object Attribute
 	//         Write out summary including characteristic and type (if primitive type or collection of primitives)
 	//         If Object type or collection of Objects, add to list of nested types
+	//       End
+	//       Recursively do nested type functionality
+	//   ElseIf NestedAttribute
+	//     Call writeNestedAttributeChildren, which
+	//       For each nested Attribute
+	//         Write out summary including characteristic and type (if primitive type or collection of primitives)
+	//         If NestedAttribute type, Object type or collection of Objects, add to list of nested types
 	//       End
 	//       Recursively do nested type functionality
 	//   End
@@ -322,6 +343,11 @@ func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
 			}
 		case nt.object != nil:
 			err = writeObjectChildren(w, nt.path, *nt.object, nt.group)
+			if err != nil {
+				return err
+			}
+		case nt.attrs != nil:
+			err = writeNestedAttributeChildren(w, nt.path, nt.attrs, nt.group)
 			if err != nil {
 				return err
 			}
@@ -439,7 +465,40 @@ func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group group
 	return nil
 }
 
-// TODO
-// TODO I think it will be sufficient to treat nested Attributes similar to Attributes of Object or collection of Object type.
-// TODO We'll need to add writeNestedAttributeChildren (similar to writeObjectChildren) and writeNestedAttribute (similar to writeObjectAttribute).
-// TODO
+func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttributes *tfjson.SchemaNestedAttributeType, group groupFilter) error {
+	_, err := io.WriteString(w, group.nestedTitle+"\n\n")
+	if err != nil {
+		return err
+	}
+
+	sortedNames := []string{}
+	for n := range nestedAttributes.Attributes {
+		sortedNames = append(sortedNames, n)
+	}
+	sort.Strings(sortedNames)
+	nestedTypes := []nestedType{}
+
+	for _, name := range sortedNames {
+		att := nestedAttributes.Attributes[name]
+		path := append(parents, name)
+
+		nt, err := writeAttribute(w, path, att, group)
+		if err != nil {
+			return fmt.Errorf("unable to render attribute %q: %w", name, err)
+		}
+
+		nestedTypes = append(nestedTypes, nt...)
+	}
+
+	_, err = io.WriteString(w, "\n")
+	if err != nil {
+		return err
+	}
+
+	err = writeNestedTypes(w, nestedTypes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
