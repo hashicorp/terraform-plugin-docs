@@ -31,6 +31,11 @@ func TestRender(t *testing.T) {
 			"testdata/awscc_logs_log_group.schema.json",
 			"testdata/awscc_logs_log_group.md",
 		},
+        {
+            "awscc_acmpca_certificate",
+            "testdata/awscc_acmpca_certificate.schema.json",
+            "testdata/awscc_acmpca_certificate.md",
+        },
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			input, err := os.ReadFile(c.inputFile)

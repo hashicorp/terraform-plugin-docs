@@ -1,0 +1,470 @@
+{
+    "block": {
+        "attributes": {
+            "api_passthrough": {
+                "computed": true,
+                "description": "Structure that specifies fields to be overridden in a certificate at the time of issuance. These requires an API Passthrough template be used or they will be ignored.",
+                "description_kind": "plain",
+                "nested_type": {
+                    "attributes": {
+                        "extensions": {
+                            "description": "Structure that contains X.500 extensions for a Certificate.",
+                            "description_kind": "plain",
+                            "nested_type": {
+                                "attributes": {
+                                    "certificate_policies": {
+                                        "description_kind": "plain",
+                                        "nested_type": {
+                                            "attributes": {
+                                                "cert_policy_id": {
+                                                    "description": "String that contains X.509 ObjectIdentifier information.",
+                                                    "description_kind": "plain",
+                                                    "required": true,
+                                                    "type": "string"
+                                                },
+                                                "policy_qualifiers": {
+                                                    "description_kind": "plain",
+                                                    "nested_type": {
+                                                        "attributes": {
+                                                            "policy_qualifier_id": {
+                                                                "description_kind": "plain",
+                                                                "required": true,
+                                                                "type": "string"
+                                                            },
+                                                            "qualifier": {
+                                                                "description": "Structure that contains a X.509 policy qualifier.",
+                                                                "description_kind": "plain",
+                                                                "nested_type": {
+                                                                    "attributes": {
+                                                                        "cps_uri": {
+                                                                            "description_kind": "plain",
+                                                                            "required": true,
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "nesting_mode": "single"
+                                                                },
+                                                                "required": true
+                                                            }
+                                                        },
+                                                        "nesting_mode": "list"
+                                                    },
+                                                    "optional": true
+                                                }
+                                            },
+                                            "nesting_mode": "list"
+                                        },
+                                        "optional": true
+                                    },
+                                    "extended_key_usage": {
+                                        "description_kind": "plain",
+                                        "nested_type": {
+                                            "attributes": {
+                                                "extended_key_usage_object_identifier": {
+                                                    "description": "String that contains X.509 ObjectIdentifier information.",
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "string"
+                                                },
+                                                "extended_key_usage_type": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "nesting_mode": "list"
+                                        },
+                                        "optional": true
+                                    },
+                                    "key_usage": {
+                                        "description": "Structure that contains X.509 KeyUsage information.",
+                                        "description_kind": "plain",
+                                        "nested_type": {
+                                            "attributes": {
+                                                "crl_sign": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                },
+                                                "data_encipherment": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                },
+                                                "decipher_only": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                },
+                                                "digital_signature": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                },
+                                                "encipher_only": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                },
+                                                "key_agreement": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                },
+                                                "key_cert_sign": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                },
+                                                "key_encipherment": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                },
+                                                "non_repudiation": {
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "bool"
+                                                }
+                                            },
+                                            "nesting_mode": "single"
+                                        },
+                                        "optional": true
+                                    },
+                                    "subject_alternative_names": {
+                                        "description_kind": "plain",
+                                        "nested_type": {
+                                            "attributes": {
+                                                "directory_name": {
+                                                    "description": "Structure that contains X.500 distinguished name information.",
+                                                    "description_kind": "plain",
+                                                    "nested_type": {
+                                                        "attributes": {
+                                                            "common_name": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "country": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "distinguished_name_qualifier": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "generation_qualifier": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "given_name": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "initials": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "locality": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "organization": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "organizational_unit": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "pseudonym": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "serial_number": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "state": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "surname": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            },
+                                                            "title": {
+                                                                "description_kind": "plain",
+                                                                "optional": true,
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "nesting_mode": "single"
+                                                    },
+                                                    "optional": true
+                                                },
+                                                "dns_name": {
+                                                    "description": "String that contains X.509 DnsName information.",
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "string"
+                                                },
+                                                "edi_party_name": {
+                                                    "description": "Structure that contains X.509 EdiPartyName information.",
+                                                    "description_kind": "plain",
+                                                    "nested_type": {
+                                                        "attributes": {
+                                                            "name_assigner": {
+                                                                "description_kind": "plain",
+                                                                "required": true,
+                                                                "type": "string"
+                                                            },
+                                                            "party_name": {
+                                                                "description_kind": "plain",
+                                                                "required": true,
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "nesting_mode": "single"
+                                                    },
+                                                    "optional": true
+                                                },
+                                                "ip_address": {
+                                                    "description": "String that contains X.509 IpAddress information.",
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "string"
+                                                },
+                                                "other_name": {
+                                                    "description": "Structure that contains X.509 OtherName information.",
+                                                    "description_kind": "plain",
+                                                    "nested_type": {
+                                                        "attributes": {
+                                                            "type_id": {
+                                                                "description": "String that contains X.509 ObjectIdentifier information.",
+                                                                "description_kind": "plain",
+                                                                "required": true,
+                                                                "type": "string"
+                                                            },
+                                                            "value": {
+                                                                "description_kind": "plain",
+                                                                "required": true,
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "nesting_mode": "single"
+                                                    },
+                                                    "optional": true
+                                                },
+                                                "registered_id": {
+                                                    "description": "String that contains X.509 ObjectIdentifier information.",
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "string"
+                                                },
+                                                "rfc_822_name": {
+                                                    "description": "String that contains X.509 Rfc822Name information.",
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "string"
+                                                },
+                                                "uniform_resource_identifier": {
+                                                    "description": "String that contains X.509 UniformResourceIdentifier information.",
+                                                    "description_kind": "plain",
+                                                    "optional": true,
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "nesting_mode": "list"
+                                        },
+                                        "optional": true
+                                    }
+                                },
+                                "nesting_mode": "single"
+                            },
+                            "optional": true
+                        },
+                        "subject": {
+                            "description": "Structure that contains X.500 distinguished name information.",
+                            "description_kind": "plain",
+                            "nested_type": {
+                                "attributes": {
+                                    "common_name": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "country": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "distinguished_name_qualifier": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "generation_qualifier": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "given_name": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "initials": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "locality": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "organization": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "organizational_unit": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "pseudonym": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "serial_number": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "surname": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    },
+                                    "title": {
+                                        "description_kind": "plain",
+                                        "optional": true,
+                                        "type": "string"
+                                    }
+                                },
+                                "nesting_mode": "single"
+                            },
+                            "optional": true
+                        }
+                    },
+                    "nesting_mode": "single"
+                },
+                "optional": true
+            },
+            "arn": {
+                "computed": true,
+                "description_kind": "plain",
+                "type": "string"
+            },
+            "certificate": {
+                "computed": true,
+                "description": "The issued certificate in base 64 PEM-encoded format.",
+                "description_kind": "plain",
+                "type": "string"
+            },
+            "certificate_authority_arn": {
+                "description_kind": "plain",
+                "required": true,
+                "type": "string"
+            },
+            "certificate_signing_request": {
+                "description": "The certificate signing request (CSR) for the Certificate.",
+                "description_kind": "plain",
+                "required": true,
+                "type": "string"
+            },
+            "id": {
+                "computed": true,
+                "description": "Uniquely identifies the resource.",
+                "description_kind": "plain",
+                "type": "string"
+            },
+            "signing_algorithm": {
+                "description": "The name of the algorithm that will be used to sign the Certificate.",
+                "description_kind": "plain",
+                "required": true,
+                "type": "string"
+            },
+            "template_arn": {
+                "computed": true,
+                "description_kind": "plain",
+                "optional": true,
+                "type": "string"
+            },
+            "validity": {
+                "description": "Validity for a certificate.",
+                "description_kind": "plain",
+                "nested_type": {
+                    "attributes": {
+                        "type": {
+                            "description_kind": "plain",
+                            "required": true,
+                            "type": "string"
+                        },
+                        "value": {
+                            "description_kind": "plain",
+                            "required": true,
+                            "type": "number"
+                        }
+                    },
+                    "nesting_mode": "single"
+                },
+                "required": true
+            },
+            "validity_not_before": {
+                "computed": true,
+                "description": "Validity for a certificate.",
+                "description_kind": "plain",
+                "nested_type": {
+                    "attributes": {
+                        "type": {
+                            "description_kind": "plain",
+                            "required": true,
+                            "type": "string"
+                        },
+                        "value": {
+                            "description_kind": "plain",
+                            "required": true,
+                            "type": "number"
+                        }
+                    },
+                    "nesting_mode": "single"
+                },
+                "optional": true
+            }
+        },
+        "description": "A certificate issued via a private certificate authority",
+        "description_kind": "plain"
+    },
+    "version": 1
+}
