@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/hashicorp/terraform-plugin-docs/schemamd"
 	"github.com/zclconf/go-cty/cty"
@@ -91,8 +92,8 @@ func TestWriteNestedAttributeTypeDescription(t *testing.T) {
 				t.Fatal(err)
 			}
 			actual := b.String()
-			if c.expected != actual {
-				t.Fatalf("expected %q, got %q", c.expected, actual)
+			if diff := cmp.Diff(c.expected, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 			}
 		})
 	}
