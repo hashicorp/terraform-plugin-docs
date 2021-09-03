@@ -38,17 +38,17 @@ func WriteBlockTypeDescription(w io.Writer, block *tfjson.SchemaBlockType) error
 
 	if block.NestingMode == tfjson.SchemaNestingModeSingle {
 		switch {
-		case childIsRequired(block, nil):
+		case childBlockIsRequired(block):
 			_, err = io.WriteString(w, ", Required")
 			if err != nil {
 				return err
 			}
-		case childIsOptional(block, nil):
+		case childBlockIsOptional(block):
 			_, err = io.WriteString(w, ", Optional")
 			if err != nil {
 				return err
 			}
-		case childIsReadOnly(block, nil):
+		case childBlockIsReadOnly(block):
 			_, err = io.WriteString(w, ", Read-only")
 			if err != nil {
 				return err

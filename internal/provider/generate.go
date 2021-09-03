@@ -155,11 +155,13 @@ func (g *generator) Generate(ctx context.Context) error {
 		return err
 	}
 
+	g.infof("rendering missing docs")
 	err = g.renderMissingDocs(providerName, providerSchema)
 	if err != nil {
 		return err
 	}
 
+	g.infof("rendering static website")
 	err = g.renderStaticWebsite(providerName, providerSchema)
 	if err != nil {
 		return err
@@ -494,7 +496,8 @@ provider %[1]q {
 		return nil, err
 	}
 
-	tfBin, err := tfinstall.Find(ctx, tfinstall.ExactVersion("0.13.2", tmpDir))
+	g.infof("getting Terraform binary")
+	tfBin, err := tfinstall.Find(ctx, tfinstall.ExactVersion("1.0.5", tmpDir))
 	if err != nil {
 		return nil, err
 	}
@@ -504,11 +507,13 @@ provider %[1]q {
 		return nil, err
 	}
 
-	err = tf.Init(ctx, tfexec.GetPlugins(false), tfexec.Get(false), tfexec.PluginDir("./plugins"))
+	g.infof("running terraform init")
+	err = tf.Init(ctx, tfexec.Get(false), tfexec.PluginDir("./plugins"))
 	if err != nil {
 		return nil, err
 	}
 
+	g.infof("getting provider schema")
 	schemas, err := tf.ProvidersSchema(ctx)
 	if err != nil {
 		return nil, err
