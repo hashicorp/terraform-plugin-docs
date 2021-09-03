@@ -3,6 +3,7 @@ package schemamd
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/zclconf/go-cty/cty"
 )
@@ -34,8 +35,8 @@ func TestChildAttributeIsRequired(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			actual := childAttributeIsRequired(c.att)
-			if c.expected != actual {
-				t.Fatalf("expected %t, got %t", c.expected, actual)
+			if diff := cmp.Diff(c.expected, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 			}
 		})
 	}
@@ -68,8 +69,8 @@ func TestChildAttributeIsOptional(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			actual := childAttributeIsOptional(c.att)
-			if c.expected != actual {
-				t.Fatalf("expected %t, got %t", c.expected, actual)
+			if diff := cmp.Diff(c.expected, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 			}
 		})
 	}
@@ -120,8 +121,8 @@ func TestChildAttributeIsReadOnly(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			actual := childAttributeIsReadOnly(c.att)
-			if c.expected != actual {
-				t.Fatalf("expected %t, got %t", c.expected, actual)
+			if diff := cmp.Diff(c.expected, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 			}
 		})
 	}
@@ -171,8 +172,8 @@ func TestChildBlockIsRequired(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			actual := childBlockIsRequired(c.block)
-			if c.expected != actual {
-				t.Fatalf("expected %t, got %t", c.expected, actual)
+			if diff := cmp.Diff(c.expected, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 			}
 		})
 	}
@@ -326,8 +327,8 @@ func TestChildBlockIsOptional(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			actual := childBlockIsOptional(c.block)
-			if c.expected != actual {
-				t.Fatalf("expected %t, got %t", c.expected, actual)
+			if diff := cmp.Diff(c.expected, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 			}
 		})
 	}
@@ -481,8 +482,8 @@ func TestChildBlockIsReadOnly(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			actual := childBlockIsReadOnly(c.block)
-			if c.expected != actual {
-				t.Fatalf("expected %t, got %t", c.expected, actual)
+			if diff := cmp.Diff(c.expected, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 			}
 		})
 	}

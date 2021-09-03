@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/hashicorp/terraform-plugin-docs/schemamd"
 )
@@ -31,11 +32,11 @@ func TestRender(t *testing.T) {
 			"testdata/awscc_logs_log_group.schema.json",
 			"testdata/awscc_logs_log_group.md",
 		},
-        {
-            "awscc_acmpca_certificate",
-            "testdata/awscc_acmpca_certificate.schema.json",
-            "testdata/awscc_acmpca_certificate.md",
-        },
+		{
+			"awscc_acmpca_certificate",
+			"testdata/awscc_acmpca_certificate.schema.json",
+			"testdata/awscc_acmpca_certificate.md",
+		},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			input, err := os.ReadFile(c.inputFile)
@@ -62,8 +63,10 @@ func TestRender(t *testing.T) {
 			}
 
 			// Remove trailing newlines before comparing (some text editors remove them).
-			if expected, actual := strings.TrimRight(string(expected), "\n"), strings.TrimRight(b.String(), "\n"); expected != actual {
-				t.Fatalf("expected:\n%s\ngot:\n%s\n", expected, actual)
+			expectedStr := strings.TrimRight(string(expected), "\n")
+			actual := strings.TrimRight(b.String(), "\n")
+			if diff := cmp.Diff(expectedStr, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 			}
 		})
 	}
