@@ -62,8 +62,11 @@ func TestRender(t *testing.T) {
 				t.Fatal(err)
 			}
 
+			// Remove \r characters so tests don't fail on windows
+			expectedStr := strings.ReplaceAll(string(expected), "\r", "")
+
 			// Remove trailing newlines before comparing (some text editors remove them).
-			expectedStr := strings.TrimRight(string(expected), "\n")
+			expectedStr = strings.TrimRight(expectedStr, "\n")
 			actual := strings.TrimRight(b.String(), "\n")
 			if diff := cmp.Diff(expectedStr, actual); diff != "" {
 				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
