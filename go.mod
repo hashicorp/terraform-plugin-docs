@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-colorable v0.1.9
 	github.com/mitchellh/cli v1.1.2
 	github.com/russross/blackfriday v1.6.0
-	github.com/zclconf/go-cty v1.9.1
+	github.com/zclconf/go-cty v1.10.0
 )
 
 require (
