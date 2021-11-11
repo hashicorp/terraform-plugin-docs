@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/google/go-cmp v0.5.6
-	github.com/hashicorp/terraform-exec v0.14.0
+	github.com/hashicorp/terraform-exec v0.15.0
 	github.com/hashicorp/terraform-json v0.13.0
 	github.com/mattn/go-colorable v0.1.11
 	github.com/mitchellh/cli v1.1.2
