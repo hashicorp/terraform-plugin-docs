@@ -324,6 +324,16 @@ func TestChildBlockIsOptional(t *testing.T) {
 			},
 			false,
 		},
+		{
+			"empty block",
+			&tfjson.SchemaBlockType{
+				NestingMode: tfjson.SchemaNestingModeSingle,
+				Block: &tfjson.SchemaBlock{
+					Description: "This is an empty block.",
+				},
+			},
+			true,
+		},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			actual := childBlockIsOptional(c.block)

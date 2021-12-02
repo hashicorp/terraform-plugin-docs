@@ -16,10 +16,15 @@ func childAttributeIsOptional(att *tfjson.SchemaAttribute) bool {
 	return att.Optional
 }
 
-// childBlockIsOptional returns true for blocks with with min items 0 and any required or optional children.
+// childBlockIsOptional returns true for blocks with with min items 0
+// which are either empty or have any required or optional children.
 func childBlockIsOptional(block *tfjson.SchemaBlockType) bool {
 	if block.MinItems > 0 {
 		return false
+	}
+
+	if len(block.Block.NestedBlocks) == 0 && len(block.Block.Attributes) == 0 {
+		return true
 	}
 
 	for _, childBlock := range block.Block.NestedBlocks {
