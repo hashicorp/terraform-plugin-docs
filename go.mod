@@ -10,6 +10,7 @@ require (
 	github.com/mitchellh/cli v1.1.2
 	github.com/russross/blackfriday v1.6.0
 	github.com/zclconf/go-cty v1.10.0
+	golang.org/x/tools v0.0.0-20190628153133-6cdbf07be9d0
 )
 
 require (
