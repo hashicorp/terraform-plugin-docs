@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 
@@ -20,7 +21,16 @@ func (cmd *generateCmd) Synopsis() string {
 }
 
 func (cmd *generateCmd) Help() string {
-	return `Usage: tfplugindocs generate`
+	buf := bytes.Buffer{}
+	flags := cmd.Flags()
+	flags.SetOutput(&buf)
+	// PrintDefaults implicitly prints to output
+	// thus our buffer
+	flags.PrintDefaults()
+	return fmt.Sprintf(`Usage: tfplugindocs generate [options]
+Available options:
+%s
+`, buf.String())
 }
 
 func (cmd *generateCmd) Flags() *flag.FlagSet {
