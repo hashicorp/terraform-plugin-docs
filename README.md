@@ -8,7 +8,7 @@ The **tfplugindocs** CLI has two main commands, `validate` and `generate` (`gene
 
 ### How it Works
 
-When you run `tfplugindocs` from root directory of the provider the tool takes the following actions:
+When you run `tfplugindocs` from root directory of the providersadsadsasd the tool takes the following actions:
 
 * Copy all the templates and static files to a temporary directory
 * Build (`go build`) a temporary binary of the provider source code
