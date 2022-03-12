@@ -72,8 +72,8 @@ var (
 
 type generator struct {
 	legacySidebar bool
-
-	ui cli.Ui
+	tags          string
+	ui            cli.Ui
 }
 
 func (g *generator) infof(format string, a ...interface{}) {
@@ -84,11 +84,11 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, legacySidebar bool) error {
+func Generate(ui cli.Ui, legacySidebar bool, tags string) error {
 	g := &generator{
 		legacySidebar: legacySidebar,
-
-		ui: ui,
+		tags:          tags,
+		ui:            ui,
 	}
 
 	ctx := context.Background()
@@ -150,7 +150,7 @@ func (g *generator) Generate(ctx context.Context) error {
 	}
 
 	g.infof("exporting schema from Terraform")
-	providerSchema, err := g.terraformProviderSchema(ctx, providerName)
+	providerSchema, err := g.terraformProviderSchema(ctx, providerName, g.tags)
 	if err != nil {
 		return err
 	}
@@ -354,6 +354,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 	g.infof("rendering templated website to static markdown")
 
 	err = filepath.Walk(websiteTmp, func(path string, info os.FileInfo, err error) error {
+
 		if info.IsDir() {
 			// skip directories
 			return nil
@@ -458,7 +459,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 	return nil
 }
 
-func (g *generator) terraformProviderSchema(ctx context.Context, providerName string) (*tfjson.ProviderSchema, error) {
+func (g *generator) terraformProviderSchema(ctx context.Context, providerName string, tags string) (*tfjson.ProviderSchema, error) {
 	var err error
 
 	shortName := providerShortName(providerName)
@@ -481,7 +482,11 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 	case "windows":
 		outFile = outFile + ".exe"
 	}
-	buildCmd := exec.Command("go", "build", "-o", outFile)
+	args := []string{"build", "-o", outFile}
+	if tags != "" {
+		args = append(args, "-tags", tags)
+	}
+	buildCmd := exec.Command("go", args...)
 	// TODO: constrain env here to make it a little safer?
 	_, err = runCmd(buildCmd)
 	if err != nil {
