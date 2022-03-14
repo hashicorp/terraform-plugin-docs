@@ -10,8 +10,10 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/hashicorp/go-version"
+	"github.com/hashicorp/hc-install/product"
+	"github.com/hashicorp/hc-install/releases"
 	"github.com/hashicorp/terraform-exec/tfexec"
-	"github.com/hashicorp/terraform-exec/tfinstall"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/mitchellh/cli"
 )
@@ -497,7 +499,12 @@ provider %[1]q {
 	}
 
 	g.infof("getting Terraform binary")
-	tfBin, err := tfinstall.Find(ctx, tfinstall.ExactVersion("1.0.5", tmpDir))
+	installer := &releases.ExactVersion{
+		Product:    product.Terraform,
+		Version:    version.Must(version.NewVersion("1.0.5")),
+		InstallDir: tmpDir,
+	}
+	tfBin, err := installer.Install(context.Background())
 	if err != nil {
 		return nil, err
 	}
