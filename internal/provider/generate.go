@@ -11,12 +11,17 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-version"
+	install "github.com/hashicorp/hc-install"
+	"github.com/hashicorp/hc-install/fs"
 	"github.com/hashicorp/hc-install/product"
 	"github.com/hashicorp/hc-install/releases"
+	"github.com/hashicorp/hc-install/src"
 	"github.com/hashicorp/terraform-exec/tfexec"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/mitchellh/cli"
 )
+
+const defaultTerraformVersion = "1.0.5"
 
 // TODO: convert these to flags?
 var (
@@ -74,6 +79,7 @@ var (
 
 type generator struct {
 	legacySidebar bool
+	offlineMode   bool
 
 	ui cli.Ui
 }
@@ -86,9 +92,10 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, legacySidebar bool) error {
+func Generate(ui cli.Ui, legacySidebar, offline bool) error {
 	g := &generator{
 		legacySidebar: legacySidebar,
+		offlineMode:   offline,
 
 		ui: ui,
 	}
@@ -498,13 +505,24 @@ provider %[1]q {
 		return nil, err
 	}
 
-	g.infof("getting Terraform binary")
-	installer := &releases.ExactVersion{
-		Product:    product.Terraform,
-		Version:    version.Must(version.NewVersion("1.0.5")),
-		InstallDir: tmpDir,
+	i := install.NewInstaller()
+	src := []src.Source{}
+
+	if g.offlineMode {
+		g.infof("use Terraform binary from PATH")
+		src = append(src, &fs.AnyVersion{
+			Product: &product.Terraform,
+		})
+	} else {
+		g.infof("getting Terraform binary")
+		src = append(src, &releases.ExactVersion{
+			Product:    product.Terraform,
+			Version:    version.Must(version.NewVersion(defaultTerraformVersion)),
+			InstallDir: tmpDir,
+		})
 	}
-	tfBin, err := installer.Install(context.Background())
+
+	tfBin, err := i.Ensure(context.Background(), src)
 	if err != nil {
 		return nil, err
 	}
