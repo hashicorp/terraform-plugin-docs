@@ -507,7 +507,7 @@ provider %[1]q {
 	i := install.NewInstaller()
 	sources := []src.Source{}
 	if g.tfVersion != "" {
-		g.infof("download specific Terraform binary version %s", g.tfVersion)
+		g.infof("downloading Terraform CLI binary version from releases.hashicorp.com: %s", g.tfVersion)
 		sources = []src.Source{
 			&releases.ExactVersion{
 				Product:    product.Terraform,
