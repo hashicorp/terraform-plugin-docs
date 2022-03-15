@@ -65,7 +65,7 @@ type nestedType struct {
 func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, group groupFilter) ([]nestedType, error) {
 	name := path[len(path)-1]
 
-	_, err := io.WriteString(w, "- **"+name+"** ")
+	_, err := io.WriteString(w, "- `"+name+"` ")
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) ([]nestedType, error) {
 	name := path[len(path)-1]
 
-	_, err := io.WriteString(w, "- **"+name+"** ")
+	_, err := io.WriteString(w, "- `"+name+"` ")
 	if err != nil {
 		return nil, err
 	}
@@ -367,7 +367,7 @@ func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
 func writeObjectAttribute(w io.Writer, path []string, att cty.Type, group groupFilter) ([]nestedType, error) {
 	name := path[len(path)-1]
 
-	_, err := io.WriteString(w, "- **"+name+"** (")
+	_, err := io.WriteString(w, "- `"+name+"` (")
 	if err != nil {
 		return nil, err
 	}
