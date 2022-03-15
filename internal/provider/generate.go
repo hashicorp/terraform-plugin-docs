@@ -22,8 +22,6 @@ import (
 	"github.com/mitchellh/cli"
 )
 
-const defaultTerraformVersion = "1.0.5"
-
 // TODO: convert these to flags?
 var (
 	providerName string
