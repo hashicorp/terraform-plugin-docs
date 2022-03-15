@@ -516,7 +516,7 @@ provider %[1]q {
 			},
 		}
 	} else {
-		g.infof("use Terraform binary from PATH then fallback to getting Terraform binary if not found locally")
+		g.infof("using Terraform CLI binary from PATH if available, otherwise downloading latest Terraform CLI binary")
 		sources = []src.Source{
 			&fs.AnyVersion{
 				Product: &product.Terraform,
