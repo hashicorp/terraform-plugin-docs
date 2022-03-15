@@ -12,6 +12,7 @@ import (
 
 	"github.com/hashicorp/go-version"
 	install "github.com/hashicorp/hc-install"
+	"github.com/hashicorp/hc-install/checkpoint"
 	"github.com/hashicorp/hc-install/fs"
 	"github.com/hashicorp/hc-install/product"
 	"github.com/hashicorp/hc-install/releases"
@@ -79,7 +80,7 @@ var (
 
 type generator struct {
 	legacySidebar bool
-	offlineMode   bool
+	tfVersion     string
 
 	ui cli.Ui
 }
@@ -92,10 +93,10 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, legacySidebar, offline bool) error {
+func Generate(ui cli.Ui, legacySidebar bool, tfVersion string) error {
 	g := &generator{
 		legacySidebar: legacySidebar,
-		offlineMode:   offline,
+		tfVersion:     tfVersion,
 
 		ui: ui,
 	}
@@ -506,23 +507,30 @@ provider %[1]q {
 	}
 
 	i := install.NewInstaller()
-	src := []src.Source{}
-
-	if g.offlineMode {
-		g.infof("use Terraform binary from PATH")
-		src = append(src, &fs.AnyVersion{
-			Product: &product.Terraform,
-		})
+	sources := []src.Source{}
+	if g.tfVersion != "" {
+		g.infof("download specific Terraform binary version %s", g.tfVersion)
+		sources = []src.Source{
+			&releases.ExactVersion{
+				Product:    product.Terraform,
+				Version:    version.Must(version.NewVersion(g.tfVersion)),
+				InstallDir: tmpDir,
+			},
+		}
 	} else {
-		g.infof("getting Terraform binary")
-		src = append(src, &releases.ExactVersion{
-			Product:    product.Terraform,
-			Version:    version.Must(version.NewVersion(defaultTerraformVersion)),
-			InstallDir: tmpDir,
-		})
+		g.infof("use Terraform binary from PATH then fallback to getting Terraform binary if not found locally")
+		sources = []src.Source{
+			&fs.AnyVersion{
+				Product: &product.Terraform,
+			},
+			&checkpoint.LatestVersion{
+				InstallDir: tmpDir,
+				Product:    product.Terraform,
+			},
+		}
 	}
 
-	tfBin, err := i.Ensure(context.Background(), src)
+	tfBin, err := i.Ensure(context.Background(), sources)
 	if err != nil {
 		return nil, err
 	}

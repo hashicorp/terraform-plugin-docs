@@ -11,7 +11,7 @@ type generateCmd struct {
 	commonCmd
 
 	flagLegacySidebar bool
-	offline           bool
+	tfVersion         string
 }
 
 func (cmd *generateCmd) Synopsis() string {
@@ -25,7 +25,7 @@ func (cmd *generateCmd) Help() string {
 func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
 	fs.BoolVar(&cmd.flagLegacySidebar, "legacy-sidebar", false, "generate the legacy .erb sidebar file")
-	fs.BoolVar(&cmd.offline, "offline", false, "do not download terraform binary and find one in PATH")
+	fs.StringVar(&cmd.tfVersion, "tf-version", "", "terraform binary version to download")
 	return fs
 }
 
@@ -41,7 +41,7 @@ func (cmd *generateCmd) Run(args []string) int {
 }
 
 func (cmd *generateCmd) runInternal() error {
-	err := provider.Generate(cmd.ui, cmd.flagLegacySidebar, cmd.offline)
+	err := provider.Generate(cmd.ui, cmd.flagLegacySidebar, cmd.tfVersion)
 	if err != nil {
 		return fmt.Errorf("unable to generate website: %w", err)
 	}
