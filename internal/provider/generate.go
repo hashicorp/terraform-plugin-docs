@@ -406,7 +406,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			resSchema, ok := providerSchema.DataSourceSchemas[resName]
 			if ok {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render("Data Source", providerName, resName, "", "", resSchema)
+				render, err := tmpl.Render(resName, providerName, "Data Source", "", "", resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 				}
@@ -421,7 +421,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			resSchema, ok := providerSchema.ResourceSchemas[resName]
 			if ok {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render("Resource", providerName, resName, "", "", resSchema)
+				render, err := tmpl.Render(resName, providerName, "Resource", "", "", resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
