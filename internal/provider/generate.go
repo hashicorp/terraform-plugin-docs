@@ -10,8 +10,14 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/hashicorp/go-version"
+	install "github.com/hashicorp/hc-install"
+	"github.com/hashicorp/hc-install/checkpoint"
+	"github.com/hashicorp/hc-install/fs"
+	"github.com/hashicorp/hc-install/product"
+	"github.com/hashicorp/hc-install/releases"
+	"github.com/hashicorp/hc-install/src"
 	"github.com/hashicorp/terraform-exec/tfexec"
-	"github.com/hashicorp/terraform-exec/tfinstall"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/mitchellh/cli"
 )
@@ -72,6 +78,7 @@ var (
 
 type generator struct {
 	legacySidebar bool
+	tfVersion     string
 
 	ui cli.Ui
 }
@@ -84,9 +91,10 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, legacySidebar bool) error {
+func Generate(ui cli.Ui, legacySidebar bool, tfVersion string) error {
 	g := &generator{
 		legacySidebar: legacySidebar,
+		tfVersion:     tfVersion,
 
 		ui: ui,
 	}
@@ -404,7 +412,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			resSchema, ok := providerSchema.DataSourceSchemas[resName]
 			if ok {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render("Data Source", providerName, resName, "", "", resSchema)
+				render, err := tmpl.Render(resName, providerName, "Data Source", "", "", resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 				}
@@ -419,7 +427,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			resSchema, ok := providerSchema.ResourceSchemas[resName]
 			if ok {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render("Resource", providerName, resName, "", "", resSchema)
+				render, err := tmpl.Render(resName, providerName, "Resource", "", "", resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
@@ -496,8 +504,31 @@ provider %[1]q {
 		return nil, err
 	}
 
-	g.infof("getting Terraform binary")
-	tfBin, err := tfinstall.Find(ctx, tfinstall.ExactVersion("1.0.5", tmpDir))
+	i := install.NewInstaller()
+	sources := []src.Source{}
+	if g.tfVersion != "" {
+		g.infof("downloading Terraform CLI binary version from releases.hashicorp.com: %s", g.tfVersion)
+		sources = []src.Source{
+			&releases.ExactVersion{
+				Product:    product.Terraform,
+				Version:    version.Must(version.NewVersion(g.tfVersion)),
+				InstallDir: tmpDir,
+			},
+		}
+	} else {
+		g.infof("using Terraform CLI binary from PATH if available, otherwise downloading latest Terraform CLI binary")
+		sources = []src.Source{
+			&fs.AnyVersion{
+				Product: &product.Terraform,
+			},
+			&checkpoint.LatestVersion{
+				InstallDir: tmpDir,
+				Product:    product.Terraform,
+			},
+		}
+	}
+
+	tfBin, err := i.Ensure(context.Background(), sources)
 	if err != nil {
 		return nil, err
 	}
