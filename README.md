@@ -54,6 +54,7 @@ TBD
 | `tffile`        | A special case of the `codefile` function. In addition this will elide lines with an `OMIT` comment.               |
 | `trimspace`     | `strings.TrimSpace`                                                                                                |
 | `plainmarkdown` | Render Markdown content as plaintext                                                                               |
+| `split`         | Split string into sub-strings, eg. `split .Name "_"`                                                               |
 
 ### Installation
 
