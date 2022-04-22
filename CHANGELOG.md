@@ -4,6 +4,7 @@ ENHANCEMENTS:
 
 * cmd/tfplugindocs: Use existing Terraform CLI binary if available on PATH, otherwise download latest Terraform CLI binary (https://github.com/hashicorp/terraform-plugin-docs/pull/124)
 * cmd/tfplugindocs: Added `tf-version` flag for specifying Terraform CLI binary version to download, superseding the PATH lookup (https://github.com/hashicorp/terraform-plugin-docs/pull/124)
+* template functions: Added the `split` command to split a string into substrings
 
 BUG FIXES:
 
