@@ -1,8 +1,8 @@
-# 0.8.0 (April 25, 2022)
+# 0.8.0 (UNRELEASED)
 
 ENHANCEMENTS:
 
-* template functions: Added the `split` command to split a string into substrings
+* template functions: Added `split` to help separating a string into substrings ([#70](https://github.com/hashicorp/terraform-plugin-docs/pull/70)).
  
 # 0.7.0 (March 15, 2022)
 
