@@ -1,0 +1,29 @@
+{
+	"block": {
+		"attributes": {
+			"gateway_id": {
+				"description_kind": "plain",
+				"optional": true,
+				"type": "string"
+			},
+			"id": {
+				"computed": true,
+				"description_kind": "plain",
+				"optional": true,
+				"type": "string"
+			},
+			"route_table_id": {
+				"description_kind": "plain",
+				"required": true,
+				"type": "string"
+			},
+			"subnet_id": {
+				"description_kind": "plain",
+				"optional": true,
+				"type": "string"
+			}
+		},
+		"description_kind": "plain"
+	},
+	"version": 0
+}
