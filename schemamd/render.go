@@ -225,6 +225,13 @@ nameLoop:
 			}
 		} else if childAtt, ok := block.Attributes[n]; ok {
 			for i, gf := range groupFilters {
+				if strings.ToLower(n) == "id" && childAtt.Description == "" {
+					if gf.topLevelTitle == "Read-Only" {
+						childAtt.Description = "The ID of this resource."
+						groups[i] = append(groups[i], n)
+						continue nameLoop
+					}
+				}
 				if gf.filterAttribute(childAtt) {
 					groups[i] = append(groups[i], n)
 					continue nameLoop

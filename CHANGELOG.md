@@ -3,7 +3,11 @@
 ENHANCEMENTS:
 
 * template functions: Added `split` to help separating a string into substrings ([#70](https://github.com/hashicorp/terraform-plugin-docs/pull/70)).
- 
+
+BUG FIXES:
+
+* schemamd: Place the default "ID" attribute as a "Read Only" attribute, unless there's a defined description ([#46](https://github.com/hashicorp/terraform-plugin-docs/pull/46)).
+
 # 0.7.0 (March 15, 2022)
 
 ENHANCEMENTS:
