@@ -3,6 +3,10 @@
 ENHANCEMENTS:
 
 * template functions: Added `split` to help separating a string into substrings ([#70](https://github.com/hashicorp/terraform-plugin-docs/pull/70)).
+
+BUG FIXES:
+
+* cmd/tflugindocs: Allow documentation generation for schemas containing empty nested attributes or empty nested blocks ([#99](https://github.com/hashicorp/terraform-plugin-docs/pull/99), [#XX](https://github.com/hashicorp/terraform-plugin-docs/pull/XX)) 
  
 # 0.7.0 (March 15, 2022)
 
