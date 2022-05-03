@@ -6,7 +6,7 @@ ENHANCEMENTS:
 
 BUG FIXES:
 
-* schemamd: Place the default "ID" attribute as a "Read Only" attribute, unless there's a defined description ([#46](https://github.com/hashicorp/terraform-plugin-docs/pull/46)).
+* schemamd: By default `ID` attribute should be "Read Only", unless there's a description defined, in which case it's handled like any other attribute in the schema ([#46](https://github.com/hashicorp/terraform-plugin-docs/pull/46)).
 
 # 0.7.0 (March 15, 2022)
 
