@@ -70,10 +70,6 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 		return nil, err
 	}
 
-	if name == "id" && att.Description == "" {
-		att.Description = "The ID of this resource."
-	}
-
 	if att.AttributeNestedType == nil {
 		err = WriteAttributeDescription(w, att, false)
 	} else {
