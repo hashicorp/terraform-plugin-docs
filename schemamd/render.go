@@ -231,8 +231,7 @@ nameLoop:
 						groups[i] = append(groups[i], n)
 						continue nameLoop
 					}
-				}
-				if gf.filterAttribute(childAtt) {
+				} else if gf.filterAttribute(childAtt) {
 					groups[i] = append(groups[i], n)
 					continue nameLoop
 				}
