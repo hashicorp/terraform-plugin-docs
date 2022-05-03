@@ -1,4 +1,4 @@
-# 0.8.0 (UNRELEASED)
+# 0.8.0 (May 3, 2022)
 
 ENHANCEMENTS:
 
