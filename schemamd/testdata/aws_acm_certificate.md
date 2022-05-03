@@ -6,7 +6,6 @@
 - `certificate_body` (String)
 - `certificate_chain` (String)
 - `domain_name` (String)
-- `id` (String) The ID of this resource.
 - `options` (Block List, Max: 1) (see [below for nested schema](#nestedblock--options))
 - `private_key` (String, Sensitive)
 - `subject_alternative_names` (Set of String)
@@ -18,6 +17,7 @@
 
 - `arn` (String)
 - `domain_validation_options` (Set of Object) (see [below for nested schema](#nestedatt--domain_validation_options))
+- `id` (String) The ID of this resource.
 - `status` (String)
 - `validation_emails` (List of String)
 
