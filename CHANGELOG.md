@@ -1,3 +1,9 @@
+# 0.8.1 (May 10, 2022)
+
+BUG FIXES:
+
+* cmd/tfplugindocs: Updated version of [hc-install](github.com/hashicorp/hc-install) in response to change in HashiCorp Release API [sending back a different `Content-Type` header](https://github.com/hashicorp/hc-install/issues/56). This was causing failures when the tool attempted to install Terraform. ([#135](https://github.com/hashicorp/terraform-plugin-docs/issues/135))
+
 # 0.8.0 (May 3, 2022)
 
 ENHANCEMENTS:
