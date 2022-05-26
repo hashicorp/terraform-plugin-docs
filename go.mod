@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/go-version v1.5.0
 	github.com/hashicorp/hc-install v0.3.2
 	github.com/hashicorp/terraform-exec v0.16.1
-	github.com/hashicorp/terraform-json v0.13.0
+	github.com/hashicorp/terraform-json v0.14.0
 	github.com/mattn/go-colorable v0.1.12
 	github.com/mitchellh/cli v1.1.3
 	github.com/russross/blackfriday v1.6.0
