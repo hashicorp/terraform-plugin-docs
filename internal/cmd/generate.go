@@ -33,12 +33,12 @@ func (cmd *generateCmd) Help() string {
 func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
 	fs.BoolVar(&cmd.flagLegacySidebar, "legacy-sidebar", false, "generate the legacy .erb sidebar file")
-	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name used for looking up the schema")
-	fs.StringVar(&cmd.flagRenderedProviderName, "rendered-provider-name", "", "provider name used in generated outputs such as page titles")
-	fs.StringVar(&cmd.flagRenderedWebsiteDir, "rendered-website-dir", "docs", "directory where the rendered website documentation is generated to")
-	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "directory of examples used in rendered documentation")
-	fs.StringVar(&cmd.flagWebsiteTmpDir, "website-temp-dir", "", "")
-	fs.StringVar(&cmd.flagWebsiteSourceDir, "website-source-dir", "templates", "directory of templates that are used for generating the static output")
+	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations")
+	fs.StringVar(&cmd.flagRenderedProviderName, "rendered-provider-name", "", "provider name, as generated in documentation (ex. page titles, ...)")
+	fs.StringVar(&cmd.flagRenderedWebsiteDir, "rendered-website-dir", "docs", "output directory")
+	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory")
+	fs.StringVar(&cmd.flagWebsiteTmpDir, "website-temp-dir", "", "temporary directory (used during generation)")
+	fs.StringVar(&cmd.flagWebsiteSourceDir, "website-source-dir", "templates", "templates directory")
 	fs.StringVar(&cmd.tfVersion, "tf-version", "", "terraform binary version to download")
 	return fs
 }
