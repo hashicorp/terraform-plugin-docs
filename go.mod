@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/terraform-exec v0.16.1
 	github.com/hashicorp/terraform-json v0.14.0
 	github.com/mattn/go-colorable v0.1.12
-	github.com/mitchellh/cli v1.1.3
+	github.com/mitchellh/cli v1.1.4
 	github.com/russross/blackfriday v1.6.0
 	github.com/zclconf/go-cty v1.10.0
 )
