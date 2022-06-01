@@ -3,6 +3,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-docs/internal/provider"
 )
@@ -27,7 +28,41 @@ func (cmd *generateCmd) Synopsis() string {
 }
 
 func (cmd *generateCmd) Help() string {
-	return `Usage: tfplugindocs generate`
+	strBuilder := &strings.Builder{}
+
+	longestName := 0
+	longestUsage := 0
+	cmd.Flags().VisitAll(func(f *flag.Flag) {
+		if len(f.Name) > longestName {
+			longestName = len(f.Name)
+		}
+		if len(f.Usage) > longestUsage {
+			longestUsage = len(f.Usage)
+		}
+	})
+
+	strBuilder.WriteString(fmt.Sprintf("\nUsage: tfplugindocs generate [<args>]\n\n"))
+	cmd.Flags().VisitAll(func(f *flag.Flag) {
+		if f.DefValue != "" {
+			strBuilder.WriteString(fmt.Sprintf("    --%s <ARG> %s%s%s  (default: %q)\n",
+				f.Name,
+				strings.Repeat(" ", longestName-len(f.Name)+2),
+				f.Usage,
+				strings.Repeat(" ", longestUsage-len(f.Usage)+2),
+				f.DefValue,
+			))
+		} else {
+			strBuilder.WriteString(fmt.Sprintf("    --%s <ARG> %s%s%s\n",
+				f.Name,
+				strings.Repeat(" ", longestName-len(f.Name)+2),
+				f.Usage,
+				strings.Repeat(" ", longestUsage-len(f.Usage)+2),
+			))
+		}
+	})
+	strBuilder.WriteString("\n")
+
+	return strBuilder.String()
 }
 
 func (cmd *generateCmd) Flags() *flag.FlagSet {
