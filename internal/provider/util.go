@@ -52,6 +52,18 @@ func removeAllExt(file string) string {
 	}
 }
 
+// resourceName determines whether the shortname and the relFile
+// are identical after file extensions have been stripped from the
+// latter. This allows single word resources (e.g., http) to use
+// templates (e.g., http.md.tmpl).
+func resourceName(shortName, relFile string) string {
+	if shortName == removeAllExt(relFile) {
+		return shortName
+	}
+
+	return shortName + "_" + removeAllExt(relFile)
+}
+
 func writeFile(path string, data string) error {
 	dir, _ := filepath.Split(path)
 	err := os.MkdirAll(dir, 0755)

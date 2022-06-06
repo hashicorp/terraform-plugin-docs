@@ -414,7 +414,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		g.infof("rendering %q", rel)
 		switch relDir {
 		case "data-sources/":
-			resName := shortName + "_" + removeAllExt(relFile)
+			resName := resourceName(shortName, relFile)
 			resSchema, ok := providerSchema.DataSourceSchemas[resName]
 			if ok {
 				tmpl := resourceTemplate(tmplData)
@@ -429,7 +429,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 				return nil
 			}
 		case "resources/":
-			resName := shortName + "_" + removeAllExt(relFile)
+			resName := resourceName(shortName, relFile)
 			resSchema, ok := providerSchema.ResourceSchemas[resName]
 			if ok {
 				tmpl := resourceTemplate(tmplData)
