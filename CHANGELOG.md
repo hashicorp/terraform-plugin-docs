@@ -1,12 +1,18 @@
+# 0.9.1 (Unreleased)
+
+BUG FIXES:
+
+* cmd/tfplugindocs: Allow single word resources to use templates ([147](https://github.com/hashicorp/terraform-plugin-docs/pull/147)).
+
 # 0.9.0 (June 1, 2022)
 
 NEW FEATURES:
 
-* cmd/tflugindocs: Additional CLI arguments `provider-name`, `rendered-provider-name`, `rendered-website-dir`, `examples-dir`, `website-temp-dir`, and `website-source-dir`. These allow to further customise generated doc ([#95](https://github.com/hashicorp/terraform-plugin-docs/pull/95)).
+* cmd/tfplugindocs: Additional CLI arguments `provider-name`, `rendered-provider-name`, `rendered-website-dir`, `examples-dir`, `website-temp-dir`, and `website-source-dir`. These allow to further customise generated doc ([#95](https://github.com/hashicorp/terraform-plugin-docs/pull/95)).
 
 ENHANCEMENTS:
 
-* cmd/tflugindocs: Implemented usage output (i.e. `--help`) for `generate` and `validate` commands ([#95](https://github.com/hashicorp/terraform-plugin-docs/pull/95)).
+* cmd/tfplugindocs: Implemented usage output (i.e. `--help`) for `generate` and `validate` commands ([#95](https://github.com/hashicorp/terraform-plugin-docs/pull/95)).
 
 # 0.8.1 (May 10, 2022)
 
