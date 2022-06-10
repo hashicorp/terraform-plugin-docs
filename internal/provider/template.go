@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	tfjson "github.com/hashicorp/terraform-json"
+
 	"github.com/hashicorp/terraform-plugin-docs/internal/mdplain"
 	"github.com/hashicorp/terraform-plugin-docs/internal/tmplfuncs"
 	"github.com/hashicorp/terraform-plugin-docs/schemamd"
