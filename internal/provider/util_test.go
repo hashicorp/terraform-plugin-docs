@@ -8,68 +8,62 @@ import (
 )
 
 func Test_resourceSchema(t *testing.T) {
-	cases := []struct {
-		name                 string
+	cases := map[string]struct {
 		schemas              map[string]*tfjson.Schema
 		providerShortName    string
 		templateFileName     string
 		expectedSchema       *tfjson.Schema
 		expectedResourceName string
 	}{
-		{
-			"provider short name matches schema name",
-			map[string]*tfjson.Schema{
+		"provider short name matches schema name": {
+			schemas: map[string]*tfjson.Schema{
 				"http": {},
 			},
-			"http",
-			"http.md.tmpl",
-			&tfjson.Schema{},
-			"http",
+			providerShortName:    "http",
+			templateFileName:     "http.md.tmpl",
+			expectedSchema:       &tfjson.Schema{},
+			expectedResourceName: "http",
 		},
-		{
-			"provider short name does not match schema name",
-			map[string]*tfjson.Schema{
+		"provider short name does not match schema name": {
+			schemas: map[string]*tfjson.Schema{
 				"http": {},
 			},
-			"tls",
-			"http.md.tmpl",
-			nil,
-			"",
+			providerShortName:    "tls",
+			templateFileName:     "http.md.tmpl",
+			expectedSchema:       nil,
+			expectedResourceName: "",
 		},
-		{
-			"provider short name concatenated with template file name matches schema name",
-			map[string]*tfjson.Schema{
+		"provider short name concatenated with template file name matches schema name": {
+			schemas: map[string]*tfjson.Schema{
 				"tls_cert_request": {},
 			},
-			"tls",
-			"cert_request.md.tmpl",
-			&tfjson.Schema{},
-			"tls_cert_request",
+			providerShortName:    "tls",
+			templateFileName:     "cert_request.md.tmpl",
+			expectedSchema:       &tfjson.Schema{},
+			expectedResourceName: "tls_cert_request",
 		},
-		{
-			"provider short name concatenated with template file name does not match schema name",
-			map[string]*tfjson.Schema{
+		"provider short name concatenated with template file name does not match schema name": {
+			schemas: map[string]*tfjson.Schema{
 				"tls_cert_request": {},
 			},
-			"tls",
-			"not_found.md.tmpl",
-			nil,
-			"",
+			providerShortName:    "tls",
+			templateFileName:     "not_found.md.tmpl",
+			expectedSchema:       nil,
+			expectedResourceName: "",
 		},
-		{
-			"provider short name concatenated with same template file name matches schema name",
-			map[string]*tfjson.Schema{
+		"provider short name concatenated with same template file name matches schema name": {
+			schemas: map[string]*tfjson.Schema{
 				"tls_tls": {},
 			},
-			"tls",
-			"tls.md.tmpl",
-			&tfjson.Schema{},
-			"tls_tls",
+			providerShortName:    "tls",
+			templateFileName:     "tls.md.tmpl",
+			expectedSchema:       &tfjson.Schema{},
+			expectedResourceName: "tls_tls",
 		},
 	}
 
-	for _, c := range cases {
-		t.Run(c.name, func(t *testing.T) {
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
 			actualSchema, actualResourceName := resourceSchema(c.schemas, c.providerShortName, c.templateFileName)
 
 			if !cmp.Equal(c.expectedSchema, actualSchema) {
