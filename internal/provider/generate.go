@@ -170,13 +170,13 @@ func (g *generator) Generate(ctx context.Context) error {
 	}
 
 	g.infof("rendering missing docs")
-	err = g.renderMissingDocs(g.renderedProviderName, providerSchema)
+	err = g.renderMissingDocs(providerName, providerSchema)
 	if err != nil {
 		return err
 	}
 
 	g.infof("rendering static website")
-	err = g.renderStaticWebsite(g.renderedProviderName, providerSchema)
+	err = g.renderStaticWebsite(providerName, providerSchema)
 	if err != nil {
 		return err
 	}
