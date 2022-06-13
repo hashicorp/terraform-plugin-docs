@@ -4,6 +4,10 @@ BUG FIXES:
 
 * cmd/tfplugindocs: Allow single word resources to use templates ([147](https://github.com/hashicorp/terraform-plugin-docs/pull/147)).
 
+ENHANCEMENTS:
+
+* cmd/tfplugindocs: Expose `RenderedProviderName` to templates ([#149](https://github.com/hashicorp/terraform-plugin-docs/pull/149)).
+
 # 0.9.0 (June 1, 2022)
 
 NEW FEATURES:
