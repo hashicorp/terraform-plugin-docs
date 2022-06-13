@@ -255,7 +255,7 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 	}
 
 	g.infof("generating template for %q", name)
-	md, err := targetResourceTemplate.Render(name, providerName, typeName, examplePath, importPath, schema)
+	md, err := targetResourceTemplate.Render(name, providerName, g.renderedProviderName, typeName, examplePath, importPath, schema)
 	if err != nil {
 		return fmt.Errorf("unable to render template for %q: %w", name, err)
 	}
@@ -303,7 +303,7 @@ func (g *generator) renderMissingProviderDoc(providerName string, schema *tfjson
 	}
 
 	g.infof("generating template for %q", providerName)
-	md, err := defaultProviderTemplate.Render(providerName, examplePath, schema)
+	md, err := defaultProviderTemplate.Render(providerName, g.renderedProviderName, examplePath, schema)
 	if err != nil {
 		return fmt.Errorf("unable to render template for %q: %w", providerName, err)
 	}
@@ -420,7 +420,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			}
 
 			tmpl := resourceTemplate(tmplData)
-			render, err := tmpl.Render(resName, providerName, "Data Source", "", "", resSchema)
+			render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Data Source", "", "", resSchema)
 			if err != nil {
 				return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 			}
@@ -430,13 +430,15 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			}
 			return nil
 		case "resources/":
+			// spew.Dump(providerSchema.ResourceSchemas, shortName)
 			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
+			// spew.Dump(resName, resSchema)
 			if resSchema == nil {
 				return fmt.Errorf("unable to find resource for provider (%s) and template (%s)", shortName, relFile)
 			}
 
 			tmpl := resourceTemplate(tmplData)
-			render, err := tmpl.Render(resName, providerName, "Resource", "", "", resSchema)
+			render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Resource", "", "", resSchema)
 			if err != nil {
 				return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 			}
@@ -448,7 +450,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		case "": // provider
 			if relFile == "index.md.tmpl" {
 				tmpl := providerTemplate(tmplData)
-				render, err := tmpl.Render(providerName, "", providerSchema.ConfigSchema)
+				render, err := tmpl.Render(providerName, g.renderedProviderName, "", providerSchema.ConfigSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render provider template %q: %w", rel, err)
 				}
