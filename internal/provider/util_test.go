@@ -31,7 +31,7 @@ func Test_resourceSchema(t *testing.T) {
 			providerShortName:    "tls",
 			templateFileName:     "http.md.tmpl",
 			expectedSchema:       nil,
-			expectedResourceName: "",
+			expectedResourceName: "tls_http",
 		},
 		"provider short name concatenated with template file name matches schema name": {
 			schemas: map[string]*tfjson.Schema{
@@ -49,7 +49,7 @@ func Test_resourceSchema(t *testing.T) {
 			providerShortName:    "tls",
 			templateFileName:     "not_found.md.tmpl",
 			expectedSchema:       nil,
-			expectedResourceName: "",
+			expectedResourceName: "tls_not_found",
 		},
 		"provider short name concatenated with same template file name matches schema name": {
 			schemas: map[string]*tfjson.Schema{
