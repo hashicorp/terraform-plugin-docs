@@ -442,7 +442,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 				}
 				return nil
 			}
-			g.infof("resource entitled %q, or %q does not exist", shortName, resName)
+			g.warnf("resource entitled %q, or %q does not exist", shortName, resName)
 		case "": // provider
 			if relFile == "index.md.tmpl" {
 				tmpl := providerTemplate(tmplData)
