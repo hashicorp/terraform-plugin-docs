@@ -1,3 +1,9 @@
+# 0.10.1 (June 14, 2022)
+
+BUG FIXES:
+
+* cmd/tfplugindocs: Do not error when schema not found, issue log warning ([#151](https://github.com/hashicorp/terraform-plugin-docs/pull/151)).
+
 # 0.10.0 (June 13, 2022)
 
 BUG FIXES:
