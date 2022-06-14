@@ -427,7 +427,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 				}
 				return nil
 			}
-			g.infof("data source entitled %q, or %q does not exist", shortName, resName)
+			g.warnf("data source entitled %q, or %q does not exist", shortName, resName)
 		case "resources/":
 			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
 			if resSchema != nil {
