@@ -64,8 +64,9 @@ var (
 )
 
 type generator struct {
-	legacySidebar bool
-	tfVersion     string
+	ignoreDeprecated bool
+	legacySidebar    bool
+	tfVersion        string
 
 	providerName         string
 	renderedProviderName string
@@ -85,10 +86,11 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, legacySidebar bool, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, websiteSourceDir, tfVersion string) error {
+func Generate(ui cli.Ui, legacySidebar bool, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, websiteSourceDir, tfVersion string, ignoreDeprecated bool) error {
 	g := &generator{
-		legacySidebar: legacySidebar,
-		tfVersion:     tfVersion,
+		ignoreDeprecated: ignoreDeprecated,
+		legacySidebar:    legacySidebar,
+		tfVersion:        tfVersion,
 
 		providerName:         providerName,
 		renderedProviderName: renderedProviderName,
@@ -319,6 +321,10 @@ func (g *generator) renderMissingProviderDoc(providerName string, schema *tfjson
 func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjson.ProviderSchema) error {
 	g.infof("generating missing resource content")
 	for name, schema := range providerSchema.ResourceSchemas {
+		if g.ignoreDeprecated && schema.Block.Deprecated {
+			continue
+		}
+
 		err := g.renderMissingResourceDoc(providerName, name, "Resource", schema,
 			websiteResourceFileTemplate,
 			websiteResourceFallbackFileTemplate,
@@ -332,6 +338,10 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 
 	g.infof("generating missing data source content")
 	for name, schema := range providerSchema.DataSourceSchemas {
+		if g.ignoreDeprecated && schema.Block.Deprecated {
+			continue
+		}
+
 		err := g.renderMissingResourceDoc(providerName, name, "Data Source", schema,
 			websiteDataSourceFileTemplate,
 			websiteDataSourceFallbackFileTemplate,
