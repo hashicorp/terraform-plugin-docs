@@ -415,9 +415,10 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		switch relDir {
 		case "data-sources/":
 			resSchema, resName := resourceSchema(providerSchema.DataSourceSchemas, shortName, relFile)
+			exampleFilePath := filepath.Join(g.examplesDir, "data-sources", resName, "data-source.tf")
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Data Source", "", "", resSchema)
+				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Data Source", exampleFilePath, "", resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 				}
@@ -430,9 +431,12 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			g.warnf("data source entitled %q, or %q does not exist", shortName, resName)
 		case "resources/":
 			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
+			exampleFilePath := filepath.Join(g.examplesDir, "resources", resName, "resource.tf")
+			importFilePath := filepath.Join(g.examplesDir, "resources", resName, "import.sh")
+
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Resource", "", "", resSchema)
+				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Resource", exampleFilePath, importFilePath, resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
@@ -446,7 +450,8 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		case "": // provider
 			if relFile == "index.md.tmpl" {
 				tmpl := providerTemplate(tmplData)
-				render, err := tmpl.Render(providerName, g.renderedProviderName, "", providerSchema.ConfigSchema)
+				exampleFilePath := filepath.Join(g.examplesDir, "provider", "provider.tf")
+				render, err := tmpl.Render(providerName, g.renderedProviderName, exampleFilePath, providerSchema.ConfigSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render provider template %q: %w", rel, err)
 				}
