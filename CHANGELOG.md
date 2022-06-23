@@ -1,3 +1,9 @@
+# 0.10.2 (Unreleased)
+
+BUG FIXES:
+
+* cmd/tfplugindocs: Pass through filepaths for `examples` and `import` to allow use of `HasExample` and `HasImport` template helpers in custom templates ([#155](https://github.com/hashicorp/terraform-plugin-docs/pull/155)).
+
 # 0.10.1 (June 14, 2022)
 
 BUG FIXES:
