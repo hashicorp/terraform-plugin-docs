@@ -44,20 +44,30 @@ Otherwise, the provider developer can set an arbitrary description like this:
 
 ### Conventional Paths
 
-The generation of missing documentation is based on a number of assumptions / conventional paths:
+The generation of missing documentation is based on a number of assumptions / conventional paths.
+
+For templates:
 
 | Path                                                      | Description                            |
 |-----------------------------------------------------------|----------------------------------------|
 | `templates/`                                              | Root of templated docs                 |
 | `templates/index.md[.tmpl]`                               | Docs index page (or template)          |
-| `examples/provider/provider.tf`                           | Provider example config*               |
 | `templates/data-sources.md[.tmpl]`                        | Generic data source page (or template) |
 | `templates/data-sources/<data source name>.md[.tmpl]`     | Data source page (or template)         |
-| `examples/data-sources/<data source name>/data-source.tf` | Data source example config*            |
 | `templates/resources.md[.tmpl]`                           | Generic resource page (or template)    |
 | `templates/resources/<resource name>.md[.tmpl]`           | Resource page (or template)            |
-| `examples/resources/<resource name>/resource.tf`          | Resource example config*               |
-| `examples/resources/<resource name>/import.sh`            | Resource example import command        |
+
+Note: the `.tmpl` extension is necessary, for the file to be correctly handled as a template.
+
+For examples:
+
+| Path                                                      | Description                     |
+|-----------------------------------------------------------|---------------------------------|
+| `examples/`                                               | Root of examples                |
+| `examples/provider/provider.tf`                           | Provider example config         |
+| `examples/data-sources/<data source name>/data-source.tf` | Data source example config      |
+| `examples/resources/<resource name>/resource.tf`          | Resource example config         |
+| `examples/resources/<resource name>/import.sh`            | Resource example import command |
 
 ### Templates
 
