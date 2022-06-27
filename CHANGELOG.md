@@ -1,5 +1,9 @@
 # 0.10.2 (Unreleased)
 
+NEW FEATURES:
+
+* cmd/tfplugindocs: Additional CLI argument `ignore-deprecated` allows to skip deprecated resources and data-sources when generating docs ([#154](https://github.com/hashicorp/terraform-plugin-docs/pull/154)).
+
 BUG FIXES:
 
 * cmd/tfplugindocs: Pass through filepaths for `examples` and `import` to allow use of `HasExample` and `HasImport` template helpers in custom templates ([#155](https://github.com/hashicorp/terraform-plugin-docs/pull/155)).
