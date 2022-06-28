@@ -1,10 +1,62 @@
 # terraform-plugin-docs
 
-This repository contains tools and packages for creating Terraform plugin docs (currently only provider plugins). The primary way users will interact with this is the **tfplugindocs** CLI tool to generate and validate plugin documentation.
+This repository contains tools and packages for creating Terraform plugin docs (currently only provider plugins).
+The primary way users will interact with this is the `tfplugindocs` CLI tool to generate and validate plugin documentation.
 
-## tfplugindocs
+## `tfplugindocs`
 
-The **tfplugindocs** CLI has two main commands, `validate` and `generate` (`generate` is the default). This tool will let you generate documentation for your provider from live example .tf files and markdown templates. It will also export schema information from the provider (using `terraform providers schema -json`), and sync the schema with the reference documents. If your documentation only consists of simple examples and schema information, the tool can also generate missing template files to make website creation extremely simple for most providers.
+The `tfplugindocs` CLI has two main commands, `validate` and `generate` (`generate` is the default).
+This tool will let you generate documentation for your provider from live example `.tf` files and markdown templates.
+It will also export schema information from the provider (using `terraform providers schema -json`),
+and sync the schema with the reference documents.
+
+If your documentation only consists of simple examples and schema information,
+the tool can also generate missing template files to make website creation extremely simple for most providers.
+
+### Installation
+
+You can install a copy of the binary manually from the [releases](https://github.com/hashicorp/terraform-plugin-docs/releases),
+or you can optionally use the [tools.go model](https://github.com/go-modules-by-example/index/blob/master/010_tools/README.md)
+for tool installation.
+
+### Usage
+
+```shell
+$ tfplugindocs --help
+Usage: tfplugindocs [--version] [--help] <command> [<args>]
+
+Available commands are:
+                the generate command is run by default
+    generate    generates a plugin website from code, templates, and examples for the current directory
+    validate    validates a plugin website for the current directory
+       
+```
+
+`generate` command:
+
+```shell
+$ tfplugindocs generate --help
+
+Usage: tfplugindocs generate [<args>]
+
+    --examples-dir <ARG>             examples directory                                                        (default: "examples")
+    --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources    (default: "false")
+    --legacy-sidebar <ARG>           generate the legacy .erb sidebar file                                     (default: "false")
+    --provider-name <ARG>            provider name, as used in Terraform configurations
+    --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)
+    --rendered-website-dir <ARG>     output directory                                                          (default: "docs")
+    --tf-version <ARG>               terraform binary version to download
+    --website-source-dir <ARG>       templates directory                                                       (default: "templates")
+    --website-temp-dir <ARG>         temporary directory (used during generation)
+```
+
+`validate` command:
+
+```shell
+$ tfplugindocs validate --help
+
+Usage: tfplugindocs validate [<args>]
+```
 
 ### How it Works
 
@@ -19,7 +71,12 @@ When you run `tfplugindocs` from root directory of the provider the tool takes t
 * Copy all non-template files to the output website directory
 * Process all the remaining templates to generate files for the output website directory
 
-You can see an example of the templates and output in [paultyng/terraform-provider-unifi](https://github.com/paultyng/terraform-provider-unifi) and browse the generated docs in the [Terraform Registry](https://registry.terraform.io/providers/paultyng/unifi/latest/docs).
+For inspiration, you can look at the templates and output of the
+[`terraform-provider-random`](https://github.com/hashicorp/terraform-provider-random)
+and [`terraform-provider-tls`](https://github.com/hashicorp/terraform-provider-tls).
+And you can browser their respective docs on the Terraform Registry,
+[here](https://registry.terraform.io/providers/hashicorp/random/latest/docs)
+and [here](https://registry.terraform.io/providers/hashicorp/tls/latest/docs).
 
 #### About the `id` attribute
 
@@ -87,10 +144,11 @@ TBD
 | `plainmarkdown` | Render Markdown content as plaintext                                                                               |
 | `split`         | Split string into sub-strings, eg. `split .Name "_"`                                                               |
 
-### Installation
-
-You can install a copy of the binary manually from the releases, or you can optionally use the [tools.go model](https://github.com/go-modules-by-example/index/blob/master/010_tools/README.md) for tool installation.
 
 ## Disclaimer
 
-This experimental repository contains software which is still being developed and in the alpha testing stage. It is not ready for production use.
+This is still under development: while it's being used for production-ready providers, you might still find bugs
+and limitations. In those cases, please report [issues](https://github.com/hashicorp/terraform-plugin-docs/issues)
+or, if you can, submit a [pull-request](https://github.com/hashicorp/terraform-plugin-docs/pulls).
+
+Your help and patience is truly appreciated.
