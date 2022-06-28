@@ -74,7 +74,7 @@ When you run `tfplugindocs` from root directory of the provider the tool takes t
 For inspiration, you can look at the templates and output of the
 [`terraform-provider-random`](https://github.com/hashicorp/terraform-provider-random)
 and [`terraform-provider-tls`](https://github.com/hashicorp/terraform-provider-tls).
-And you can browser their respective docs on the Terraform Registry,
+You can browse their respective docs on the Terraform Registry,
 [here](https://registry.terraform.io/providers/hashicorp/random/latest/docs)
 and [here](https://registry.terraform.io/providers/hashicorp/tls/latest/docs).
 
