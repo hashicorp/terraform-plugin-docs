@@ -1,4 +1,4 @@
-# 0.10.2 (Unreleased)
+# 0.11.0 (June 28, 2022)
 
 NEW FEATURES:
 
@@ -7,6 +7,7 @@ NEW FEATURES:
 BUG FIXES:
 
 * cmd/tfplugindocs: Pass through filepaths for `examples` and `import` to allow use of `HasExample` and `HasImport` template helpers in custom templates ([#155](https://github.com/hashicorp/terraform-plugin-docs/pull/155)).
+* cmd/tfplugindocs: Fixed issue with the generation of title and reference links, when nested attributes go too deep ([#56](https://github.com/hashicorp/terraform-plugin-docs/pull/56)).
 
 # 0.10.1 (June 14, 2022)
 
