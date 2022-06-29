@@ -128,22 +128,47 @@ For examples:
 
 ### Templates
 
-The templates are implemented with Go [`text/template`](https://golang.org/pkg/text/template/) using the following objects and functions:
+The templates are implemented with Go [`text/template`](https://golang.org/pkg/text/template/)
+using the following data fields and functions:
 
-#### Template Objects
+#### Data fields
 
-TBD
+##### Provider
 
-#### Template Functions
+|                   Field |  Type  | Description                                                                               |
+|------------------------:|:------:|-------------------------------------------------------------------------------------------|
+|          `.Description` | string | Provider description                                                                      |
+|           `.HasExample` |  bool  | Is there an example file?                                                                 |
+|          `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
+|         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
+|    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+| `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 
-| Function        | Description                                                                                                        |
-|-----------------|--------------------------------------------------------------------------------------------------------------------|
-| `codefile`      | Create a Markdown code block and populate it with the contents of a file. Path is relative to the repository root. |
-| `tffile`        | A special case of the `codefile` function. In addition this will elide lines with an `OMIT` comment.               |
-| `trimspace`     | `strings.TrimSpace`                                                                                                |
-| `plainmarkdown` | Render Markdown content as plaintext                                                                               |
-| `split`         | Split string into sub-strings, eg. `split .Name "_"`                                                               |
+##### Resources / Data Source
 
+|                   Field |  Type  | Description                                                                               |
+|------------------------:|:------:|-------------------------------------------------------------------------------------------|
+|                 `.Name` | string | Name of the resource/data-source (ex. `tls_certificate`)                                  |
+|                 `.Type` | string | Either `Resource` or `Data Source`                                                        |
+|          `.Description` | string | Resource / Data Source description                                                        |
+|           `.HasExample` |  bool  | Is there an example file?                                                                 |
+|          `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
+|            `.HasImport` |  bool  | Is there an import file?                                                                  |
+|           `.ImportFile` | string | Path to the file with the command for importing the resource                              |
+|         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
+|    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+| `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+
+#### Functions
+
+| Function        | Description                                                                                       |
+|-----------------|---------------------------------------------------------------------------------------------------|
+| `codefile`      | Create a Markdown code block with the content of a file. Path is relative to the repository root. |
+| `plainmarkdown` | Render Markdown content as plaintext.                                                             |
+| `prefixlines`   | Add a prefix to all (newline-separated) lines in a string.                                        |
+| `split`         | Split string into sub-strings, by a given separator (ex. `split .Name "_"`).                      |
+| `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
+| `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
 
 ## Disclaimer
 
