@@ -130,15 +130,10 @@ func (t providerTemplate) Render(providerName, renderedProviderName, exampleFile
 		return "", nil
 	}
 	return renderStringTemplate("providerTemplate", s, struct {
-		Type        string
-		Name        string
 		Description string
 
 		HasExample  bool
 		ExampleFile string
-
-		HasImport  bool
-		ImportFile string
 
 		ProviderName      string
 		ProviderShortName string
@@ -195,10 +190,10 @@ func (t resourceTemplate) Render(name, providerName, renderedProviderName, typeN
 		Name:        name,
 		Description: schema.Block.Description,
 
-		HasExample:  exampleFile != "",
+		HasExample:  exampleFile != "" && fileExists(exampleFile),
 		ExampleFile: exampleFile,
 
-		HasImport:  importFile != "",
+		HasImport:  importFile != "" && fileExists(importFile),
 		ImportFile: importFile,
 
 		ProviderName:      providerName,
