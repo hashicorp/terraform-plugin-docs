@@ -32,17 +32,17 @@ type (
 func newTemplate(name, text string) (*template.Template, error) {
 	tmpl := template.New(name)
 
-	tmpl.Funcs(template.FuncMap(map[string]interface{}{
+	tmpl.Funcs(map[string]interface{}{
 		"codefile":      tmplfuncs.CodeFile,
+		"lower":         strings.ToLower,
 		"plainmarkdown": mdplain.PlainMarkdown,
 		"prefixlines":   tmplfuncs.PrefixLines,
-		"tffile": func(file string) (string, error) {
-			// TODO: omit comment handling
-			return tmplfuncs.CodeFile("terraform", file)
-		},
-		"trimspace": strings.TrimSpace,
-		"split":     strings.Split,
-	}))
+		"split":         strings.Split,
+		"tffile":        terraformCodeFile,
+		"title":         strings.ToTitle,
+		"trimspace":     strings.TrimSpace,
+		"upper":         strings.ToUpper,
+	})
 
 	var err error
 	tmpl, err = tmpl.Parse(text)
@@ -51,6 +51,11 @@ func newTemplate(name, text string) (*template.Template, error) {
 	}
 
 	return tmpl, nil
+}
+
+func terraformCodeFile(file string) (string, error) {
+	// TODO: omit comment handling
+	return tmplfuncs.CodeFile("terraform", file)
 }
 
 func renderTemplate(name string, text string, out io.Writer, data interface{}) error {
