@@ -1,3 +1,17 @@
+# 0.12.0 (June 29, 2022)
+
+BUG FIXES:
+
+* template data: A regression was introduced in [#155](https://github.com/hashicorp/terraform-plugin-docs/pull/155) making template data field `HasExample` and `HasImport` always true ([#162](https://github.com/hashicorp/terraform-plugin-docs/pull/162)).
+
+NEW FEATURES:
+
+* template functions: Added `lower`, `upper` and `title` ([#162](https://github.com/hashicorp/terraform-plugin-docs/pull/162)).
+
+ENHANCEMENTS:
+
+* Added documentation for all the template functions and template data fields ([#162](https://github.com/hashicorp/terraform-plugin-docs/pull/162)).
+
 # 0.11.0 (June 28, 2022)
 
 NEW FEATURES:
