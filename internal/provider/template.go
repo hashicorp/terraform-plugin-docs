@@ -149,7 +149,7 @@ func (t providerTemplate) Render(providerName, renderedProviderName, exampleFile
 	}{
 		Description: schema.Block.Description,
 
-		HasExample:  exampleFile != "",
+		HasExample:  exampleFile != "" && fileExists(exampleFile),
 		ExampleFile: exampleFile,
 
 		ProviderName:      providerName,
