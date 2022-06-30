@@ -49,15 +49,18 @@ Optional:
 <a id="nestedatt--api_passthrough--extensions--certificate_policies"></a>
 ### Nested Schema for `api_passthrough.extensions.certificate_policies`
 
-Optional:
+Required:
 
 - `cert_policy_id` (String) String that contains X.509 ObjectIdentifier information.
+
+Optional:
+
 - `policy_qualifiers` (Attributes List) (see [below for nested schema](#nestedatt--api_passthrough--extensions--certificate_policies--policy_qualifiers))
 
 <a id="nestedatt--api_passthrough--extensions--certificate_policies--policy_qualifiers"></a>
 ### Nested Schema for `api_passthrough.extensions.certificate_policies.policy_qualifiers`
 
-Optional:
+Required:
 
 - `policy_qualifier_id` (String)
 - `qualifier` (Attributes) Structure that contains a X.509 policy qualifier. (see [below for nested schema](#nestedatt--api_passthrough--extensions--certificate_policies--policy_qualifiers--qualifier))
@@ -65,7 +68,7 @@ Optional:
 <a id="nestedatt--api_passthrough--extensions--certificate_policies--policy_qualifiers--qualifier"></a>
 ### Nested Schema for `api_passthrough.extensions.certificate_policies.policy_qualifiers.qualifier`
 
-Optional:
+Required:
 
 - `cps_uri` (String)
 
@@ -135,7 +138,7 @@ Optional:
 <a id="nestedatt--api_passthrough--extensions--subject_alternative_names--edi_party_name"></a>
 ### Nested Schema for `api_passthrough.extensions.subject_alternative_names.uniform_resource_identifier`
 
-Optional:
+Required:
 
 - `name_assigner` (String)
 - `party_name` (String)
@@ -144,7 +147,7 @@ Optional:
 <a id="nestedatt--api_passthrough--extensions--subject_alternative_names--other_name"></a>
 ### Nested Schema for `api_passthrough.extensions.subject_alternative_names.uniform_resource_identifier`
 
-Optional:
+Required:
 
 - `type_id` (String) String that contains X.509 ObjectIdentifier information.
 - `value` (String)
@@ -177,7 +180,7 @@ Optional:
 <a id="nestedatt--validity_not_before"></a>
 ### Nested Schema for `validity_not_before`
 
-Optional:
+Required:
 
 - `type` (String)
 - `value` (Number)

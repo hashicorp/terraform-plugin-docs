@@ -523,12 +523,7 @@ func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttribute
 		}
 	}
 
-	_, err := io.WriteString(w, "\n")
-	if err != nil {
-		return err
-	}
-
-	err = writeNestedTypes(w, nestedTypes)
+	err := writeNestedTypes(w, nestedTypes)
 	if err != nil {
 		return err
 	}
