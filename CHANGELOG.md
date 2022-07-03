@@ -1,3 +1,9 @@
+# 0.13.0 (TBD)
+
+ENHANCEMENTS:
+
+* Group nested attributes by optional, required and read-only ([#163](https://github.com/hashicorp/terraform-plugin-docs/pull/163)).
+
 # 0.12.0 (June 29, 2022)
 
 BUG FIXES:
