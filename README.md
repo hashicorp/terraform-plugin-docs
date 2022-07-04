@@ -168,10 +168,10 @@ using the following data fields and functions:
 | `plainmarkdown` | Render Markdown content as plaintext.                                                             |
 | `prefixlines`   | Add a prefix to all (newline-separated) lines in a string.                                        |
 | `split`         | Split string into sub-strings, by a given separator (ex. `split .Name "_"`).                      |
-| `title`         | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToTitle).                            |
+| `title`         | Equivalent to [`cases.Title`](https://pkg.go.dev/golang.org/x/text/cases#Title).                  |
 | `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
 | `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
-| `upper`         | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToUpper).                            |
+| `upper`         | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                            |
 
 ## Disclaimer
 

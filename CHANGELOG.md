@@ -1,8 +1,12 @@
-# 0.13.0 (TBD)
+# 0.13.0 (Unreleased)
 
 ENHANCEMENTS:
 
 * Group nested attributes by optional, required and read-only ([#163](https://github.com/hashicorp/terraform-plugin-docs/pull/163)).
+
+BUG FIXES:
+
+* template functions: funtion `title` creates capitalize strings instead of upper strings ([#165](https://github.com/hashicorp/terraform-plugin-docs/pull/165)).
 
 # 0.12.0 (June 29, 2022)
 
@@ -77,13 +81,13 @@ BUG FIXES:
 
 ENHANCEMENTS:
 
-* cmd/tfplugindocs: Use existing Terraform CLI binary if available on PATH, otherwise download latest Terraform CLI binary (https://github.com/hashicorp/terraform-plugin-docs/pull/124).
-* cmd/tfplugindocs: Added `tf-version` flag for specifying Terraform CLI binary version to download, superseding the PATH lookup (https://github.com/hashicorp/terraform-plugin-docs/pull/124).
+* cmd/tfplugindocs: Use existing Terraform CLI binary if available on PATH, otherwise download latest Terraform CLI binary ([#124](https://github.com/hashicorp/terraform-plugin-docs/pull/124)).
+* cmd/tfplugindocs: Added `tf-version` flag for specifying Terraform CLI binary version to download, superseding the PATH lookup ([#124](https://github.com/hashicorp/terraform-plugin-docs/pull/124)).
 
 BUG FIXES:
 
-* cmd/tfplugindocs: Swapped `.Type` and `.Name` resource and data source template fields so they correctly align (https://github.com/hashicorp/terraform-plugin-docs/pull/44).
-* schemamd: Switched attribute name rendering from bold text to code blocks so the Terraform Registry treats them as anchor links (https://github.com/hashicorp/terraform-plugin-docs/pull/59).
+* cmd/tfplugindocs: Swapped `.Type` and `.Name` resource and data source template fields so they correctly align ([#44](https://github.com/hashicorp/terraform-plugin-docs/pull/44)).
+* schemamd: Switched attribute name rendering from bold text to code blocks so the Terraform Registry treats them as anchor links ([#59](https://github.com/hashicorp/terraform-plugin-docs/pull/59)).
 
 # 0.6.0 (March 14, 2022)
 
