@@ -1,12 +1,12 @@
-# 0.13.0 (Unreleased)
+# 0.13.0 (July 8, 2022)
 
 ENHANCEMENTS:
 
-* Group nested attributes by optional, required and read-only ([#163](https://github.com/hashicorp/terraform-plugin-docs/pull/163)).
+* schemamd: Nested attributes are now correctly grouped in "optional", "required" and "read-only" ([#163](https://github.com/hashicorp/terraform-plugin-docs/pull/163)).
 
 BUG FIXES:
 
-* template functions: funtion `title` creates capitalize strings instead of upper strings ([#165](https://github.com/hashicorp/terraform-plugin-docs/pull/165)).
+* template functions: `title` now capitalizes each word in the input string, instead of upper-casing them ([#165](https://github.com/hashicorp/terraform-plugin-docs/pull/165)).
 
 # 0.12.0 (June 29, 2022)
 
