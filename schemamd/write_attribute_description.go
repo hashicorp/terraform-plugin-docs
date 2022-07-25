@@ -62,6 +62,7 @@ func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, include
 
 	desc := strings.TrimSpace(att.Description)
 	if desc != "" {
+		fmt.Println("hihi")
 		_, err = io.WriteString(w, " "+desc)
 		if err != nil {
 			return err
