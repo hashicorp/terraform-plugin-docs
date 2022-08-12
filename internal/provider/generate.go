@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -128,7 +127,7 @@ func (g *generator) Generate(ctx context.Context) error {
 
 	switch {
 	case g.websiteTmpDir == "":
-		g.websiteTmpDir, err = ioutil.TempDir("", "tfws")
+		g.websiteTmpDir, err = os.MkdirTemp("", "tfws")
 		if err != nil {
 			return fmt.Errorf("unable to create temporary directory: %w", err)
 		}
@@ -190,7 +189,14 @@ func (g *generator) Generate(ctx context.Context) error {
 	return nil
 }
 
-func (g *generator) renderMissingResourceDoc(providerName, name, typeName string, schema *tfjson.Schema, websiteFileTemplate resourceFileTemplate, fallbackWebsiteFileTemplate resourceFileTemplate, websiteStaticCandidateTemplates []resourceFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
+func (g *generator) renderMissingResourceDoc(
+	providerName, name, typeName string,
+	schema *tfjson.Schema,
+	websiteFileTemplate, fallbackWebsiteFileTemplate resourceFileTemplate,
+	websiteStaticCandidateTemplates []resourceFileTemplate,
+	examplesFileTemplate resourceFileTemplate,
+	examplesImportTemplate *resourceFileTemplate,
+) error {
 	tmplPath, err := websiteFileTemplate.Render(name, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render path for resource %q: %w", name, err)
@@ -247,7 +253,7 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 	fallbackTmplPath = filepath.Join(g.websiteTmpDir, g.websiteSourceDir, fallbackTmplPath)
 	if fileExists(fallbackTmplPath) {
 		g.infof("resource %q fallback template exists", name)
-		tmplData, err := ioutil.ReadFile(fallbackTmplPath)
+		tmplData, err := os.ReadFile(fallbackTmplPath)
 		if err != nil {
 			return fmt.Errorf("unable to read file %q: %w", fallbackTmplPath, err)
 		}
@@ -376,6 +382,10 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 	g.infof("rendering templated website to static markdown")
 
 	err = filepath.Walk(g.websiteTmpDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return fmt.Errorf("unable to walk dir %q: %w", g.websiteTmpDir, err)
+		}
+
 		if info.IsDir() {
 			// skip directories
 			return nil
@@ -411,7 +421,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 
 		renderedPath = strings.TrimSuffix(renderedPath, ext)
 
-		tmplData, err := ioutil.ReadFile(path)
+		tmplData, err := os.ReadFile(path)
 		if err != nil {
 			return fmt.Errorf("unable to read file %q: %w", rel, err)
 		}
@@ -493,7 +503,7 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 
 	shortName := providerShortName(providerName)
 
-	tmpDir, err := ioutil.TempDir("", "tfws")
+	tmpDir, err := os.MkdirTemp("", "tfws")
 	if err != nil {
 		return nil, fmt.Errorf("unable to create temp dir: %w", err)
 	}
@@ -507,9 +517,8 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 	g.infof("compiling provider %q", shortName)
 	providerPath := fmt.Sprintf("plugins/registry.terraform.io/hashicorp/%s/0.0.1/%s_%s", shortName, runtime.GOOS, runtime.GOARCH)
 	outFile := filepath.Join(tmpDir, providerPath, fmt.Sprintf("terraform-provider-%s", shortName))
-	switch runtime.GOOS {
-	case "windows":
-		outFile = outFile + ".exe"
+	if runtime.GOOS == "windows" {
+		outFile += ".exe"
 	}
 	buildCmd := exec.Command("go", "build", "-o", outFile)
 	// TODO: constrain env here to make it a little safer?

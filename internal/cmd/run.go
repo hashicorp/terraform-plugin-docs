@@ -54,7 +54,7 @@ func initCommands(ui cli.Ui) map[string]cli.CommandFactory {
 		"":         defaultFactory,
 		"generate": generateFactory,
 		"validate": validateFactory,
-		//"serve": serveFactory,
+		// "serve": serveFactory,
 	}
 }
 
@@ -81,7 +81,7 @@ func Run(name, version string, args []string, stdin io.Reader, stdout, stderr io
 
 	commands := initCommands(ui)
 
-	cli := cli.CLI{
+	cmd := cli.CLI{
 		Name:       name,
 		Args:       args,
 		Commands:   commands,
@@ -90,7 +90,7 @@ func Run(name, version string, args []string, stdin io.Reader, stdout, stderr io
 		Version:    version,
 	}
 
-	exitCode, err := cli.Run()
+	exitCode, err := cmd.Run()
 	if err != nil {
 		return 1
 	}

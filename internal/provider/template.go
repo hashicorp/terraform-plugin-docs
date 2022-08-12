@@ -7,14 +7,12 @@ import (
 	"strings"
 	"text/template"
 
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
-
 	tfjson "github.com/hashicorp/terraform-json"
-
 	"github.com/hashicorp/terraform-plugin-docs/internal/mdplain"
 	"github.com/hashicorp/terraform-plugin-docs/internal/tmplfuncs"
 	"github.com/hashicorp/terraform-plugin-docs/schemamd"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 const (
@@ -62,7 +60,7 @@ func terraformCodeFile(file string) (string, error) {
 	return tmplfuncs.CodeFile("terraform", file)
 }
 
-func renderTemplate(name string, text string, out io.Writer, data interface{}) error {
+func renderTemplate(name, text string, out io.Writer, data interface{}) error {
 	tmpl, err := newTemplate(name, text)
 	if err != nil {
 		return fmt.Errorf("unable to parse template %q: %w", text, err)

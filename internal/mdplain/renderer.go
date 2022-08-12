@@ -18,7 +18,7 @@ func (options *Text) GetFlags() int {
 
 func (options *Text) TitleBlock(out *bytes.Buffer, text []byte) {
 	text = bytes.TrimPrefix(text, []byte("% "))
-	text = bytes.Replace(text, []byte("\n% "), []byte("\n"), -1)
+	text = bytes.ReplaceAll(text, []byte("\n% "), []byte("\n"))
 	out.Write(text)
 	out.WriteString("\n")
 }
@@ -29,7 +29,6 @@ func (options *Text) Header(out *bytes.Buffer, text func() bool, level int, id s
 
 	if !text() {
 		out.Truncate(marker)
-		return
 	}
 }
 
@@ -57,7 +56,7 @@ func (options *Text) BlockQuote(out *bytes.Buffer, text []byte) {
 	out.Write(text)
 }
 
-func (options *Text) Table(out *bytes.Buffer, header []byte, body []byte, columnData []int) {
+func (options *Text) Table(out *bytes.Buffer, header, body []byte, columnData []int) {
 	doubleSpace(out)
 	out.Write(header)
 	out.Write(body)
@@ -93,7 +92,6 @@ func (options *Text) List(out *bytes.Buffer, text func() bool, flags int) {
 
 	if !text() {
 		out.Truncate(marker)
-		return
 	}
 }
 
@@ -107,7 +105,6 @@ func (options *Text) Paragraph(out *bytes.Buffer, text func() bool) {
 
 	if !text() {
 		out.Truncate(marker)
-		return
 	}
 }
 
@@ -130,26 +127,19 @@ func (options *Text) Emphasis(out *bytes.Buffer, text []byte) {
 	out.Write(text)
 }
 
-func (options *Text) Image(out *bytes.Buffer, link []byte, title []byte, alt []byte) {
-	return
-}
+func (options *Text) Image(out *bytes.Buffer, link, title, alt []byte) {}
 
-func (options *Text) LineBreak(out *bytes.Buffer) {
-	return
-}
+func (options *Text) LineBreak(out *bytes.Buffer) {}
 
-func (options *Text) Link(out *bytes.Buffer, link []byte, title []byte, content []byte) {
+func (options *Text) Link(out *bytes.Buffer, link, title, content []byte) {
 	out.Write(content)
 	if !isRelativeLink(link) {
 		out.WriteString(" ")
 		out.Write(link)
 	}
-	return
 }
 
-func (options *Text) RawHtmlTag(out *bytes.Buffer, text []byte) {
-	return
-}
+func (options *Text) RawHtmlTag(out *bytes.Buffer, text []byte) {}
 
 func (options *Text) TripleEmphasis(out *bytes.Buffer, text []byte) {
 	out.Write(text)
@@ -159,9 +149,7 @@ func (options *Text) StrikeThrough(out *bytes.Buffer, text []byte) {
 	out.Write(text)
 }
 
-func (options *Text) FootnoteRef(out *bytes.Buffer, ref []byte, id int) {
-	return
-}
+func (options *Text) FootnoteRef(out *bytes.Buffer, ref []byte, id int) {}
 
 func (options *Text) Entity(out *bytes.Buffer, entity []byte) {
 	out.Write(entity)
@@ -171,25 +159,15 @@ func (options *Text) NormalText(out *bytes.Buffer, text []byte) {
 	out.Write(text)
 }
 
-func (options *Text) Smartypants(out *bytes.Buffer, text []byte) {
-	return
-}
+func (options *Text) Smartypants(out *bytes.Buffer, text []byte) {}
 
-func (options *Text) DocumentHeader(out *bytes.Buffer) {
-	return
-}
+func (options *Text) DocumentHeader(out *bytes.Buffer) {}
 
-func (options *Text) DocumentFooter(out *bytes.Buffer) {
-	return
-}
+func (options *Text) DocumentFooter(out *bytes.Buffer) {}
 
-func (options *Text) TocHeader(text []byte, level int) {
-	return
-}
+func (options *Text) TocHeader(text []byte, level int) {}
 
-func (options *Text) TocFinalize() {
-	return
-}
+func (options *Text) TocFinalize() {}
 
 func doubleSpace(out *bytes.Buffer) {
 	if out.Len() > 0 {
@@ -214,5 +192,5 @@ func isRelativeLink(link []byte) (yes bool) {
 	if len(link) == 1 && link[0] == '/' {
 		yes = true
 	}
-	return
+	return yes
 }

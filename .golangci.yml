@@ -1,0 +1,19 @@
+run:
+  tests: False
+  timeout: 3m
+
+severity:
+  default-severity: error
+  rules:
+    - linters:
+        - errcheck
+        - gocritic
+      severity: warning
+
+linters:
+  enable:
+    - asciicheck
+    - exportloopref
+    - gci
+    - gofmt
+    - misspell

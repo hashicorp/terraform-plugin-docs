@@ -3,9 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/mattn/go-colorable"
-
 	"github.com/hashicorp/terraform-plugin-docs/internal/cmd"
+	"github.com/mattn/go-colorable"
 )
 
 func main() {
