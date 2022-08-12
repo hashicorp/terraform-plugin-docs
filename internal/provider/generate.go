@@ -569,6 +569,10 @@ provider %[1]q {
 		return nil, fmt.Errorf("unable to create Terraform CLI: %w", err)
 	}
 
+	// Pass stderr through to the end user, as if there is an error, the output from
+	// terraform will help troubleshoot.
+	tf.SetStderr(os.Stderr)
+
 	g.infof("running terraform init")
 	err = tf.Init(ctx, tfexec.Get(false), tfexec.PluginDir("./plugins"))
 	if err != nil {
