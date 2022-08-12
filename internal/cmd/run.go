@@ -23,7 +23,6 @@ func (cmd *commonCmd) run(r func() error) int {
 }
 
 func initCommands(ui cli.Ui) map[string]cli.CommandFactory {
-
 	generateFactory := func() (cli.Command, error) {
 		return &generateCmd{
 			commonCmd: commonCmd{

@@ -17,7 +17,7 @@ func CodeFile(format, file string) (string, error) {
 	// may be undesirable, probably need to think about it
 	wd, err := os.Getwd()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error getting working dir: %w", err)
 	}
 
 	fullPath := filepath.Join(wd, file)

@@ -65,7 +65,7 @@ func terraformCodeFile(file string) (string, error) {
 func renderTemplate(name string, text string, out io.Writer, data interface{}) error {
 	tmpl, err := newTemplate(name, text)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to parse template %q: %w", text, err)
 	}
 
 	err = tmpl.Execute(out, data)
@@ -81,7 +81,7 @@ func renderStringTemplate(name, text string, data interface{}) (string, error) {
 
 	err := renderTemplate(name, text, &buf, data)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("unable to render template: %w", err)
 	}
 
 	return buf.String(), nil
