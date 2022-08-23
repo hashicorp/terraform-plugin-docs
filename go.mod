@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mitchellh/cli v1.1.4
 	github.com/russross/blackfriday v1.6.0
-	github.com/zclconf/go-cty v1.10.0
+	github.com/zclconf/go-cty v1.11.0
 	golang.org/x/text v0.3.7
 )
 
