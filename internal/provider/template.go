@@ -330,13 +330,15 @@ description: |-
 
 const defaultProviderTemplate providerTemplate = `---
 ` + frontmatterComment + `
-page_title: "{{.ProviderShortName}} Provider"
+{{- $name := .ProviderShortName}}
+{{- if ne .ProviderName .RenderedProviderName }}{{ $name = .RenderedProviderName}}{{ end }}
+page_title: "{{$name}} Provider"
 subcategory: ""
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
-# {{.ProviderShortName}} Provider
+# {{$name}} Provider
 
 {{ .Description | trimspace }}
 
