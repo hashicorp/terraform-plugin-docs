@@ -34,7 +34,6 @@ func Validate(ui cli.Ui) error {
 				return err
 			}
 		}
-		return err
 	case dirExists("docs"):
 		ui.Info("detected static docs directory, running checks")
 		return validateStaticDocs(ui, "docs")
