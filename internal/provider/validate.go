@@ -43,6 +43,8 @@ func Validate(ui cli.Ui) error {
 		return validateLegacyWebsite(ui, "website")
 	}
 
+	ui.Info("validation checks complete, no issues detected!")
+
 	return nil
 }
 
