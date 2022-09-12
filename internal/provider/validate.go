@@ -55,6 +55,10 @@ func validateTemplates(ui cli.Ui, dir string) error {
 		checkAllowedFiles(
 			"index.md",
 			"index.md.tmpl",
+			"resources.md",
+			"resources.md.tmpl",
+			"data-sources.md",
+			"data-sources.md.tmpl",
 		),
 		checkAllowedDirs(
 			"data-sources",
