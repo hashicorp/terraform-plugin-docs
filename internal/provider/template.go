@@ -165,7 +165,7 @@ func (t providerTemplate) Render(providerName, renderedProviderName, exampleFile
 	})
 }
 
-func (t resourceTemplate) Render(name, providerName, renderedProviderName, typeName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
+func (t resourceTemplate) Render(name, providerName, renderedProviderName, typeName, subCategory, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -181,6 +181,7 @@ func (t resourceTemplate) Render(name, providerName, renderedProviderName, typeN
 		Type        string
 		Name        string
 		Description string
+		SubCategory string
 
 		HasExample  bool
 		ExampleFile string
@@ -198,6 +199,7 @@ func (t resourceTemplate) Render(name, providerName, renderedProviderName, typeN
 		Type:        typeName,
 		Name:        name,
 		Description: schema.Block.Description,
+		SubCategory: subCategory,
 
 		HasExample:  exampleFile != "" && fileExists(exampleFile),
 		ExampleFile: exampleFile,
@@ -217,7 +219,7 @@ func (t resourceTemplate) Render(name, providerName, renderedProviderName, typeN
 const defaultResourceTemplate resourceTemplate = `---
 ` + frontmatterComment + `
 page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
-subcategory: ""
+subcategory: "{{.SubCategory}}"
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
@@ -246,7 +248,7 @@ Import is supported using the following syntax:
 const defaultProviderTemplate providerTemplate = `---
 ` + frontmatterComment + `
 page_title: "{{.ProviderShortName}} Provider"
-subcategory: ""
+subcategory: "{{.SubCategory}}"
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---

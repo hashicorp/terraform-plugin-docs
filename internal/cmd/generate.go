@@ -22,6 +22,7 @@ type generateCmd struct {
 	flagWebsiteTmpDir      string
 	flagWebsiteSourceDir   string
 	tfVersion              string
+	flagSubcategory        provider.SubCategories
 }
 
 func (cmd *generateCmd) Synopsis() string {
@@ -42,7 +43,7 @@ func (cmd *generateCmd) Help() string {
 		}
 	})
 
-	strBuilder.WriteString(fmt.Sprintf("\nUsage: tfplugindocs generate [<args>]\n\n"))
+	strBuilder.WriteString("\nUsage: tfplugindocs generate [<args>]\n\n")
 	cmd.Flags().VisitAll(func(f *flag.Flag) {
 		if f.DefValue != "" {
 			strBuilder.WriteString(fmt.Sprintf("    --%s <ARG> %s%s%s  (default: %q)\n",
@@ -67,6 +68,8 @@ func (cmd *generateCmd) Help() string {
 }
 
 func (cmd *generateCmd) Flags() *flag.FlagSet {
+	cmd.flagSubcategory = provider.SubCategories{}
+
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
 	fs.BoolVar(&cmd.flagLegacySidebar, "legacy-sidebar", false, "generate the legacy .erb sidebar file")
 	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations")
@@ -77,6 +80,7 @@ func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs.StringVar(&cmd.flagWebsiteSourceDir, "website-source-dir", "templates", "templates directory")
 	fs.StringVar(&cmd.tfVersion, "tf-version", "", "terraform binary version to download")
 	fs.BoolVar(&cmd.flagIgnoreDeprecated, "ignore-deprecated", false, "don't generate documentation for deprecated resources and data-sources")
+	fs.Var(&cmd.flagSubcategory, "subcategory", "an optional subcategory mapping to group resources, can be specified multiple time e.g. --subcategory consul_acl=ACL --subcategory consul_admin=\"Admin Partition\"")
 	return fs
 }
 
@@ -103,6 +107,7 @@ func (cmd *generateCmd) runInternal() error {
 		cmd.flagWebsiteSourceDir,
 		cmd.tfVersion,
 		cmd.flagIgnoreDeprecated,
+		cmd.flagSubcategory,
 	)
 	if err != nil {
 		return fmt.Errorf("unable to generate website: %w", err)
