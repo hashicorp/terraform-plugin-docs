@@ -66,7 +66,7 @@ func WriteNestedAttributeTypeDescription(w io.Writer, att *tfjson.SchemaAttribut
 		}
 	} else {
 		if nestedAttributeType.MinItems > 0 {
-			_, err = io.WriteString(w, fmt.Sprintf(", Min: %d", nestedAttributeType.MinItems))
+			_, err = fmt.Fprintf(w, ", Min: %d", nestedAttributeType.MinItems)
 			if err != nil {
 				return err
 			}
@@ -74,7 +74,7 @@ func WriteNestedAttributeTypeDescription(w io.Writer, att *tfjson.SchemaAttribut
 	}
 
 	if nestedAttributeType.MaxItems > 0 {
-		_, err = io.WriteString(w, fmt.Sprintf(", Max: %d", nestedAttributeType.MaxItems))
+		_, err = fmt.Fprintf(w, ", Max: %d", nestedAttributeType.MaxItems)
 		if err != nil {
 			return err
 		}

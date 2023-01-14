@@ -25,13 +25,13 @@ func Validate(ui cli.Ui) error {
 		ui.Info("detected templates directory, running checks...")
 		err := validateTemplates(ui, "templates")
 		if err != nil {
-			return err
+			return fmt.Errorf("invalid templates directory: %w", err)
 		}
 		if dirExists("examples") {
 			ui.Info("detected examples directory for templates, running checks...")
 			err = validateExamples(ui, "examples")
 			if err != nil {
-				return err
+				return fmt.Errorf("invalid examples directory: %w", err)
 			}
 		}
 		return err
@@ -73,7 +73,7 @@ func validateTemplates(ui cli.Ui, dir string) error {
 	for _, c := range checks {
 		checkIssues, err := c(dir)
 		if err != nil {
-			return err
+			return fmt.Errorf("invalid templates directory: %w", err)
 		}
 		issues = append(issues, checkIssues...)
 	}
@@ -109,7 +109,7 @@ func validateStaticDocs(ui cli.Ui, dir string) error {
 	for _, c := range checks {
 		checkIssues, err := c(dir)
 		if err != nil {
-			return err
+			return fmt.Errorf("invalid static docs directory: %w", err)
 		}
 		issues = append(issues, checkIssues...)
 	}
@@ -138,7 +138,7 @@ func checkBlockedExtensions(exts ...string) check {
 		issues := []issue{}
 		err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				return err
+				return fmt.Errorf("error checking for blocked extensions: %w", err)
 			}
 			if info.IsDir() {
 				return nil
@@ -156,7 +156,7 @@ func checkBlockedExtensions(exts ...string) check {
 			return nil
 		})
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error checking for blocked extensions: %w", err)
 		}
 		return issues, nil
 	}
@@ -167,7 +167,7 @@ func checkAllowedExtensions(exts ...string) check {
 		issues := []issue{}
 		err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				return err
+				return fmt.Errorf("error checking for allowed extensions: %w", err)
 			}
 			if info.IsDir() {
 				return nil
@@ -189,7 +189,7 @@ func checkAllowedExtensions(exts ...string) check {
 			return nil
 		})
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error checking for allowed extensions: %w", err)
 		}
 		return issues, nil
 	}
@@ -210,7 +210,7 @@ func checkAllowedDirs(dirs ...string) check {
 		}
 		infos, err := f.Readdir(-1)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error reading directory: %w", err)
 		}
 
 		for _, fi := range infos {
@@ -241,11 +241,11 @@ func checkAllowedFiles(dirs ...string) check {
 
 		f, err := os.Open(dir)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error opening directory: %w", err)
 		}
 		infos, err := f.Readdir(-1)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error reading directory: %w", err)
 		}
 
 		for _, fi := range infos {

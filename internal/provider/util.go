@@ -3,7 +3,6 @@ package provider
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -71,14 +70,14 @@ func resourceSchema(schemas map[string]*tfjson.Schema, providerShortName, templa
 	return nil, resName
 }
 
-func writeFile(path string, data string) error {
+func writeFile(path, data string) error {
 	dir, _ := filepath.Split(path)
-	err := os.MkdirAll(dir, 0755)
+	err := os.MkdirAll(dir, 0o755)
 	if err != nil {
 		return fmt.Errorf("unable to make dir %q: %w", dir, err)
 	}
 
-	err = ioutil.WriteFile(path, []byte(data), 0644)
+	err = os.WriteFile(path, []byte(data), 0o644)
 	if err != nil {
 		return fmt.Errorf("unable to write file %q: %w", path, err)
 	}
@@ -90,7 +89,7 @@ func runCmd(cmd *exec.Cmd) ([]byte, error) {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("error executing %q, %v", cmd.Path, cmd.Args)
-		log.Printf(string(output))
+		log.Println(string(output))
 		return nil, fmt.Errorf("error executing %q: %w", cmd.Path, err)
 	}
 	return output, nil
@@ -99,12 +98,12 @@ func runCmd(cmd *exec.Cmd) ([]byte, error) {
 func cp(srcDir, dstDir string) error {
 	err := filepath.Walk(srcDir, func(srcPath string, f os.FileInfo, err error) error {
 		if err != nil {
-			return err
+			return fmt.Errorf("unable to walk %q: %w", srcPath, err)
 		}
 
 		relPath, err := filepath.Rel(srcDir, srcPath)
 		if err != nil {
-			return err
+			return fmt.Errorf("unable to get relative path for %q: %w", srcPath, err)
 		}
 
 		dstPath := filepath.Join(dstDir, relPath)
@@ -112,11 +111,11 @@ func cp(srcDir, dstDir string) error {
 		switch mode := f.Mode(); {
 		case mode.IsDir():
 			if err := os.Mkdir(dstPath, f.Mode()); err != nil && !os.IsExist(err) {
-				return err
+				return fmt.Errorf("unable to create dir %q: %w", dstPath, err)
 			}
 		case mode.IsRegular():
 			if err := copyFile(srcPath, dstPath, mode); err != nil {
-				return err
+				return fmt.Errorf("unable to copy file %q to %q: %w", srcPath, dstPath, err)
 			}
 		default:
 			return fmt.Errorf("unknown file type (%d / %s) for %s", f.Mode(), f.Mode().String(), srcPath)

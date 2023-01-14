@@ -56,17 +56,15 @@ func WriteBlockTypeDescription(w io.Writer, block *tfjson.SchemaBlockType) error
 		default:
 			return fmt.Errorf("block does not match any filter states")
 		}
-	} else {
-		if block.MinItems > 0 {
-			_, err = io.WriteString(w, fmt.Sprintf(", Min: %d", block.MinItems))
-			if err != nil {
-				return err
-			}
+	} else if block.MinItems > 0 {
+		_, err = fmt.Fprintf(w, ", Min: %d", block.MinItems)
+		if err != nil {
+			return err
 		}
 	}
 
 	if block.MaxItems > 0 {
-		_, err = io.WriteString(w, fmt.Sprintf(", Max: %d", block.MaxItems))
+		_, err = fmt.Fprintf(w, ", Max: %d", block.MaxItems)
 		if err != nil {
 			return err
 		}
