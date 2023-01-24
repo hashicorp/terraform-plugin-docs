@@ -19,6 +19,10 @@ jobs:
         uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
           go-version-file: 'go.mod'
+      - name: Run linters
+        uses: golangci/golangci-lint-action@08e2f20817b15149a52b5b3ebe7de50aff2ba8c5 # v3.4.0
+        with:
+          version: latest
       - name: go vet
         run: go vet ./...
       - name: Run tests

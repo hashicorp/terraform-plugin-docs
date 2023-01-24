@@ -12,11 +12,12 @@ import (
 
 // Render writes a Markdown formatted Schema definition to the specified writer.
 // A Schema contains a Version and the root Block, for example:
-// "aws_accessanalyzer_analyzer": {
-//   "block": {
-//   },
-// 	 "version": 0
-// },
+//
+//	"aws_accessanalyzer_analyzer": {
+//	  "block": {
+//	  },
+//		 "version": 0
+//	},
 func Render(schema *tfjson.Schema, w io.Writer) error {
 	_, err := io.WriteString(w, "## Schema\n\n")
 	if err != nil {
@@ -178,26 +179,27 @@ func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
 // * Description(Kind)
 // * Deprecated flag
 // For example:
-// "block": {
-//   "attributes": {
-//     "certificate_arn": {
-// 	     "description_kind": "plain",
-// 	     "required": true,
-// 	     "type": "string"
-//     }
-// 	 },
-// 	 "block_types": {
-//     "timeouts": {
-// 	     "block": {
-// 		   "attributes": {
-// 		   },
-// 		   "description_kind": "plain"
-// 	     },
-// 	     "nesting_mode": "single"
-//     }
-// 	 },
-// 	 "description_kind": "plain"
-// },
+//
+//	"block": {
+//	  "attributes": {
+//	    "certificate_arn": {
+//		     "description_kind": "plain",
+//		     "required": true,
+//		     "type": "string"
+//	    }
+//		 },
+//		 "block_types": {
+//	    "timeouts": {
+//		     "block": {
+//			   "attributes": {
+//			   },
+//			   "description_kind": "plain"
+//		     },
+//		     "nesting_mode": "single"
+//	    }
+//		 },
+//		 "description_kind": "plain"
+//	},
 func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock, root bool) error {
 	names := []string{}
 	for n := range block.Attributes {

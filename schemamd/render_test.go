@@ -12,6 +12,8 @@ import (
 )
 
 func TestRender(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		name         string
 		inputFile    string
@@ -38,7 +40,10 @@ func TestRender(t *testing.T) {
 			"testdata/awscc_acmpca_certificate.md",
 		},
 	} {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			input, err := os.ReadFile(c.inputFile)
 			if err != nil {
 				t.Fatal(err)

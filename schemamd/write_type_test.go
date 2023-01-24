@@ -12,6 +12,8 @@ import (
 )
 
 func TestWriteType(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		expected string
 		ty       cty.Type
@@ -44,7 +46,10 @@ func TestWriteType(t *testing.T) {
 			"bool": cty.Bool,
 		}))))},
 	} {
+		c := c
 		t.Run(fmt.Sprintf("%s %s", c.ty.FriendlyName(), c.expected), func(t *testing.T) {
+			t.Parallel()
+
 			b := &strings.Builder{}
 			err := schemamd.WriteType(b, c.ty)
 			if err != nil {

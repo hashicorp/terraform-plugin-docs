@@ -8,6 +8,8 @@ import (
 )
 
 func Test_resourceSchema(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]struct {
 		schemas              map[string]*tfjson.Schema
 		providerShortName    string
@@ -63,7 +65,11 @@ func Test_resourceSchema(t *testing.T) {
 	}
 
 	for name, c := range cases {
+		name := name
+		c := c
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			actualSchema, actualResourceName := resourceSchema(c.schemas, c.providerShortName, c.templateFileName)
 
 			if !cmp.Equal(c.expectedSchema, actualSchema) {
