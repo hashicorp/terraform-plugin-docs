@@ -9,11 +9,13 @@ jobs:
     strategy:
       matrix:
         os:
-          # - ubuntu-latest
+          - ubuntu-latest
           - windows-latest
-          # - macos-latest
+          - macos-latest
     steps:
-      - name: CLRF handling test
+      # Related issue: https://github.com/golangci/golangci-lint/issues/580
+      - name: Ensure LF line endings for gofmt
+        if: matrix.os == 'windows-latest'
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
