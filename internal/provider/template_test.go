@@ -7,6 +7,8 @@ import (
 )
 
 func TestRenderStringTemplate(t *testing.T) {
+	t.Parallel()
+
 	template := `
 Plainmarkdown: {{ plainmarkdown .Text }}
 Split: {{ $arr := split .Text " "}}{{ index $arr 3 }}

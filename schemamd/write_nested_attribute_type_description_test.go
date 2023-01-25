@@ -11,6 +11,8 @@ import (
 )
 
 func TestWriteNestedAttributeTypeDescription(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		expected string
 		att      *tfjson.SchemaAttribute
@@ -85,7 +87,10 @@ func TestWriteNestedAttributeTypeDescription(t *testing.T) {
 			},
 		},
 	} {
+		c := c
 		t.Run(c.expected, func(t *testing.T) {
+			t.Parallel()
+
 			b := &strings.Builder{}
 			err := schemamd.WriteNestedAttributeTypeDescription(b, c.att, true)
 			if err != nil {

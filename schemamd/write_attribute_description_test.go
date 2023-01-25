@@ -12,6 +12,8 @@ import (
 )
 
 func TestWriteAttributeDescription(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		expected string
 		att      *tfjson.SchemaAttribute
@@ -149,7 +151,10 @@ func TestWriteAttributeDescription(t *testing.T) {
 			},
 		},
 	} {
+		c := c
 		t.Run(c.expected, func(t *testing.T) {
+			t.Parallel()
+
 			b := &strings.Builder{}
 			err := schemamd.WriteAttributeDescription(b, c.att, true)
 			if err != nil {

@@ -9,6 +9,8 @@ import (
 )
 
 func TestChildAttributeIsRequired(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		name     string
 		att      *tfjson.SchemaAttribute
@@ -33,7 +35,10 @@ func TestChildAttributeIsRequired(t *testing.T) {
 			false,
 		},
 	} {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := childAttributeIsRequired(c.att)
 			if diff := cmp.Diff(c.expected, actual); diff != "" {
 				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
@@ -43,6 +48,8 @@ func TestChildAttributeIsRequired(t *testing.T) {
 }
 
 func TestChildAttributeIsOptional(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		name     string
 		att      *tfjson.SchemaAttribute
@@ -67,7 +74,10 @@ func TestChildAttributeIsOptional(t *testing.T) {
 			true,
 		},
 	} {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := childAttributeIsOptional(c.att)
 			if diff := cmp.Diff(c.expected, actual); diff != "" {
 				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
@@ -77,6 +87,8 @@ func TestChildAttributeIsOptional(t *testing.T) {
 }
 
 func TestChildAttributeIsReadOnly(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		name     string
 		att      *tfjson.SchemaAttribute
@@ -119,7 +131,10 @@ func TestChildAttributeIsReadOnly(t *testing.T) {
 			true,
 		},
 	} {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := childAttributeIsReadOnly(c.att)
 			if diff := cmp.Diff(c.expected, actual); diff != "" {
 				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
@@ -129,6 +144,8 @@ func TestChildAttributeIsReadOnly(t *testing.T) {
 }
 
 func TestChildBlockIsRequired(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		name     string
 		block    *tfjson.SchemaBlockType
@@ -170,7 +187,10 @@ func TestChildBlockIsRequired(t *testing.T) {
 			false,
 		},
 	} {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := childBlockIsRequired(c.block)
 			if diff := cmp.Diff(c.expected, actual); diff != "" {
 				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
@@ -180,6 +200,8 @@ func TestChildBlockIsRequired(t *testing.T) {
 }
 
 func TestChildBlockIsOptional(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		name     string
 		block    *tfjson.SchemaBlockType
@@ -335,7 +357,10 @@ func TestChildBlockIsOptional(t *testing.T) {
 			true,
 		},
 	} {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := childBlockIsOptional(c.block)
 			if diff := cmp.Diff(c.expected, actual); diff != "" {
 				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
@@ -345,6 +370,8 @@ func TestChildBlockIsOptional(t *testing.T) {
 }
 
 func TestChildBlockIsReadOnly(t *testing.T) {
+	t.Parallel()
+
 	for _, c := range []struct {
 		name     string
 		block    *tfjson.SchemaBlockType
@@ -490,7 +517,10 @@ func TestChildBlockIsReadOnly(t *testing.T) {
 			true,
 		},
 	} {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := childBlockIsReadOnly(c.block)
 			if diff := cmp.Diff(c.expected, actual); diff != "" {
 				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
