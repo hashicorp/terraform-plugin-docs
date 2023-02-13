@@ -1,3 +1,9 @@
+# 0.14.0 (Unreleased)
+
+BUG FIXES:
+
+* cmd/validate: allow top level templates (`resources.md.tmpl` and `data-sources.md.tmpl`) to pass validation ([#184](https://github.com/hashicorp/terraform-plugin-docs/pull/184)).
+
 # 0.13.0 (July 8, 2022)
 
 ENHANCEMENTS:

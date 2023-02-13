@@ -34,7 +34,6 @@ func Validate(ui cli.Ui) error {
 				return err
 			}
 		}
-		return err
 	case dirExists("docs"):
 		ui.Info("detected static docs directory, running checks")
 		return validateStaticDocs(ui, "docs")
@@ -42,6 +41,8 @@ func Validate(ui cli.Ui) error {
 		ui.Info("detected legacy website directory, running checks")
 		return validateLegacyWebsite(ui, "website")
 	}
+
+	ui.Info("validation checks complete, no issues detected!")
 
 	return nil
 }
@@ -55,6 +56,10 @@ func validateTemplates(ui cli.Ui, dir string) error {
 		checkAllowedFiles(
 			"index.md",
 			"index.md.tmpl",
+			"resources.md",
+			"resources.md.tmpl",
+			"data-sources.md",
+			"data-sources.md.tmpl",
 		),
 		checkAllowedDirs(
 			"data-sources",
