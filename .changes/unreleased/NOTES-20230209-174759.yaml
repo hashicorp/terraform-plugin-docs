@@ -1,6 +1,0 @@
-kind: NOTES
-body: This Go module has been updated to Go 1.18 per the [Go support policy](https://go.dev/doc/devel/release#policy).
-  Any consumers building on earlier Go versions may experience errors
-time: 2023-02-09T17:47:59.646473-05:00
-custom:
-  Issue: "199"
