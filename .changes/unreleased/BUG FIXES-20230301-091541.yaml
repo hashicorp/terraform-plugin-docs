@@ -1,7 +1,7 @@
 kind: BUG FIXES
 body: 'dependencies: `github.com/hashicorp/terraform-exec` dependency upgraded to
   `v0.18.1` to avoid causing acceptance test failures when `terraform-plugin-sdk`
-  or `terraform-plugin-testing` is in use'
+  or `terraform-plugin-testing` are in use'
 time: 2023-03-01T09:15:41.520975-05:00
 custom:
   Issue: "226"
