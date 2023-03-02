@@ -1,3 +1,9 @@
+## 0.14.1 (March 02, 2023)
+
+BUG FIXES:
+
+* dependencies: `github.com/hashicorp/terraform-exec` dependency upgraded to `v0.18.1` to avoid causing acceptance test failures when `terraform-plugin-sdk` or `terraform-plugin-testing` are in use ([#226](https://github.com/hashicorp/terraform-plugin-docs/issues/226))
+
 ## 0.14.0 (February 28, 2023)
 
 NOTES:
