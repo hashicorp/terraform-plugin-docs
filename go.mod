@@ -12,7 +12,7 @@ require (
 	github.com/mitchellh/cli v1.1.5
 	github.com/russross/blackfriday v1.6.0
 	github.com/zclconf/go-cty v1.13.0
-	golang.org/x/text v0.7.0
+	golang.org/x/text v0.8.0
 )
 
 require (
@@ -38,6 +38,6 @@ require (
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
-	golang.org/x/mod v0.7.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/mod v0.8.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 )
