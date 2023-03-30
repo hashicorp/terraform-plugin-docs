@@ -233,8 +233,8 @@ description: |-
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
+{{- if .HasImport }}
 
-{{ if .HasImport -}}
 ## Import
 
 Import is supported using the following syntax:
