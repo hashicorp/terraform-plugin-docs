@@ -232,7 +232,9 @@ description: |-
 {{ printf "{{tffile %q}}" .ExampleFile }}
 {{- end }}
 
-{{ .SchemaMarkdown | trimspace }}{{ if .HasImport }}
+{{ .SchemaMarkdown | trimspace }}
+{{- if .HasImport }}
+
 ## Import
 
 Import is supported using the following syntax:
