@@ -201,19 +201,22 @@ func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
 //		 "description_kind": "plain"
 //	},
 func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock, root bool) error {
-	names := []string{}
+	var attributeNames, nestedBlockNames []string
 	for n := range block.Attributes {
-		names = append(names, n)
+		attributeNames = append(attributeNames, n)
 	}
+	sort.Slice(attributeNames, func(i, j int) bool { return attributeNames[i] < attributeNames[j] })
+
 	for n := range block.NestedBlocks {
-		names = append(names, n)
+		nestedBlockNames = append(nestedBlockNames, n)
 	}
+	sort.Slice(nestedBlockNames, func(i, j int) bool { return nestedBlockNames[i] < nestedBlockNames[j] })
 
 	groups := map[int][]string{}
 
 	// Group Attributes/Blocks by characteristics.
 nameLoop:
-	for _, n := range names {
+	for _, n := range append(attributeNames, nestedBlockNames...) {
 		if childBlock, ok := block.NestedBlocks[n]; ok {
 			for i, gf := range groupFilters {
 				if gf.filterBlock(childBlock) {
