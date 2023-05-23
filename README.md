@@ -29,7 +29,7 @@ Available commands are:
                 the generate command is run by default
     generate    generates a plugin website from code, templates, and examples for the current directory
     validate    validates a plugin website for the current directory
-       
+
 ```
 
 `generate` command:
@@ -39,14 +39,15 @@ $ tfplugindocs generate --help
 
 Usage: tfplugindocs generate [<args>]
 
-    --examples-dir <ARG>             examples directory                                                        (default: "examples")
-    --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources    (default: "false")
-    --legacy-sidebar <ARG>           generate the legacy .erb sidebar file                                     (default: "false")
+    --examples-dir <ARG>             examples directory                                                                                                                                                   (default: "examples")
+    --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources                                                                                               (default: "false")
+    --legacy-sidebar <ARG>           generate the legacy .erb sidebar file                                                                                                                                (default: "false")
     --provider-name <ARG>            provider name, as used in Terraform configurations
     --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)
-    --rendered-website-dir <ARG>     output directory                                                          (default: "docs")
+    --rendered-website-dir <ARG>     output directory                                                                                                                                                     (default: "docs")
+    --subcategory <ARG>              an optional subcategory mapping to group resources, can be specified multiple time e.g. --subcategory consul_acl=ACL --subcategory consul_admin="Admin Partition"
     --tf-version <ARG>               terraform binary version to download
-    --website-source-dir <ARG>       templates directory                                                       (default: "templates")
+    --website-source-dir <ARG>       templates directory                                                                                                                                                  (default: "templates")
     --website-temp-dir <ARG>         temporary directory (used during generation)
 ```
 
@@ -153,6 +154,7 @@ using the following data fields and functions:
 |------------------------:|:------:|-------------------------------------------------------------------------------------------|
 |                 `.Name` | string | Name of the resource/data-source (ex. `tls_certificate`)                                  |
 |                 `.Type` | string | Either `Resource` or `Data Source`                                                        |
+|          `.SubCategory` | string | The subcategory for this resource or an empty string if unset                             |
 |          `.Description` | string | Resource / Data Source description                                                        |
 |           `.HasExample` |  bool  | Is there an example file?                                                                 |
 |          `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |

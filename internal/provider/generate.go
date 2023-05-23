@@ -74,7 +74,49 @@ type generator struct {
 	websiteTmpDir        string
 	websiteSourceDir     string
 
+	subcategories SubCategories
+
 	ui cli.Ui
+}
+
+type SubCategories map[string]string
+
+func (s *SubCategories) String() string {
+	if s == nil {
+		return ""
+	}
+
+	var subcategories []string
+	for k, v := range *s {
+		subcategories = append(subcategories, fmt.Sprintf("%s=%q", k, v))
+	}
+
+	return strings.Join(subcategories, ", ")
+}
+
+func (s *SubCategories) Set(v string) error {
+	parts := strings.SplitN(v, "=", 2)
+	if len(parts) != 2 {
+		return fmt.Errorf("wrong format for %q, expected prefix=\"SubCategory Name\"", v)
+	}
+
+	prefix := parts[0]
+	if sc, found := (*s)[prefix]; found {
+		return fmt.Errorf("%s is already registered with subcategory %q", prefix, sc)
+	}
+
+	(*s)[prefix] = parts[1]
+	return nil
+}
+
+func (s *SubCategories) Get(name string) string {
+	for k, v := range *s {
+		if strings.HasPrefix(name, k) {
+			return v
+		}
+	}
+
+	return ""
 }
 
 func (g *generator) infof(format string, a ...interface{}) {
@@ -85,7 +127,7 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, legacySidebar bool, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, websiteSourceDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, legacySidebar bool, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, websiteSourceDir, tfVersion string, ignoreDeprecated bool, subcategories SubCategories) error {
 	g := &generator{
 		ignoreDeprecated: ignoreDeprecated,
 		legacySidebar:    legacySidebar,
@@ -97,6 +139,8 @@ func Generate(ui cli.Ui, legacySidebar bool, providerName, renderedProviderName,
 		examplesDir:          examplesDir,
 		websiteTmpDir:        websiteTmpDir,
 		websiteSourceDir:     websiteSourceDir,
+
+		subcategories: subcategories,
 
 		ui: ui,
 	}
@@ -191,7 +235,7 @@ func (g *generator) Generate(ctx context.Context) error {
 	return nil
 }
 
-func (g *generator) renderMissingResourceDoc(providerName, name, typeName string, schema *tfjson.Schema, websiteFileTemplate resourceFileTemplate, fallbackWebsiteFileTemplate resourceFileTemplate, websiteStaticCandidateTemplates []resourceFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
+func (g *generator) renderMissingResourceDoc(providerName, name, typeName, subCategory string, schema *tfjson.Schema, websiteFileTemplate resourceFileTemplate, fallbackWebsiteFileTemplate resourceFileTemplate, websiteStaticCandidateTemplates []resourceFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
 	tmplPath, err := websiteFileTemplate.Render(name, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render path for resource %q: %w", name, err)
@@ -256,7 +300,7 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 	}
 
 	g.infof("generating template for %q", name)
-	md, err := targetResourceTemplate.Render(name, providerName, g.renderedProviderName, typeName, examplePath, importPath, schema)
+	md, err := targetResourceTemplate.Render(name, providerName, g.renderedProviderName, typeName, subCategory, examplePath, importPath, schema)
 	if err != nil {
 		return fmt.Errorf("unable to render template for %q: %w", name, err)
 	}
@@ -324,7 +368,10 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 			continue
 		}
 
-		err := g.renderMissingResourceDoc(providerName, name, "Resource", schema,
+		subCategory := g.subcategories.Get(name)
+
+		err := g.renderMissingResourceDoc(providerName, name, "Resource", subCategory,
+			schema,
 			websiteResourceFileTemplate,
 			websiteResourceFallbackFileTemplate,
 			websiteResourceFileStatic,
@@ -341,7 +388,10 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 			continue
 		}
 
-		err := g.renderMissingResourceDoc(providerName, name, "Data Source", schema,
+		subCategory := g.subcategories.Get(name)
+
+		err := g.renderMissingResourceDoc(providerName, name, "Data Source", subCategory,
+			schema,
 			websiteDataSourceFileTemplate,
 			websiteDataSourceFallbackFileTemplate,
 			websiteDataSourceFileStatic,
@@ -424,10 +474,11 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		switch relDir {
 		case "data-sources/":
 			resSchema, resName := resourceSchema(providerSchema.DataSourceSchemas, shortName, relFile)
+			subCategory := g.subcategories.Get(resName)
 			exampleFilePath := filepath.Join(g.examplesDir, "data-sources", resName, "data-source.tf")
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Data Source", exampleFilePath, "", resSchema)
+				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Data Source", subCategory, exampleFilePath, "", resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 				}
@@ -440,12 +491,13 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			g.warnf("data source entitled %q, or %q does not exist", shortName, resName)
 		case "resources/":
 			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
+			subCategory := g.subcategories.Get(resName)
 			exampleFilePath := filepath.Join(g.examplesDir, "resources", resName, "resource.tf")
 			importFilePath := filepath.Join(g.examplesDir, "resources", resName, "import.sh")
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Resource", exampleFilePath, importFilePath, resSchema)
+				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Resource", subCategory, exampleFilePath, importFilePath, resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
