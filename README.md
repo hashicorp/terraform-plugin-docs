@@ -161,6 +161,7 @@ using the following data fields and functions:
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
 |    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+|       `.SchemaMarkdown` | string | Schema including Required, Optional, and Read-Only attributes                             |
 
 #### Functions
 
