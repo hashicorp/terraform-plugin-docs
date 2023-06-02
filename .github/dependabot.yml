@@ -13,3 +13,10 @@ updates:
     schedule:
       # Check for updates to Go modules every weekday
       interval: "daily"
+
+  # Maintain dependencies for Go modules (tools)
+  - package-ecosystem: "gomod"
+    directory: "/tools"
+    schedule:
+      # Check for updates to Go modules every weekday
+      interval: "daily"

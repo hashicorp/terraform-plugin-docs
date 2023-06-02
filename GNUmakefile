@@ -9,3 +9,7 @@ build:
 
 test:
 	go test $(TEST) $(TESTARGS) -timeout=5m
+
+# Generate copywrite headers
+generate:
+	cd tools; go generate ./...
