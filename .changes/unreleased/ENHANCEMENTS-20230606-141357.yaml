@@ -1,0 +1,6 @@
+kind: ENHANCEMENTS
+body: 'generate: Added `provider-dir` flag, which enables the command to be run from
+  any directory'
+time: 2023-06-06T14:13:57.482032-04:00
+custom:
+  Issue: "259"
