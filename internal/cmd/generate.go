@@ -72,7 +72,7 @@ func (cmd *generateCmd) Help() string {
 func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
 	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations")
-	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute directory of provider code")
+	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory when running the command outside the root provider code directory")
 	fs.StringVar(&cmd.flagRenderedProviderName, "rendered-provider-name", "", "provider name, as generated in documentation (ex. page titles, ...)")
 	fs.StringVar(&cmd.flagRenderedWebsiteDir, "rendered-website-dir", "docs", "output directory based on provider-dir")
 	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir")
