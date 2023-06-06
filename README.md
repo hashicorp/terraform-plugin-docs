@@ -41,7 +41,6 @@ Usage: tfplugindocs generate [<args>]
 
     --examples-dir <ARG>             examples directory                                                        (default: "examples")
     --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources    (default: "false")
-    --legacy-sidebar <ARG>           generate the legacy .erb sidebar file                                     (default: "false")
     --provider-name <ARG>            provider name, as used in Terraform configurations
     --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)
     --rendered-website-dir <ARG>     output directory                                                          (default: "docs")
