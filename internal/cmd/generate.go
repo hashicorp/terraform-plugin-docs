@@ -14,7 +14,6 @@ import (
 type generateCmd struct {
 	commonCmd
 
-	flagLegacySidebar    bool
 	flagIgnoreDeprecated bool
 
 	flagProviderName         string
@@ -71,7 +70,6 @@ func (cmd *generateCmd) Help() string {
 
 func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
-	fs.BoolVar(&cmd.flagLegacySidebar, "legacy-sidebar", false, "generate the legacy .erb sidebar file")
 	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations")
 	fs.StringVar(&cmd.flagRenderedProviderName, "rendered-provider-name", "", "provider name, as generated in documentation (ex. page titles, ...)")
 	fs.StringVar(&cmd.flagRenderedWebsiteDir, "rendered-website-dir", "docs", "output directory")
@@ -97,7 +95,6 @@ func (cmd *generateCmd) Run(args []string) int {
 func (cmd *generateCmd) runInternal() error {
 	err := provider.Generate(
 		cmd.ui,
-		cmd.flagLegacySidebar,
 		cmd.flagProviderName,
 		cmd.flagRenderedProviderName,
 		cmd.flagRenderedWebsiteDir,

@@ -67,7 +67,6 @@ var (
 
 type generator struct {
 	ignoreDeprecated bool
-	legacySidebar    bool
 	tfVersion        string
 
 	providerName         string
@@ -88,10 +87,9 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, legacySidebar bool, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, websiteSourceDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, websiteSourceDir, tfVersion string, ignoreDeprecated bool) error {
 	g := &generator{
 		ignoreDeprecated: ignoreDeprecated,
-		legacySidebar:    legacySidebar,
 		tfVersion:        tfVersion,
 
 		providerName:         providerName,
@@ -183,12 +181,6 @@ func (g *generator) Generate(ctx context.Context) error {
 	err = g.renderStaticWebsite(providerName, providerSchema)
 	if err != nil {
 		return err
-	}
-
-	// TODO: may not ever need this, unsure on when this will go live
-	if g.legacySidebar {
-		g.infof("rendering legacy sidebar...")
-		g.warnf("TODO...!")
 	}
 
 	return nil
