@@ -6,7 +6,6 @@ package tmplfuncs
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -15,15 +14,7 @@ func PrefixLines(prefix, text string) string {
 }
 
 func CodeFile(format, file string) (string, error) {
-	// paths are relative to the rendering process work dir, which
-	// may be undesirable, probably need to think about it
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	fullPath := filepath.Join(wd, file)
-	content, err := os.ReadFile(fullPath)
+	content, err := os.ReadFile(file)
 	if err != nil {
 		return "", fmt.Errorf("unable to read content from %q: %w", file, err)
 	}

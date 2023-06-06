@@ -69,12 +69,15 @@ type generator struct {
 	ignoreDeprecated bool
 	tfVersion        string
 
+	// providerDir is the absolute path to the root provider directory
+	providerDir string
+
 	providerName         string
 	renderedProviderName string
 	renderedWebsiteDir   string
 	examplesDir          string
+	templatesDir         string
 	websiteTmpDir        string
-	websiteSourceDir     string
 
 	ui cli.Ui
 }
@@ -87,17 +90,48 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, websiteSourceDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
+	// Ensure provider directory is resolved absolute path
+	if providerDir == "" {
+		wd, err := os.Getwd()
+
+		if err != nil {
+			return fmt.Errorf("error getting working directory: %w", err)
+		}
+
+		providerDir = wd
+	} else {
+		absProviderDir, err := filepath.Abs(providerDir)
+
+		if err != nil {
+			return fmt.Errorf("error getting absolute path with provider directory %q: %w", providerDir, err)
+		}
+
+		providerDir = absProviderDir
+	}
+
+	// Verify provider directory
+	providerDirFileInfo, err := os.Stat(providerDir)
+
+	if err != nil {
+		return fmt.Errorf("error getting information for provider directory %q: %w", providerDir, err)
+	}
+
+	if !providerDirFileInfo.IsDir() {
+		return fmt.Errorf("expected %q to be a directory", providerDir)
+	}
+
 	g := &generator{
 		ignoreDeprecated: ignoreDeprecated,
 		tfVersion:        tfVersion,
 
+		providerDir:          providerDir,
 		providerName:         providerName,
 		renderedProviderName: renderedProviderName,
 		renderedWebsiteDir:   renderedWebsiteDir,
 		examplesDir:          examplesDir,
+		templatesDir:         templatesDir,
 		websiteTmpDir:        websiteTmpDir,
-		websiteSourceDir:     websiteSourceDir,
 
 		ui: ui,
 	}
@@ -110,14 +144,9 @@ func Generate(ui cli.Ui, providerName, renderedProviderName, renderedWebsiteDir,
 func (g *generator) Generate(ctx context.Context) error {
 	var err error
 
-	wd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
 	providerName := g.providerName
 	if g.providerName == "" {
-		providerName = filepath.Base(wd)
+		providerName = filepath.Base(g.providerDir)
 	}
 
 	if g.renderedProviderName == "" {
@@ -147,19 +176,19 @@ func (g *generator) Generate(ctx context.Context) error {
 		}
 	}
 
-	websiteSourceDirInfo, err := os.Stat(g.websiteSourceDir)
+	templatesDirInfo, err := os.Stat(g.ProviderTemplatesDir())
 	switch {
 	case os.IsNotExist(err):
 		// do nothing, no template dir
 	case err != nil:
 		return err
 	default:
-		if !websiteSourceDirInfo.IsDir() {
-			return fmt.Errorf("template path is not a directory: %s", g.websiteSourceDir)
+		if !templatesDirInfo.IsDir() {
+			return fmt.Errorf("template path is not a directory: %s", g.ProviderTemplatesDir())
 		}
 
 		g.infof("copying any existing content to tmp dir")
-		err = cp(g.websiteSourceDir, filepath.Join(g.websiteTmpDir, "templates"))
+		err = cp(g.ProviderTemplatesDir(), g.TempTemplatesDir())
 		if err != nil {
 			return err
 		}
@@ -186,35 +215,60 @@ func (g *generator) Generate(ctx context.Context) error {
 	return nil
 }
 
+// ProviderDocsDir returns the absolute path to the joined provider and
+// given website documentation directory, which defaults to "docs".
+func (g generator) ProviderDocsDir() string {
+	return filepath.Join(g.providerDir, g.renderedWebsiteDir)
+}
+
+// ProviderExamplesDir returns the absolute path to the joined provider and
+// given examples directory, which defaults to "examples".
+func (g generator) ProviderExamplesDir() string {
+	return filepath.Join(g.providerDir, g.examplesDir)
+}
+
+// ProviderTemplatesDir returns the absolute path to the joined provider and
+// given templates directory, which defaults to "templates".
+func (g generator) ProviderTemplatesDir() string {
+	return filepath.Join(g.providerDir, g.templatesDir)
+}
+
+// TempTemplatesDir returns the absolute path to the joined temporary and
+// hardcoded "templates" sub-directory, which is where provider templates are
+// copied.
+func (g generator) TempTemplatesDir() string {
+	return filepath.Join(g.websiteTmpDir, "templates")
+}
+
 func (g *generator) renderMissingResourceDoc(providerName, name, typeName string, schema *tfjson.Schema, websiteFileTemplate resourceFileTemplate, fallbackWebsiteFileTemplate resourceFileTemplate, websiteStaticCandidateTemplates []resourceFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
-	tmplPath, err := websiteFileTemplate.Render(name, providerName)
+	tmplPath, err := websiteFileTemplate.Render(g.providerDir, name, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render path for resource %q: %w", name, err)
 	}
-	tmplPath = filepath.Join(g.websiteTmpDir, g.websiteSourceDir, tmplPath)
+	tmplPath = filepath.Join(g.TempTemplatesDir(), tmplPath)
 	if fileExists(tmplPath) {
 		g.infof("resource %q template exists, skipping", name)
 		return nil
 	}
 
 	for _, candidate := range websiteStaticCandidateTemplates {
-		candidatePath, err := candidate.Render(name, providerName)
+		candidatePath, err := candidate.Render(g.providerDir, name, providerName)
 		if err != nil {
 			return fmt.Errorf("unable to render path for resource %q: %w", name, err)
 		}
-		candidatePath = filepath.Join(g.websiteTmpDir, g.websiteSourceDir, candidatePath)
+		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
 		if fileExists(candidatePath) {
 			g.infof("resource %q static file exists, skipping", name)
 			return nil
 		}
 	}
 
-	examplePath, err := examplesFileTemplate.Render(name, providerName)
+	examplePath, err := examplesFileTemplate.Render(g.providerDir, name, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render example file path for %q: %w", name, err)
 	}
 	if examplePath != "" {
-		examplePath = filepath.Join(g.examplesDir, examplePath)
+		examplePath = filepath.Join(g.ProviderExamplesDir(), examplePath)
 	}
 	if !fileExists(examplePath) {
 		examplePath = ""
@@ -222,12 +276,12 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 
 	importPath := ""
 	if examplesImportTemplate != nil {
-		importPath, err = examplesImportTemplate.Render(name, providerName)
+		importPath, err = examplesImportTemplate.Render(g.providerDir, name, providerName)
 		if err != nil {
 			return fmt.Errorf("unable to render example import file path for %q: %w", name, err)
 		}
 		if importPath != "" {
-			importPath = filepath.Join(g.examplesDir, importPath)
+			importPath = filepath.Join(g.ProviderExamplesDir(), importPath)
 		}
 		if !fileExists(importPath) {
 			importPath = ""
@@ -236,11 +290,11 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 
 	targetResourceTemplate := defaultResourceTemplate
 
-	fallbackTmplPath, err := fallbackWebsiteFileTemplate.Render(name, providerName)
+	fallbackTmplPath, err := fallbackWebsiteFileTemplate.Render(g.providerDir, name, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render path for resource %q: %w", name, err)
 	}
-	fallbackTmplPath = filepath.Join(g.websiteTmpDir, g.websiteSourceDir, fallbackTmplPath)
+	fallbackTmplPath = filepath.Join(g.TempTemplatesDir(), fallbackTmplPath)
 	if fileExists(fallbackTmplPath) {
 		g.infof("resource %q fallback template exists", name)
 		tmplData, err := os.ReadFile(fallbackTmplPath)
@@ -251,7 +305,7 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 	}
 
 	g.infof("generating template for %q", name)
-	md, err := targetResourceTemplate.Render(name, providerName, g.renderedProviderName, typeName, examplePath, importPath, schema)
+	md, err := targetResourceTemplate.Render(g.providerDir, name, providerName, g.renderedProviderName, typeName, examplePath, importPath, schema)
 	if err != nil {
 		return fmt.Errorf("unable to render template for %q: %w", name, err)
 	}
@@ -265,41 +319,41 @@ func (g *generator) renderMissingResourceDoc(providerName, name, typeName string
 }
 
 func (g *generator) renderMissingProviderDoc(providerName string, schema *tfjson.Schema, websiteFileTemplate providerFileTemplate, websiteStaticCandidateTemplates []providerFileTemplate, examplesFileTemplate providerFileTemplate) error {
-	tmplPath, err := websiteFileTemplate.Render(providerName)
+	tmplPath, err := websiteFileTemplate.Render(g.providerDir, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render path for provider %q: %w", providerName, err)
 	}
-	tmplPath = filepath.Join(g.websiteTmpDir, g.websiteSourceDir, tmplPath)
+	tmplPath = filepath.Join(g.TempTemplatesDir(), tmplPath)
 	if fileExists(tmplPath) {
 		g.infof("provider %q template exists, skipping", providerName)
 		return nil
 	}
 
 	for _, candidate := range websiteStaticCandidateTemplates {
-		candidatePath, err := candidate.Render(providerName)
+		candidatePath, err := candidate.Render(g.providerDir, providerName)
 		if err != nil {
 			return fmt.Errorf("unable to render path for provider %q: %w", providerName, err)
 		}
-		candidatePath = filepath.Join(g.websiteTmpDir, g.websiteSourceDir, candidatePath)
+		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
 		if fileExists(candidatePath) {
 			g.infof("provider %q static file exists, skipping", providerName)
 			return nil
 		}
 	}
 
-	examplePath, err := examplesFileTemplate.Render(providerName)
+	examplePath, err := examplesFileTemplate.Render(g.providerDir, providerName)
 	if err != nil {
 		return fmt.Errorf("unable to render example file path for %q: %w", providerName, err)
 	}
 	if examplePath != "" {
-		examplePath = filepath.Join(g.examplesDir, examplePath)
+		examplePath = filepath.Join(g.ProviderExamplesDir(), examplePath)
 	}
 	if !fileExists(examplePath) {
 		examplePath = ""
 	}
 
 	g.infof("generating template for %q", providerName)
-	md, err := defaultProviderTemplate.Render(providerName, g.renderedProviderName, examplePath, schema)
+	md, err := defaultProviderTemplate.Render(g.providerDir, providerName, g.renderedProviderName, examplePath, schema)
 	if err != nil {
 		return fmt.Errorf("unable to render template for %q: %w", providerName, err)
 	}
@@ -362,7 +416,7 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 
 func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfjson.ProviderSchema) error {
 	g.infof("cleaning rendered website dir")
-	err := os.RemoveAll(g.renderedWebsiteDir)
+	err := os.RemoveAll(g.ProviderDocsDir())
 	if err != nil {
 		return err
 	}
@@ -377,7 +431,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			return nil
 		}
 
-		rel, err := filepath.Rel(filepath.Join(g.websiteTmpDir, g.websiteSourceDir), path)
+		rel, err := filepath.Rel(filepath.Join(g.TempTemplatesDir()), path)
 		if err != nil {
 			return err
 		}
@@ -390,7 +444,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			return nil
 		}
 
-		renderedPath := filepath.Join(g.renderedWebsiteDir, rel)
+		renderedPath := filepath.Join(g.ProviderDocsDir(), rel)
 		err = os.MkdirAll(filepath.Dir(renderedPath), 0755)
 		if err != nil {
 			return err
@@ -419,10 +473,11 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		switch relDir {
 		case "data-sources/":
 			resSchema, resName := resourceSchema(providerSchema.DataSourceSchemas, shortName, relFile)
-			exampleFilePath := filepath.Join(g.examplesDir, "data-sources", resName, "data-source.tf")
+			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "data-sources", resName, "data-source.tf")
+
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Data Source", exampleFilePath, "", resSchema)
+				render, err := tmpl.Render(g.providerDir, resName, providerName, g.renderedProviderName, "Data Source", exampleFilePath, "", resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 				}
@@ -435,12 +490,12 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			g.warnf("data source entitled %q, or %q does not exist", shortName, resName)
 		case "resources/":
 			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
-			exampleFilePath := filepath.Join(g.examplesDir, "resources", resName, "resource.tf")
-			importFilePath := filepath.Join(g.examplesDir, "resources", resName, "import.sh")
+			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "resource.tf")
+			importFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import.sh")
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(resName, providerName, g.renderedProviderName, "Resource", exampleFilePath, importFilePath, resSchema)
+				render, err := tmpl.Render(g.providerDir, resName, providerName, g.renderedProviderName, "Resource", exampleFilePath, importFilePath, resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
@@ -454,8 +509,8 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		case "": // provider
 			if relFile == "index.md.tmpl" {
 				tmpl := providerTemplate(tmplData)
-				exampleFilePath := filepath.Join(g.examplesDir, "provider", "provider.tf")
-				render, err := tmpl.Render(providerName, g.renderedProviderName, exampleFilePath, providerSchema.ConfigSchema)
+				exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "provider", "provider.tf")
+				render, err := tmpl.Render(g.providerDir, providerName, g.renderedProviderName, exampleFilePath, providerSchema.ConfigSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render provider template %q: %w", rel, err)
 				}
@@ -468,7 +523,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		}
 
 		tmpl := docTemplate(tmplData)
-		err = tmpl.Render(out)
+		err = tmpl.Render(g.providerDir, out)
 		if err != nil {
 			return fmt.Errorf("unable to render template %q: %w", rel, err)
 		}
@@ -505,6 +560,7 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 		outFile = outFile + ".exe"
 	}
 	buildCmd := exec.Command("go", "build", "-o", outFile)
+	buildCmd.Dir = g.providerDir
 	// TODO: constrain env here to make it a little safer?
 	_, err = runCmd(buildCmd)
 	if err != nil {
