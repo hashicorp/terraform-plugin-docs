@@ -23,3 +23,7 @@ linters:
     - unparam
     - unused
     - vet
+
+run:
+  # Prevent false positive timeouts in CI
+  timeout: 5m
