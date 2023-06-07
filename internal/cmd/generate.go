@@ -19,6 +19,7 @@ type generateCmd struct {
 	flagProviderName         string
 	flagRenderedProviderName string
 
+	flagProviderDir        string
 	flagRenderedWebsiteDir string
 	flagExamplesDir        string
 	flagWebsiteTmpDir      string
@@ -27,7 +28,7 @@ type generateCmd struct {
 }
 
 func (cmd *generateCmd) Synopsis() string {
-	return "generates a plugin website from code, templates, and examples for the current directory"
+	return "generates a plugin website from code, templates, and examples"
 }
 
 func (cmd *generateCmd) Help() string {
@@ -71,11 +72,12 @@ func (cmd *generateCmd) Help() string {
 func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
 	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations")
+	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory when running the command outside the root provider code directory")
 	fs.StringVar(&cmd.flagRenderedProviderName, "rendered-provider-name", "", "provider name, as generated in documentation (ex. page titles, ...)")
-	fs.StringVar(&cmd.flagRenderedWebsiteDir, "rendered-website-dir", "docs", "output directory")
-	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory")
+	fs.StringVar(&cmd.flagRenderedWebsiteDir, "rendered-website-dir", "docs", "output directory based on provider-dir")
+	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir")
 	fs.StringVar(&cmd.flagWebsiteTmpDir, "website-temp-dir", "", "temporary directory (used during generation)")
-	fs.StringVar(&cmd.flagWebsiteSourceDir, "website-source-dir", "templates", "templates directory")
+	fs.StringVar(&cmd.flagWebsiteSourceDir, "website-source-dir", "templates", "templates directory based on provider-dir")
 	fs.StringVar(&cmd.tfVersion, "tf-version", "", "terraform binary version to download")
 	fs.BoolVar(&cmd.flagIgnoreDeprecated, "ignore-deprecated", false, "don't generate documentation for deprecated resources and data-sources")
 	return fs
@@ -95,6 +97,7 @@ func (cmd *generateCmd) Run(args []string) int {
 func (cmd *generateCmd) runInternal() error {
 	err := provider.Generate(
 		cmd.ui,
+		cmd.flagProviderDir,
 		cmd.flagProviderName,
 		cmd.flagRenderedProviderName,
 		cmd.flagRenderedWebsiteDir,

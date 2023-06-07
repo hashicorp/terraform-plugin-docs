@@ -27,7 +27,7 @@ Usage: tfplugindocs [--version] [--help] <command> [<args>]
 
 Available commands are:
                 the generate command is run by default
-    generate    generates a plugin website from code, templates, and examples for the current directory
+    generate    generates a plugin website from code, templates, and examples
     validate    validates a plugin website for the current directory
        
 ```
@@ -39,14 +39,15 @@ $ tfplugindocs generate --help
 
 Usage: tfplugindocs generate [<args>]
 
-    --examples-dir <ARG>             examples directory                                                        (default: "examples")
-    --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources    (default: "false")
-    --provider-name <ARG>            provider name, as used in Terraform configurations
-    --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)
-    --rendered-website-dir <ARG>     output directory                                                          (default: "docs")
-    --tf-version <ARG>               terraform binary version to download
-    --website-source-dir <ARG>       templates directory                                                       (default: "templates")
-    --website-temp-dir <ARG>         temporary directory (used during generation)
+    --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
+    --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources                                                             (default: "false")
+    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory  
+    --provider-name <ARG>            provider name, as used in Terraform configurations                                                                               
+    --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)                                                              
+    --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
+    --tf-version <ARG>               terraform binary version to download                                                                                             
+    --website-source-dir <ARG>       templates directory based on provider-dir                                                                                          (default: "templates")
+    --website-temp-dir <ARG>         temporary directory (used during generation)  
 ```
 
 `validate` command:
@@ -59,7 +60,7 @@ Usage: tfplugindocs validate [<args>]
 
 ### How it Works
 
-When you run `tfplugindocs` from root directory of the provider the tool takes the following actions:
+When you run `tfplugindocs`, by default from the root directory of a provider codebase, the tool takes the following actions:
 
 * Copy all the templates and static files to a temporary directory
 * Build (`go build`) a temporary binary of the provider source code

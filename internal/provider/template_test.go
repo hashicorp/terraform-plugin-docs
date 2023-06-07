@@ -34,7 +34,7 @@ Prefixlines:
   This text used
   multiple lines
 `
-	result, err := renderStringTemplate("testTemplate", template, struct {
+	result, err := renderStringTemplate("test-provider-dir", "testTemplate", template, struct {
 		Text          string
 		MultiLineTest string
 	}{
