@@ -1,6 +1,0 @@
-kind: BREAKING CHANGES
-body: 'generate: The `legacy-sidebar` flag has been removed without replacement. It
-  implemented no logic and is not necessary with Terraform Registry based documentation'
-time: 2023-06-06T09:29:55.309657-04:00
-custom:
-  Issue: "258"

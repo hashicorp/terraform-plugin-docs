@@ -1,3 +1,17 @@
+## 0.15.0 (June 07, 2023)
+
+BREAKING CHANGES:
+
+* generate: The `legacy-sidebar` flag has been removed without replacement. It implemented no logic and is not necessary with Terraform Registry based documentation ([#258](https://github.com/hashicorp/terraform-plugin-docs/issues/258))
+
+NOTES:
+
+* This Go module has been updated to Go 1.19 per the [Go support policy](https://golang.org/doc/devel/release.html#policy). Any consumers building on earlier Go versions may experience errors. ([#231](https://github.com/hashicorp/terraform-plugin-docs/issues/231))
+
+ENHANCEMENTS:
+
+* generate: Added `provider-dir` flag, which enables the command to be run from any directory ([#259](https://github.com/hashicorp/terraform-plugin-docs/issues/259))
+
 ## 0.14.1 (March 02, 2023)
 
 BUG FIXES:
