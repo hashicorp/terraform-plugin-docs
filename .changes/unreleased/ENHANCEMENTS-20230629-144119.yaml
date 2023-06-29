@@ -1,0 +1,7 @@
+kind: ENHANCEMENTS
+body: 'generate: Added `exclude-rendered-website-sub-dir` flag, which excludes the
+  specified subdirectory in the rendered website directory from being deleted during
+  generation'
+time: 2023-06-29T14:41:19.134991-04:00
+custom:
+  Issue: "267"
