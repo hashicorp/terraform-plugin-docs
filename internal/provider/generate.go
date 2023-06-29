@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -72,12 +73,13 @@ type generator struct {
 	// providerDir is the absolute path to the root provider directory
 	providerDir string
 
-	providerName         string
-	renderedProviderName string
-	renderedWebsiteDir   string
-	examplesDir          string
-	templatesDir         string
-	websiteTmpDir        string
+	providerName                 string
+	renderedProviderName         string
+	renderedWebsiteDir           string
+	examplesDir                  string
+	excludeRenderedWebsiteSubDir string
+	templatesDir                 string
+	websiteTmpDir                string
 
 	ui cli.Ui
 }
@@ -90,7 +92,7 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, excludeRenderedWebsiteSubDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -125,13 +127,14 @@ func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, render
 		ignoreDeprecated: ignoreDeprecated,
 		tfVersion:        tfVersion,
 
-		providerDir:          providerDir,
-		providerName:         providerName,
-		renderedProviderName: renderedProviderName,
-		renderedWebsiteDir:   renderedWebsiteDir,
-		examplesDir:          examplesDir,
-		templatesDir:         templatesDir,
-		websiteTmpDir:        websiteTmpDir,
+		providerDir:                  providerDir,
+		providerName:                 providerName,
+		renderedProviderName:         renderedProviderName,
+		renderedWebsiteDir:           renderedWebsiteDir,
+		examplesDir:                  examplesDir,
+		excludeRenderedWebsiteSubDir: excludeRenderedWebsiteSubDir,
+		templatesDir:                 templatesDir,
+		websiteTmpDir:                websiteTmpDir,
 
 		ui: ui,
 	}
@@ -416,9 +419,20 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 
 func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfjson.ProviderSchema) error {
 	g.infof("cleaning rendered website dir")
-	err := os.RemoveAll(g.ProviderDocsDir())
+	dirEntry, err := os.ReadDir(g.ProviderDocsDir())
 	if err != nil {
 		return err
+	}
+
+	for _, file := range dirEntry {
+		if file.IsDir() && file.Name() == g.excludeRenderedWebsiteSubDir {
+			g.infof("excluding specified sub dir %q from cleanup", g.excludeRenderedWebsiteSubDir)
+			continue
+		}
+		err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+		if err != nil {
+			return err
+		}
 	}
 
 	shortName := providerShortName(providerName)
