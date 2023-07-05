@@ -19,13 +19,12 @@ type generateCmd struct {
 	flagProviderName         string
 	flagRenderedProviderName string
 
-	flagProviderDir                  string
-	flagRenderedWebsiteDir           string
-	flagExamplesDir                  string
-	flagExcludeRenderedWebsiteSubDir string
-	flagWebsiteTmpDir                string
-	flagWebsiteSourceDir             string
-	tfVersion                        string
+	flagProviderDir        string
+	flagRenderedWebsiteDir string
+	flagExamplesDir        string
+	flagWebsiteTmpDir      string
+	flagWebsiteSourceDir   string
+	tfVersion              string
 }
 
 func (cmd *generateCmd) Synopsis() string {
@@ -77,7 +76,6 @@ func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs.StringVar(&cmd.flagRenderedProviderName, "rendered-provider-name", "", "provider name, as generated in documentation (ex. page titles, ...)")
 	fs.StringVar(&cmd.flagRenderedWebsiteDir, "rendered-website-dir", "docs", "output directory based on provider-dir")
 	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir")
-	fs.StringVar(&cmd.flagExcludeRenderedWebsiteSubDir, "exclude-rendered-website-sub-dir", "", "excludes a subdirectory within rendered-website-dir from being deleted during documentation generation")
 	fs.StringVar(&cmd.flagWebsiteTmpDir, "website-temp-dir", "", "temporary directory (used during generation)")
 	fs.StringVar(&cmd.flagWebsiteSourceDir, "website-source-dir", "templates", "templates directory based on provider-dir")
 	fs.StringVar(&cmd.tfVersion, "tf-version", "", "terraform binary version to download")
@@ -104,7 +102,6 @@ func (cmd *generateCmd) runInternal() error {
 		cmd.flagRenderedProviderName,
 		cmd.flagRenderedWebsiteDir,
 		cmd.flagExamplesDir,
-		cmd.flagExcludeRenderedWebsiteSubDir,
 		cmd.flagWebsiteTmpDir,
 		cmd.flagWebsiteSourceDir,
 		cmd.tfVersion,

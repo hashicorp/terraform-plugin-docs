@@ -39,16 +39,15 @@ $ tfplugindocs generate --help
 
 Usage: tfplugindocs generate [<args>]
 
-    --examples-dir <ARG>                       examples directory based on provider-dir                                                                                           (default: "examples")
-    --exclude-rendered-website-sub-dir <ARG>   excludes a subdirectory within rendered-website-dir from being deleted during documentation generation                           
-    --ignore-deprecated <ARG>                  don't generate documentation for deprecated resources and data-sources                                                             (default: "false")
-    --provider-dir <ARG>                       relative or absolute path to the root provider code directory when running the command outside the root provider code directory  
-    --provider-name <ARG>                      provider name, as used in Terraform configurations                                                                               
-    --rendered-provider-name <ARG>             provider name, as generated in documentation (ex. page titles, ...)                                                              
-    --rendered-website-dir <ARG>               output directory based on provider-dir                                                                                             (default: "docs")
-    --tf-version <ARG>                         terraform binary version to download                                                                                             
-    --website-source-dir <ARG>                 templates directory based on provider-dir                                                                                          (default: "templates")
-    --website-temp-dir <ARG>                   temporary directory (used during generation) 
+    --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
+    --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources                                                             (default: "false")
+    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory  
+    --provider-name <ARG>            provider name, as used in Terraform configurations                                                                               
+    --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)                                                              
+    --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
+    --tf-version <ARG>               terraform binary version to download                                                                                             
+    --website-source-dir <ARG>       templates directory based on provider-dir                                                                                          (default: "templates")
+    --website-temp-dir <ARG>         temporary directory (used during generation)  
 ```
 
 `validate` command:

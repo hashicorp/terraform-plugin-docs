@@ -23,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfexec"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/mitchellh/cli"
+	"golang.org/x/exp/slices"
 )
 
 var (
@@ -64,6 +65,16 @@ var (
 		providerFileTemplate("index.html.markdown"),
 		providerFileTemplate("index.html.md"),
 	}
+
+	managedWebsiteSubDirectories = []string{
+		"data-sources",
+		"guides",
+		"resources",
+	}
+
+	managedWebsiteFiles = []string{
+		"index.md",
+	}
 )
 
 type generator struct {
@@ -73,13 +84,12 @@ type generator struct {
 	// providerDir is the absolute path to the root provider directory
 	providerDir string
 
-	providerName                 string
-	renderedProviderName         string
-	renderedWebsiteDir           string
-	examplesDir                  string
-	excludeRenderedWebsiteSubDir string
-	templatesDir                 string
-	websiteTmpDir                string
+	providerName         string
+	renderedProviderName string
+	renderedWebsiteDir   string
+	examplesDir          string
+	templatesDir         string
+	websiteTmpDir        string
 
 	ui cli.Ui
 }
@@ -92,7 +102,7 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, excludeRenderedWebsiteSubDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -127,14 +137,13 @@ func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, render
 		ignoreDeprecated: ignoreDeprecated,
 		tfVersion:        tfVersion,
 
-		providerDir:                  providerDir,
-		providerName:                 providerName,
-		renderedProviderName:         renderedProviderName,
-		renderedWebsiteDir:           renderedWebsiteDir,
-		examplesDir:                  examplesDir,
-		excludeRenderedWebsiteSubDir: excludeRenderedWebsiteSubDir,
-		templatesDir:                 templatesDir,
-		websiteTmpDir:                websiteTmpDir,
+		providerDir:          providerDir,
+		providerName:         providerName,
+		renderedProviderName: renderedProviderName,
+		renderedWebsiteDir:   renderedWebsiteDir,
+		examplesDir:          examplesDir,
+		templatesDir:         templatesDir,
+		websiteTmpDir:        websiteTmpDir,
 
 		ui: ui,
 	}
@@ -425,13 +434,25 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 	}
 
 	for _, file := range dirEntry {
-		if file.IsDir() && file.Name() == g.excludeRenderedWebsiteSubDir {
-			g.infof("excluding specified sub dir %q from cleanup", g.excludeRenderedWebsiteSubDir)
+
+		// Remove subdirectories managed by tfplugindocs
+		if file.IsDir() && slices.Contains(managedWebsiteSubDirectories, file.Name()) {
+			g.infof("removing directory: %q", file.Name())
+			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+			if err != nil {
+				return err
+			}
 			continue
 		}
-		err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
-		if err != nil {
-			return err
+
+		// Remove files managed by tfplugindocs
+		if !file.IsDir() && slices.Contains(managedWebsiteFiles, file.Name()) {
+			g.infof("removing file: %q", file.Name())
+			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+			if err != nil {
+				return err
+			}
+			continue
 		}
 	}
 
