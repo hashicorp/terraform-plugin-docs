@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -22,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfexec"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/mitchellh/cli"
+	"golang.org/x/exp/slices"
 )
 
 var (
@@ -62,6 +64,16 @@ var (
 		providerFileTemplate("index.md"),
 		providerFileTemplate("index.html.markdown"),
 		providerFileTemplate("index.html.md"),
+	}
+
+	managedWebsiteSubDirectories = []string{
+		"data-sources",
+		"guides",
+		"resources",
+	}
+
+	managedWebsiteFiles = []string{
+		"index.md",
 	}
 )
 
@@ -416,9 +428,32 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 
 func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfjson.ProviderSchema) error {
 	g.infof("cleaning rendered website dir")
-	err := os.RemoveAll(g.ProviderDocsDir())
+	dirEntry, err := os.ReadDir(g.ProviderDocsDir())
 	if err != nil {
 		return err
+	}
+
+	for _, file := range dirEntry {
+
+		// Remove subdirectories managed by tfplugindocs
+		if file.IsDir() && slices.Contains(managedWebsiteSubDirectories, file.Name()) {
+			g.infof("removing directory: %q", file.Name())
+			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		// Remove files managed by tfplugindocs
+		if !file.IsDir() && slices.Contains(managedWebsiteFiles, file.Name()) {
+			g.infof("removing file: %q", file.Name())
+			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+			if err != nil {
+				return err
+			}
+			continue
+		}
 	}
 
 	shortName := providerShortName(providerName)

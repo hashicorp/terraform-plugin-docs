@@ -1,0 +1,6 @@
+kind: ENHANCEMENTS
+body: 'generate: Prevent files and subdirectories in the rendered website directory
+  that are not directly managed by `tfplugindocs` from being deleted during generation'
+time: 2023-06-29T14:41:19.134991-04:00
+custom:
+  Issue: "267"

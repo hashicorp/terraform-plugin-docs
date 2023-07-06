@@ -98,6 +98,7 @@ func validateStaticDocs(ui cli.Ui, dir string) error {
 			"data-sources",
 			"guides",
 			"resources",
+			"cdktf",
 		),
 		checkBlockedExtensions(
 			".html.md.tmpl",
