@@ -1,3 +1,10 @@
+## 0.16.0 (July 06, 2023)
+
+ENHANCEMENTS:
+
+* generate: Prevent files and subdirectories in the rendered website directory that are not directly managed by `tfplugindocs` from being deleted during generation ([#267](https://github.com/hashicorp/terraform-plugin-docs/issues/267))
+* validate: Add `cdktf` to list of allowed rendered website subdirectories ([#267](https://github.com/hashicorp/terraform-plugin-docs/issues/267))
+
 ## 0.15.0 (June 07, 2023)
 
 BREAKING CHANGES:
