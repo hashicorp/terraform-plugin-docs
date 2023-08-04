@@ -13,7 +13,7 @@ require (
 	github.com/russross/blackfriday v1.6.0
 	github.com/zclconf/go-cty v1.13.2
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
-	golang.org/x/text v0.11.0
+	golang.org/x/text v0.12.0
 )
 
 require (
