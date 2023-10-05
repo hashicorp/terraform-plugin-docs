@@ -33,6 +33,14 @@ for tool installation.
 >   _ "github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs"
 > )
 > ```
+>
+> Then run the following to install and verify `tfplugindocs`:
+> ```console
+> export GOBIN=$PWD/bin
+> export PATH=$GOBIN:$PATH
+> go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+> which tfplugindocs
+> ```
 
 ### Usage
 
