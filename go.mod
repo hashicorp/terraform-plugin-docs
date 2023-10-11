@@ -3,7 +3,7 @@ module github.com/hashicorp/terraform-plugin-docs
 go 1.19
 
 require (
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/go-version v1.6.0
 	github.com/hashicorp/hc-install v0.6.1
 	github.com/hashicorp/terraform-exec v0.19.0
