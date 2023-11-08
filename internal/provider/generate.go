@@ -429,7 +429,7 @@ func (g *generator) renderMissingDocs(providerName string, providerSchema *tfjso
 func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfjson.ProviderSchema) error {
 	g.infof("cleaning rendered website dir")
 	dirEntry, err := os.ReadDir(g.ProviderDocsDir())
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
