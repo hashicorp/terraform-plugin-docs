@@ -1,5 +1,6 @@
 # Successful run of tfplugindocs on a stripped-down version of the Null provider with pre-exiting templates, examples,
 # docs, and non-tfplugindocs managed docs (docs/cdktf subdirectory).
+[!unix] skip
 env GOCACHE=$WORK/gocache
 env GOMODCACHE=$WORK/gomodcache
 exec tfplugindocs --provider-name=terraform-provider-null

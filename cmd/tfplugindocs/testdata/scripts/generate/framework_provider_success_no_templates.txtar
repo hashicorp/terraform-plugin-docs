@@ -1,4 +1,5 @@
 # Successful run of tfplugindocs on a Framework provider with examples but no templates or pre-exiting docs.
+[!unix] skip
 env GOCACHE=$WORK/gocache
 env GOMODCACHE=$WORK/gomodcache
 exec tfplugindocs --provider-name=terraform-provider-scaffolding

@@ -1,5 +1,6 @@
 # Successful run of tfplugindocs on a Framework provider with "named" template paths (i.e. templates/resources/<resource name>.md.tmpl)
 # Templates test all implemented data fields and functions.
+[!unix] skip
 env GOCACHE=$WORK/gocache
 env GOMODCACHE=$WORK/gomodcache
 exec tfplugindocs --provider-name=terraform-provider-scaffolding
