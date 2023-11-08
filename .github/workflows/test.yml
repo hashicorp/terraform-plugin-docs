@@ -33,5 +33,5 @@ jobs:
           args: --timeout=3m
       - name: go vet
         run: go vet ./...
-      - name: Run tests
-        run: ACCTEST=1 go test -v -cover -race ./...
+      - name: Run acceptance tests
+        run: make testacc
