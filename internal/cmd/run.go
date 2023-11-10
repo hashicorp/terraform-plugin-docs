@@ -11,7 +11,7 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/mitchellh/cli"
 
-	"github.com/hashicorp/terraform-plugin-docs/cmd/build"
+	"github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs/build"
 )
 
 type commonCmd struct {
