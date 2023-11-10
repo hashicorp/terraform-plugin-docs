@@ -146,6 +146,7 @@ using the following data fields and functions:
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
 |    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+|       `.SchemaMarkdown` | string | a Markdown formatted Provider Schema definition                                           |
 
 ##### Resources / Data Source
 
@@ -161,6 +162,7 @@ using the following data fields and functions:
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
 |    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+|       `.SchemaMarkdown` | string | a Markdown formatted Resource / Data Source Schema definition                             |
 
 #### Functions
 
@@ -170,6 +172,7 @@ using the following data fields and functions:
 | `lower`         | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToLower).                            |
 | `plainmarkdown` | Render Markdown content as plaintext.                                                             |
 | `prefixlines`   | Add a prefix to all (newline-separated) lines in a string.                                        |
+| `printf`        | Equivalent to [`fmt.Printf`](https://pkg.go.dev/fmt#Printf).                                      |
 | `split`         | Split string into sub-strings, by a given separator (ex. `split .Name "_"`).                      |
 | `title`         | Equivalent to [`cases.Title`](https://pkg.go.dev/golang.org/x/text/cases#Title).                  |
 | `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
