@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 # Successful run of tfplugindocs on a Framework provider with "generic" template paths (i.e. templates/resources.md.tmpl)
 # Templates test all implemented data fields and functions.
 [!unix] skip
