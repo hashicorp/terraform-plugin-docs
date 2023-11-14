@@ -171,20 +171,20 @@ func (g *generator) Generate(ctx context.Context) error {
 	case g.websiteTmpDir == "":
 		g.websiteTmpDir, err = os.MkdirTemp("", "tfws")
 		if err != nil {
-			return err
+			return fmt.Errorf("error creating temporary website directory: %w", err)
 		}
 		defer os.RemoveAll(g.websiteTmpDir)
 	default:
 		g.infof("cleaning tmp dir %q", g.websiteTmpDir)
 		err = os.RemoveAll(g.websiteTmpDir)
 		if err != nil {
-			return err
+			return fmt.Errorf("error removing temporary website directory %q: %w", g.websiteTmpDir, err)
 		}
 
 		g.infof("creating tmp dir %q", g.websiteTmpDir)
 		err = os.MkdirAll(g.websiteTmpDir, 0755)
 		if err != nil {
-			return err
+			return fmt.Errorf("error creating temporary website directory %q: %w", g.websiteTmpDir, err)
 		}
 	}
 
@@ -193,7 +193,7 @@ func (g *generator) Generate(ctx context.Context) error {
 	case os.IsNotExist(err):
 		// do nothing, no template dir
 	case err != nil:
-		return err
+		return fmt.Errorf("error getting information for provider templates directory %q: %w", g.ProviderTemplatesDir(), err)
 	default:
 		if !templatesDirInfo.IsDir() {
 			return fmt.Errorf("template path is not a directory: %s", g.ProviderTemplatesDir())
@@ -202,26 +202,26 @@ func (g *generator) Generate(ctx context.Context) error {
 		g.infof("copying any existing content to tmp dir")
 		err = cp(g.ProviderTemplatesDir(), g.TempTemplatesDir())
 		if err != nil {
-			return err
+			return fmt.Errorf("error copying exiting content to temporary directory %q: %w", g.TempTemplatesDir(), err)
 		}
 	}
 
 	g.infof("exporting schema from Terraform")
 	providerSchema, err := g.terraformProviderSchema(ctx, providerName)
 	if err != nil {
-		return err
+		return fmt.Errorf("error exporting provider schema from Terraform: %w", err)
 	}
 
 	g.infof("rendering missing docs")
 	err = g.renderMissingDocs(providerName, providerSchema)
 	if err != nil {
-		return err
+		return fmt.Errorf("error rendering missing docs: %w", err)
 	}
 
 	g.infof("rendering static website")
 	err = g.renderStaticWebsite(providerName, providerSchema)
 	if err != nil {
-		return err
+		return fmt.Errorf("error rendering static website: %w", err)
 	}
 
 	return nil
@@ -430,7 +430,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 	g.infof("cleaning rendered website dir")
 	dirEntry, err := os.ReadDir(g.ProviderDocsDir())
 	if err != nil && !os.IsNotExist(err) {
-		return err
+		return fmt.Errorf("unable to read rendered website directory %q: %w", g.ProviderDocsDir(), err)
 	}
 
 	for _, file := range dirEntry {
@@ -440,7 +440,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			g.infof("removing directory: %q", file.Name())
 			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
 			if err != nil {
-				return err
+				return fmt.Errorf("unable to remove directory %q from rendered website directory: %w", file.Name(), err)
 			}
 			continue
 		}
@@ -450,7 +450,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 			g.infof("removing file: %q", file.Name())
 			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
 			if err != nil {
-				return err
+				return fmt.Errorf("unable to remove file %q from rendered website directory: %w", file.Name(), err)
 			}
 			continue
 		}
@@ -468,7 +468,8 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 
 		rel, err := filepath.Rel(filepath.Join(g.TempTemplatesDir()), path)
 		if err != nil {
-			return err
+			return fmt.Errorf("unable to retrieve the relative path of basepath %q and targetpath %q: %w",
+				filepath.Join(g.TempTemplatesDir()), path, err)
 		}
 
 		relDir, relFile := filepath.Split(rel)
@@ -482,7 +483,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		renderedPath := filepath.Join(g.ProviderDocsDir(), rel)
 		err = os.MkdirAll(filepath.Dir(renderedPath), 0755)
 		if err != nil {
-			return err
+			return fmt.Errorf("unable to create rendered website subdirectory %q: %w", renderedPath, err)
 		}
 
 		ext := filepath.Ext(path)
@@ -500,7 +501,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 
 		out, err := os.Create(renderedPath)
 		if err != nil {
-			return err
+			return fmt.Errorf("unable to create file %q: %w", renderedPath, err)
 		}
 		defer out.Close()
 
@@ -565,7 +566,7 @@ func (g *generator) renderStaticWebsite(providerName string, providerSchema *tfj
 		return nil
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to render templated website to static markdown: %w", err)
 	}
 
 	return nil
@@ -578,7 +579,7 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 
 	tmpDir, err := os.MkdirTemp("", "tfws")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to create temporary provider install directory %q: %w", tmpDir, err)
 	}
 	defer os.RemoveAll(tmpDir)
 
@@ -599,7 +600,7 @@ func (g *generator) terraformProviderSchema(ctx context.Context, providerName st
 	// TODO: constrain env here to make it a little safer?
 	_, err = runCmd(buildCmd)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to execute go build command: %w", err)
 	}
 
 	err = writeFile(filepath.Join(tmpDir, "provider.tf"), fmt.Sprintf(`
@@ -607,7 +608,7 @@ provider %[1]q {
 }
 `, shortName))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to write provider.tf file: %w", err)
 	}
 
 	i := install.NewInstaller()
@@ -636,24 +637,24 @@ provider %[1]q {
 
 	tfBin, err := i.Ensure(context.Background(), sources)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to download Terraform binary: %w", err)
 	}
 
 	tf, err := tfexec.NewTerraform(tmpDir, tfBin)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to create new terraform exec instance: %w", err)
 	}
 
 	g.infof("running terraform init")
 	err = tf.Init(ctx, tfexec.Get(false), tfexec.PluginDir("./plugins"))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to run terraform init on provider: %w", err)
 	}
 
 	g.infof("getting provider schema")
 	schemas, err := tf.ProvidersSchema(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to retrieve provider schema from terraform exec: %w", err)
 	}
 
 	if ps, ok := schemas.Schemas[shortName]; ok {
