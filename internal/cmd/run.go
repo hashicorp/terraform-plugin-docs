@@ -8,7 +8,10 @@ import (
 	"io"
 	"os"
 
+	"github.com/mattn/go-colorable"
 	"github.com/mitchellh/cli"
+
+	"github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs/build"
 )
 
 type commonCmd struct {
@@ -99,4 +102,17 @@ func Run(name, version string, args []string, stdin io.Reader, stdout, stderr io
 		return 1
 	}
 	return exitCode
+}
+
+// Main has the required function signature for use with testscript
+func Main() int {
+
+	return Run(
+		"tfplugindocs",
+		build.GetVersion(),
+		os.Args[1:],
+		os.Stdin,
+		colorable.NewColorableStdout(),
+		colorable.NewColorableStderr(),
+	)
 }

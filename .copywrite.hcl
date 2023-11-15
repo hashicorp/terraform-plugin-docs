@@ -9,6 +9,9 @@ project {
     ".changes/unreleased/*.yaml",
     ".changie.yaml",
 
+    # examples used within documentation (prose)
+    "internal/provider/testdata/**",
+
     # GitHub issue template configuration
     ".github/ISSUE_TEMPLATE/*.yml",
 

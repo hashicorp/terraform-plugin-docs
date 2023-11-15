@@ -10,6 +10,7 @@ require (
 	github.com/hashicorp/terraform-json v0.18.0
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mitchellh/cli v1.1.5
+	github.com/rogpeppe/go-internal v1.11.0
 	github.com/russross/blackfriday v1.6.0
 	github.com/zclconf/go-cty v1.14.1
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
@@ -43,4 +44,5 @@ require (
 	golang.org/x/crypto v0.13.0 // indirect
 	golang.org/x/mod v0.13.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/tools v0.13.0 // indirect
 )
