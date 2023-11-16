@@ -85,6 +85,7 @@ type generator struct {
 	providerDir string
 
 	providerName         string
+	providersSchemaPath  string
 	renderedProviderName string
 	renderedWebsiteDir   string
 	examplesDir          string
@@ -102,7 +103,7 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -139,6 +140,7 @@ func Generate(ui cli.Ui, providerDir, providerName, renderedProviderName, render
 
 		providerDir:          providerDir,
 		providerName:         providerName,
+		providersSchemaPath:  providersSchemaPath,
 		renderedProviderName: renderedProviderName,
 		renderedWebsiteDir:   renderedWebsiteDir,
 		examplesDir:          examplesDir,
@@ -205,10 +207,20 @@ func (g *generator) Generate(ctx context.Context) error {
 		}
 	}
 
-	g.infof("exporting schema from Terraform")
-	providerSchema, err := g.terraformProviderSchema(ctx)
-	if err != nil {
-		return fmt.Errorf("error exporting provider schema from Terraform: %w", err)
+	var providerSchema *tfjson.ProviderSchema
+
+	if g.providersSchemaPath == "" {
+		g.infof("exporting schema from Terraform")
+		providerSchema, err = g.terraformProviderSchemaFromTerraform(ctx)
+		if err != nil {
+			return fmt.Errorf("error exporting provider schema from Terraform: %w", err)
+		}
+	} else {
+		g.infof("exporting schema from JSON file")
+		providerSchema, err = g.terraformProviderSchemaFromFile()
+		if err != nil {
+			return fmt.Errorf("error exporting provider schema from JSON file: %w", err)
+		}
 	}
 
 	g.infof("rendering missing docs")
@@ -571,7 +583,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 	return nil
 }
 
-func (g *generator) terraformProviderSchema(ctx context.Context) (*tfjson.ProviderSchema, error) {
+func (g *generator) terraformProviderSchemaFromTerraform(ctx context.Context) (*tfjson.ProviderSchema, error) {
 	var err error
 
 	shortName := providerShortName(g.providerName)
@@ -649,6 +661,28 @@ provider %[1]q {
 	schemas, err := tf.ProvidersSchema(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("unable to retrieve provider schema from terraform exec: %w", err)
+	}
+
+	if ps, ok := schemas.Schemas[shortName]; ok {
+		return ps, nil
+	}
+
+	if ps, ok := schemas.Schemas["registry.terraform.io/hashicorp/"+shortName]; ok {
+		return ps, nil
+	}
+
+	return nil, fmt.Errorf("unable to find schema in JSON for provider %q", shortName)
+}
+
+func (g *generator) terraformProviderSchemaFromFile() (*tfjson.ProviderSchema, error) {
+	var err error
+
+	shortName := providerShortName(g.providerName)
+
+	g.infof("getting provider schema")
+	schemas, err := extractSchemaFromFile(g.providersSchemaPath)
+	if err != nil {
+		return nil, fmt.Errorf("unable to retrieve provider schema from JSON file: %w", err)
 	}
 
 	if ps, ok := schemas.Schemas[shortName]; ok {
