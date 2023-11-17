@@ -1,0 +1,6 @@
+kind: ENHANCEMENTS
+body: 'generate: Add `provider-schema` flag to pass in a file path to a provider schemas
+  file, allowing the command to skip schema generation'
+time: 2023-11-17T15:10:29.850914-05:00
+custom:
+  Issue: "299"
