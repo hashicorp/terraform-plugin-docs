@@ -20,6 +20,7 @@ type generateCmd struct {
 	flagRenderedProviderName string
 
 	flagProviderDir        string
+	flagProvidersSchema    string
 	flagRenderedWebsiteDir string
 	flagExamplesDir        string
 	flagWebsiteTmpDir      string
@@ -73,6 +74,7 @@ func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
 	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations")
 	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory when running the command outside the root provider code directory")
+	fs.StringVar(&cmd.flagProvidersSchema, "providers-schema", "", "path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI")
 	fs.StringVar(&cmd.flagRenderedProviderName, "rendered-provider-name", "", "provider name, as generated in documentation (ex. page titles, ...)")
 	fs.StringVar(&cmd.flagRenderedWebsiteDir, "rendered-website-dir", "docs", "output directory based on provider-dir")
 	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir")
@@ -99,6 +101,7 @@ func (cmd *generateCmd) runInternal() error {
 		cmd.ui,
 		cmd.flagProviderDir,
 		cmd.flagProviderName,
+		cmd.flagProvidersSchema,
 		cmd.flagRenderedProviderName,
 		cmd.flagRenderedWebsiteDir,
 		cmd.flagExamplesDir,

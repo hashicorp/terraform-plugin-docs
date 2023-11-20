@@ -136,3 +136,21 @@ func fileExists(filename string) bool {
 	}
 	return !info.IsDir()
 }
+
+func extractSchemaFromFile(path string) (*tfjson.ProviderSchemas, error) {
+	schemajson, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("unable to read file %q: %w", path, err)
+	}
+
+	schemas := &tfjson.ProviderSchemas{
+		FormatVersion: "",
+		Schemas:       nil,
+	}
+	err = schemas.UnmarshalJSON(schemajson)
+	if err != nil {
+		return nil, err
+	}
+
+	return schemas, nil
+}

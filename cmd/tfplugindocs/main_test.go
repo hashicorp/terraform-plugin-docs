@@ -18,10 +18,10 @@ func TestMain(m *testing.M) {
 	}))
 }
 
-func Test_GenerateAcceptanceTests(t *testing.T) {
+func Test_ProviderBuild_GenerateAcceptanceTests(t *testing.T) {
 	t.Parallel()
 	if os.Getenv("ACCTEST") == "" {
-		t.Skip("ACCTEST env var not set; skipping acceptance tests.")
+		t.Skip("ACCTEST env var not set; skipping provider build acceptance tests.")
 	}
 	// Setting a custom temp dir instead of relying on os.TempDir()
 	// because Terraform providers fail to start up when $TMPDIR
@@ -34,7 +34,15 @@ func Test_GenerateAcceptanceTests(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	testscript.Run(t, testscript.Params{
-		Dir:         "testdata/scripts/generate",
+		Dir:         "testdata/scripts/provider-build/generate",
 		WorkdirRoot: tmpDir,
+	})
+}
+
+func Test_SchemaJson_GenerateAcceptanceTests(t *testing.T) {
+	t.Parallel()
+
+	testscript.Run(t, testscript.Params{
+		Dir: "testdata/scripts/schema-json/generate",
 	})
 }
