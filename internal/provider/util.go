@@ -31,6 +31,12 @@ func copyFile(srcPath, dstPath string, mode os.FileMode) error {
 	}
 	defer srcFile.Close()
 
+	// Ensure destination path exists for file creation
+	err = os.MkdirAll(filepath.Dir(dstPath), 0755)
+	if err != nil {
+		return err
+	}
+
 	// If the destination file already exists, we shouldn't blow it away
 	dstFile, err := os.OpenFile(dstPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, mode)
 	if err != nil {

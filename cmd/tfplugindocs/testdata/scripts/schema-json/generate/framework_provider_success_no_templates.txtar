@@ -13,13 +13,13 @@ cmp docs/resources/example.md expected-resource.md
 rendering website for provider "terraform-provider-scaffolding" (as "terraform-provider-scaffolding")
 exporting schema from JSON file
 getting provider schema
-rendering missing docs
+generating missing templates
 generating missing resource content
-generating template for "scaffolding_example"
+generating new template for "scaffolding_example"
 generating missing data source content
-generating template for "scaffolding_example"
+generating new template for data-source "scaffolding_example"
 generating missing provider content
-generating template for "terraform-provider-scaffolding"
+generating new template for "terraform-provider-scaffolding"
 rendering static website
 cleaning rendered website dir
 rendering templated website to static markdown

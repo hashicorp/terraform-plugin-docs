@@ -30,9 +30,6 @@ type (
 	resourceTemplate string
 	providerTemplate string
 
-	resourceFileTemplate string
-	providerFileTemplate string
-
 	docTemplate string
 )
 
@@ -116,37 +113,6 @@ func (t docTemplate) Render(providerDir string, out io.Writer) error {
 	return renderTemplate(providerDir, "docTemplate", s, out, nil)
 }
 
-func (t resourceFileTemplate) Render(providerDir, name, providerName string) (string, error) {
-	s := string(t)
-	if s == "" {
-		return "", nil
-	}
-	return renderStringTemplate(providerDir, "resourceFileTemplate", s, struct {
-		Name      string
-		ShortName string
-
-		ProviderName      string
-		ProviderShortName string
-	}{
-		Name:      name,
-		ShortName: resourceShortName(name, providerName),
-
-		ProviderName:      providerName,
-		ProviderShortName: providerShortName(providerName),
-	})
-}
-
-func (t providerFileTemplate) Render(providerDir, name string) (string, error) {
-	s := string(t)
-	if s == "" {
-		return "", nil
-	}
-	return renderStringTemplate(providerDir, "providerFileTemplate", s, struct {
-		Name      string
-		ShortName string
-	}{name, providerShortName(name)})
-}
-
 func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
@@ -167,8 +133,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 
 		ProviderName      string
 		ProviderShortName string
-
-		SchemaMarkdown string
+		SchemaMarkdown    string
 
 		RenderedProviderName string
 	}{
