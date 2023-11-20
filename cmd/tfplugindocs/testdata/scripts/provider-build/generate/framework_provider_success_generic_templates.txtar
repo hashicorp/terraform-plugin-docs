@@ -76,11 +76,7 @@ printf codefile:
 printf tffile:
 ## Example Usage
 
-```terraform
-data "scaffolding_example" "example" {
-  configurable_attribute = "some-value"
-}
-```
+{{tffile "$WORK/examples/data-sources/scaffolding_example/data-source.tf"}}
 
 codefile:
 
@@ -180,18 +176,12 @@ printf codefile:
 
 Import is supported using the following syntax:
 
-```shell
-terraform import scaffolding_example.example
-```
+{{codefile "shell" "$WORK/examples/resources/scaffolding_example/import.sh"}}
 
 printf tffile:
 ## Example Usage
 
-```terraform
-resource "scaffolding_example" "example" {
-  configurable_attribute = "some-value"
-}
-```
+{{tffile "$WORK/examples/resources/scaffolding_example/resource.tf"}}
 
 codefile:
 ## Import
