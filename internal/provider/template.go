@@ -250,7 +250,7 @@ description: |-
 {{ if .HasExample -}}
 ## Example Usage
 
-{{ printf "{{tffile %q}}" .ExampleFile }}
+{{ tffile .ExampleFile }}
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
@@ -260,7 +260,7 @@ description: |-
 
 Import is supported using the following syntax:
 
-{{ printf "{{codefile \"shell\" %q}}" .ImportFile }}
+{{ codefile "shell %q" .ImportFile }}
 {{- end }}
 `
 
@@ -279,7 +279,7 @@ description: |-
 {{ if .HasExample -}}
 ## Example Usage
 
-{{ printf "{{tffile %q}}" .ExampleFile }}
+{{ tffile .ExampleFile }}
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
