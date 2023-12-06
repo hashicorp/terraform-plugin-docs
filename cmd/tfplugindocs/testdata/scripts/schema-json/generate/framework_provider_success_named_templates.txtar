@@ -15,11 +15,11 @@ rendering website for provider "terraform-provider-scaffolding" (as "terraform-p
 copying any existing content to tmp dir
 exporting schema from JSON file
 getting provider schema
-rendering missing docs
+generating missing templates
 generating missing resource content
 resource "scaffolding_example" template exists, skipping
 generating missing data source content
-resource "scaffolding_example" template exists, skipping
+data-source "scaffolding_example" template exists, skipping
 generating missing provider content
 provider "terraform-provider-scaffolding" template exists, skipping
 rendering static website

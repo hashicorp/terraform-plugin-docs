@@ -20,11 +20,11 @@ compiling provider "scaffolding"
 using Terraform CLI binary from PATH if available, otherwise downloading latest Terraform CLI binary
 running terraform init
 getting provider schema
-rendering missing docs
+generating missing templates
 generating missing resource content
 resource "scaffolding_example" template exists, skipping
 generating missing data source content
-resource "scaffolding_example" template exists, skipping
+data-source "scaffolding_example" template exists, skipping
 generating missing provider content
 provider "terraform-provider-scaffolding" template exists, skipping
 rendering static website

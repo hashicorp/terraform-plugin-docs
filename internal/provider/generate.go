@@ -27,43 +27,36 @@ import (
 )
 
 var (
-	examplesResourceFileTemplate   = resourceFileTemplate("resources/{{.Name}}/resource.tf")
-	examplesResourceImportTemplate = resourceFileTemplate("resources/{{.Name}}/import.sh")
-	examplesDataSourceFileTemplate = resourceFileTemplate("data-sources/{{ .Name }}/data-source.tf")
-	examplesProviderFileTemplate   = providerFileTemplate("provider/provider.tf")
-
-	websiteResourceFileTemplate         = resourceFileTemplate("resources/{{ .ShortName }}.md.tmpl")
-	websiteResourceFallbackFileTemplate = resourceFileTemplate("resources.md.tmpl")
-	websiteResourceFileStatic           = []resourceFileTemplate{
-		resourceFileTemplate("resources/{{ .ShortName }}.md"),
-		// TODO: warn for all of these, as they won't render? massage them to the proper output file name?
-		resourceFileTemplate("resources/{{ .ShortName }}.markdown"),
-		resourceFileTemplate("resources/{{ .ShortName }}.html.markdown"),
-		resourceFileTemplate("resources/{{ .ShortName }}.html.md"),
-		resourceFileTemplate("r/{{ .ShortName }}.markdown"),
-		resourceFileTemplate("r/{{ .ShortName }}.md"),
-		resourceFileTemplate("r/{{ .ShortName }}.html.markdown"),
-		resourceFileTemplate("r/{{ .ShortName }}.html.md"),
+	websiteResourceFile                 = "resources/%s.md.tmpl"
+	websiteResourceFallbackFile         = "resources.md.tmpl"
+	websiteResourceFileStaticCandidates = []string{
+		"resources/%s.md",
+		"resources/%s.markdown",
+		"resources/%s.html.markdown",
+		"resources/%s.html.md",
+		"r/%s.markdown",
+		"r/%s.md",
+		"r/%s.html.markdown",
+		"r/%s.html.md",
 	}
-	websiteDataSourceFileTemplate         = resourceFileTemplate("data-sources/{{ .ShortName }}.md.tmpl")
-	websiteDataSourceFallbackFileTemplate = resourceFileTemplate("data-sources.md.tmpl")
-	websiteDataSourceFileStatic           = []resourceFileTemplate{
-		resourceFileTemplate("data-sources/{{ .ShortName }}.md"),
-		// TODO: warn for all of these, as they won't render? massage them to the proper output file name?
-		resourceFileTemplate("data-sources/{{ .ShortName }}.markdown"),
-		resourceFileTemplate("data-sources/{{ .ShortName }}.html.markdown"),
-		resourceFileTemplate("data-sources/{{ .ShortName }}.html.md"),
-		resourceFileTemplate("d/{{ .ShortName }}.markdown"),
-		resourceFileTemplate("d/{{ .ShortName }}.md"),
-		resourceFileTemplate("d/{{ .ShortName }}.html.markdown"),
-		resourceFileTemplate("d/{{ .ShortName }}.html.md"),
+	websiteDataSourceFile                 = "data-sources/%s.md.tmpl"
+	websiteDataSourceFallbackFile         = "data-sources.md.tmpl"
+	websiteDataSourceFileStaticCandidates = []string{
+		"data-sources/%s.md",
+		"data-sources/%s.markdown",
+		"data-sources/%s.html.markdown",
+		"data-sources/%s.html.md",
+		"d/%s.markdown",
+		"d/%s.md",
+		"d/%s.html.markdown",
+		"d/%s.html.md",
 	}
-	websiteProviderFileTemplate = providerFileTemplate("index.md.tmpl")
-	websiteProviderFileStatic   = []providerFileTemplate{
-		providerFileTemplate("index.markdown"),
-		providerFileTemplate("index.md"),
-		providerFileTemplate("index.html.markdown"),
-		providerFileTemplate("index.html.md"),
+	websiteProviderFile                 = "index.md.tmpl"
+	websiteProviderFileStaticCandidates = []string{
+		"index.markdown",
+		"index.md",
+		"index.html.markdown",
+		"index.html.md",
 	}
 
 	managedWebsiteSubDirectories = []string{
@@ -223,10 +216,10 @@ func (g *generator) Generate(ctx context.Context) error {
 		}
 	}
 
-	g.infof("rendering missing docs")
-	err = g.renderMissingDocs(providerSchema)
+	g.infof("generating missing templates")
+	err = g.generateMissingTemplates(providerSchema)
 	if err != nil {
-		return fmt.Errorf("error rendering missing docs: %w", err)
+		return fmt.Errorf("error generating missing templates: %w", err)
 	}
 
 	g.infof("rendering static website")
@@ -263,22 +256,26 @@ func (g *generator) TempTemplatesDir() string {
 	return filepath.Join(g.websiteTmpDir, "templates")
 }
 
-func (g *generator) renderMissingResourceDoc(resourceName, typeName string, schema *tfjson.Schema, websiteFileTemplate resourceFileTemplate, fallbackWebsiteFileTemplate resourceFileTemplate, websiteStaticCandidateTemplates []resourceFileTemplate, examplesFileTemplate resourceFileTemplate, examplesImportTemplate *resourceFileTemplate) error {
-	tmplPath, err := websiteFileTemplate.Render(g.providerDir, resourceName, g.providerName)
-	if err != nil {
-		return fmt.Errorf("unable to render path for resource %q: %w", resourceName, err)
-	}
-	tmplPath = filepath.Join(g.TempTemplatesDir(), tmplPath)
-	if fileExists(tmplPath) {
+func (g *generator) generateMissingResourceTemplate(resourceName string) error {
+	templatePath := fmt.Sprintf(websiteResourceFile, resourceShortName(resourceName, g.providerName))
+	templatePath = filepath.Join(g.TempTemplatesDir(), templatePath)
+	if fileExists(templatePath) {
 		g.infof("resource %q template exists, skipping", resourceName)
 		return nil
 	}
 
-	for _, candidate := range websiteStaticCandidateTemplates {
-		candidatePath, err := candidate.Render(g.providerDir, resourceName, g.providerName)
+	fallbackTemplatePath := filepath.Join(g.TempTemplatesDir(), websiteResourceFallbackFile)
+	if fileExists(fallbackTemplatePath) {
+		g.infof("resource %q fallback template exists, creating template", resourceName)
+		err := cp(fallbackTemplatePath, templatePath)
 		if err != nil {
-			return fmt.Errorf("unable to render path for resource %q: %w", resourceName, err)
+			return fmt.Errorf("unable to copy fallback template for %q: %w", resourceName, err)
 		}
+		return nil
+	}
+
+	for _, candidate := range websiteResourceFileStaticCandidates {
+		candidatePath := fmt.Sprintf(candidate, resourceShortName(resourceName, g.providerName))
 		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
 		if fileExists(candidatePath) {
 			g.infof("resource %q static file exists, skipping", resourceName)
@@ -286,124 +283,85 @@ func (g *generator) renderMissingResourceDoc(resourceName, typeName string, sche
 		}
 	}
 
-	examplePath, err := examplesFileTemplate.Render(g.providerDir, resourceName, g.providerName)
+	g.infof("generating new template for %q", resourceName)
+	err := writeFile(templatePath, string(defaultResourceTemplate))
 	if err != nil {
-		return fmt.Errorf("unable to render example file path for %q: %w", resourceName, err)
-	}
-	if examplePath != "" {
-		examplePath = filepath.Join(g.ProviderExamplesDir(), examplePath)
-	}
-	if !fileExists(examplePath) {
-		examplePath = ""
-	}
-
-	importPath := ""
-	if examplesImportTemplate != nil {
-		importPath, err = examplesImportTemplate.Render(g.providerDir, resourceName, g.providerName)
-		if err != nil {
-			return fmt.Errorf("unable to render example import file path for %q: %w", resourceName, err)
-		}
-		if importPath != "" {
-			importPath = filepath.Join(g.ProviderExamplesDir(), importPath)
-		}
-		if !fileExists(importPath) {
-			importPath = ""
-		}
-	}
-
-	targetResourceTemplate := defaultResourceTemplate
-
-	fallbackTmplPath, err := fallbackWebsiteFileTemplate.Render(g.providerDir, resourceName, g.providerName)
-	if err != nil {
-		return fmt.Errorf("unable to render path for resource %q: %w", resourceName, err)
-	}
-	fallbackTmplPath = filepath.Join(g.TempTemplatesDir(), fallbackTmplPath)
-	if fileExists(fallbackTmplPath) {
-		g.infof("resource %q fallback template exists", resourceName)
-		tmplData, err := os.ReadFile(fallbackTmplPath)
-		if err != nil {
-			return fmt.Errorf("unable to read file %q: %w", fallbackTmplPath, err)
-		}
-		targetResourceTemplate = resourceTemplate(tmplData)
-	}
-
-	g.infof("generating template for %q", resourceName)
-	md, err := targetResourceTemplate.Render(g.providerDir, resourceName, g.providerName, g.renderedProviderName, typeName, examplePath, importPath, schema)
-	if err != nil {
-		return fmt.Errorf("unable to render template for %q: %w", resourceName, err)
-	}
-
-	err = writeFile(tmplPath, md)
-	if err != nil {
-		return fmt.Errorf("unable to write file %q: %w", tmplPath, err)
+		return fmt.Errorf("unable to write template for %q: %w", resourceName, err)
 	}
 
 	return nil
 }
 
-func (g *generator) renderMissingProviderDoc(schema *tfjson.Schema, websiteFileTemplate providerFileTemplate, websiteStaticCandidateTemplates []providerFileTemplate, examplesFileTemplate providerFileTemplate) error {
-	tmplPath, err := websiteFileTemplate.Render(g.providerDir, g.providerName)
-	if err != nil {
-		return fmt.Errorf("unable to render path for provider %q: %w", g.providerName, err)
+func (g *generator) generateMissingDataSourceTemplate(datasourceName string) error {
+	templatePath := fmt.Sprintf(websiteDataSourceFile, resourceShortName(datasourceName, g.providerName))
+	templatePath = filepath.Join(g.TempTemplatesDir(), templatePath)
+	if fileExists(templatePath) {
+		g.infof("data-source %q template exists, skipping", datasourceName)
+		return nil
 	}
-	tmplPath = filepath.Join(g.TempTemplatesDir(), tmplPath)
-	if fileExists(tmplPath) {
+
+	fallbackTemplatePath := filepath.Join(g.TempTemplatesDir(), websiteDataSourceFallbackFile)
+	if fileExists(fallbackTemplatePath) {
+		g.infof("data-source %q fallback template exists, creating template", datasourceName)
+		err := cp(fallbackTemplatePath, templatePath)
+		if err != nil {
+			return fmt.Errorf("unable to copy fallback template for %q: %w", datasourceName, err)
+		}
+		return nil
+	}
+
+	for _, candidate := range websiteDataSourceFileStaticCandidates {
+		candidatePath := fmt.Sprintf(candidate, resourceShortName(datasourceName, g.providerName))
+		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
+		if fileExists(candidatePath) {
+			g.infof("data-source %q static file exists, skipping", datasourceName)
+			return nil
+		}
+	}
+
+	g.infof("generating new template for data-source %q", datasourceName)
+	err := writeFile(templatePath, string(defaultResourceTemplate))
+	if err != nil {
+		return fmt.Errorf("unable to write template for %q: %w", datasourceName, err)
+	}
+
+	return nil
+}
+
+func (g *generator) generateMissingProviderTemplate() error {
+	templatePath := filepath.Join(g.TempTemplatesDir(), websiteProviderFile)
+	if fileExists(templatePath) {
 		g.infof("provider %q template exists, skipping", g.providerName)
 		return nil
 	}
 
-	for _, candidate := range websiteStaticCandidateTemplates {
-		candidatePath, err := candidate.Render(g.providerDir, g.providerName)
-		if err != nil {
-			return fmt.Errorf("unable to render path for provider %q: %w", g.providerName, err)
-		}
-		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
+	for _, candidate := range websiteProviderFileStaticCandidates {
+		candidatePath := filepath.Join(g.TempTemplatesDir(), candidate)
 		if fileExists(candidatePath) {
 			g.infof("provider %q static file exists, skipping", g.providerName)
 			return nil
 		}
 	}
 
-	examplePath, err := examplesFileTemplate.Render(g.providerDir, g.providerName)
+	g.infof("generating new template for %q", g.providerName)
+	err := writeFile(templatePath, string(defaultProviderTemplate))
 	if err != nil {
-		return fmt.Errorf("unable to render example file path for %q: %w", g.providerName, err)
-	}
-	if examplePath != "" {
-		examplePath = filepath.Join(g.ProviderExamplesDir(), examplePath)
-	}
-	if !fileExists(examplePath) {
-		examplePath = ""
-	}
-
-	g.infof("generating template for %q", g.providerName)
-	md, err := defaultProviderTemplate.Render(g.providerDir, g.providerName, g.renderedProviderName, examplePath, schema)
-	if err != nil {
-		return fmt.Errorf("unable to render template for %q: %w", g.providerName, err)
-	}
-
-	err = writeFile(tmplPath, md)
-	if err != nil {
-		return fmt.Errorf("unable to write file %q: %w", tmplPath, err)
+		return fmt.Errorf("unable to write template for %q: %w", g.providerName, err)
 	}
 
 	return nil
 }
 
-func (g *generator) renderMissingDocs(providerSchema *tfjson.ProviderSchema) error {
+func (g *generator) generateMissingTemplates(providerSchema *tfjson.ProviderSchema) error {
 	g.infof("generating missing resource content")
 	for name, schema := range providerSchema.ResourceSchemas {
 		if g.ignoreDeprecated && schema.Block.Deprecated {
 			continue
 		}
 
-		err := g.renderMissingResourceDoc(name, "Resource", schema,
-			websiteResourceFileTemplate,
-			websiteResourceFallbackFileTemplate,
-			websiteResourceFileStatic,
-			examplesResourceFileTemplate,
-			&examplesResourceImportTemplate)
+		err := g.generateMissingResourceTemplate(name)
 		if err != nil {
-			return fmt.Errorf("unable to render doc %q: %w", name, err)
+			return fmt.Errorf("unable to generate template for resource %q: %w", name, err)
 		}
 	}
 
@@ -413,25 +371,16 @@ func (g *generator) renderMissingDocs(providerSchema *tfjson.ProviderSchema) err
 			continue
 		}
 
-		err := g.renderMissingResourceDoc(name, "Data Source", schema,
-			websiteDataSourceFileTemplate,
-			websiteDataSourceFallbackFileTemplate,
-			websiteDataSourceFileStatic,
-			examplesDataSourceFileTemplate,
-			nil)
+		err := g.generateMissingDataSourceTemplate(name)
 		if err != nil {
-			return fmt.Errorf("unable to render doc %q: %w", name, err)
+			return fmt.Errorf("unable to generate template for data-source %q: %w", name, err)
 		}
 	}
 
 	g.infof("generating missing provider content")
-	err := g.renderMissingProviderDoc(providerSchema.ConfigSchema,
-		websiteProviderFileTemplate,
-		websiteProviderFileStatic,
-		examplesProviderFileTemplate,
-	)
+	err := g.generateMissingProviderTemplate()
 	if err != nil {
-		return fmt.Errorf("unable to render provider doc: %w", err)
+		return fmt.Errorf("unable to generate template for provider: %w", err)
 	}
 
 	return nil

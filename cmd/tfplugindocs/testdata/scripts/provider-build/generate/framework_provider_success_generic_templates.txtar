@@ -20,13 +20,11 @@ compiling provider "scaffolding"
 using Terraform CLI binary from PATH if available, otherwise downloading latest Terraform CLI binary
 running terraform init
 getting provider schema
-rendering missing docs
+generating missing templates
 generating missing resource content
-resource "scaffolding_example" fallback template exists
-generating template for "scaffolding_example"
+resource "scaffolding_example" fallback template exists, creating template
 generating missing data source content
-resource "scaffolding_example" fallback template exists
-generating template for "scaffolding_example"
+data-source "scaffolding_example" fallback template exists, creating template
 generating missing provider content
 provider "terraform-provider-scaffolding" template exists, skipping
 rendering static website
@@ -78,11 +76,7 @@ printf codefile:
 printf tffile:
 ## Example Usage
 
-```terraform
-data "scaffolding_example" "example" {
-  configurable_attribute = "some-value"
-}
-```
+{{tffile "$WORK/examples/data-sources/scaffolding_example/data-source.tf"}}
 
 codefile:
 
@@ -182,18 +176,12 @@ printf codefile:
 
 Import is supported using the following syntax:
 
-```shell
-terraform import scaffolding_example.example
-```
+{{codefile "shell" "$WORK/examples/resources/scaffolding_example/import.sh"}}
 
 printf tffile:
 ## Example Usage
 
-```terraform
-resource "scaffolding_example" "example" {
-  configurable_attribute = "some-value"
-}
-```
+{{tffile "$WORK/examples/resources/scaffolding_example/resource.tf"}}
 
 codefile:
 ## Import
