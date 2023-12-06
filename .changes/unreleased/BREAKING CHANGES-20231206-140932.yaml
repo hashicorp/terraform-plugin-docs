@@ -1,0 +1,15 @@
+kind: BREAKING CHANGES
+body: 'generate: templates using `printf` with either `codefile` or `tffile` to render code examples in markdown will need to switch to using those  
+functions directly.  
+  
+For example, switch the following template code:  
+  
+`{{printf "{{codefile \"shell\" %q}}" .ImportFile}}`  
+  
+to  
+  
+`{{codefile "shell" .ImportFile}}`  
+'
+time: 2023-12-06T14:09:32.757057-05:00
+custom:
+  Issue: "300"
