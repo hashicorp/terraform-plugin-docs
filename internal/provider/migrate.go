@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/mitchellh/cli"
 )
@@ -98,14 +99,16 @@ func (m migrator) Migrate(ctx context.Context) error {
 		m.infof("copying %q", rel)
 		switch relDir {
 		case "docs/d/":
-			dest := filepath.Join(m.NewProviderWebsiteDir(), "datasources", relFile)
+			tmplFile := strings.Replace(relFile, ".html.markdown", ".md.tmpl", 1)
+			dest := filepath.Join(m.NewProviderWebsiteDir(), "datasources", tmplFile)
 			m.infof("copying to %q", dest)
 			err = cp(rel, dest)
 			if err != nil {
 				return err
 			}
 		case "docs/r/":
-			dest := filepath.Join(m.NewProviderWebsiteDir(), "resources", relFile)
+			tmplFile := strings.Replace(relFile, ".html.markdown", ".md.tmpl", 1)
+			dest := filepath.Join(m.NewProviderWebsiteDir(), "resources", tmplFile)
 			m.infof("copying to %q", dest)
 			err = cp(path, dest)
 			if err != nil {
@@ -113,7 +116,8 @@ func (m migrator) Migrate(ctx context.Context) error {
 			}
 		case "docs/": // provider
 			if relFile == "index.html.markdown" {
-				dest := filepath.Join(m.NewProviderWebsiteDir(), relFile)
+				tmplFile := strings.Replace(relFile, ".html.markdown", ".md.tmpl", 1)
+				dest := filepath.Join(m.NewProviderWebsiteDir(), tmplFile)
 				m.infof("copying to %q", dest)
 				err = cp(path, dest)
 				if err != nil {

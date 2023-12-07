@@ -11,8 +11,8 @@ exec tfplugindocs migrate -help
 # Run migrate command
 exec tfplugindocs migrate
 #cmp stdout expected-output.txt
-cmpenv website/docs/index.html.markdown templates/index.html.markdown
-cmpenv website/docs/r/offset.html.markdown templates/resources/offset.html.markdown
+cmpenv website/docs/index.html.markdown templates/index.md.tmpl
+cmpenv website/docs/r/offset.html.markdown templates/resources/offset.md.tmpl
 
 -- expected-output.txt --
 -- expected-help-output.txt --
