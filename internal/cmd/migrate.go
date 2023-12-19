@@ -16,7 +16,8 @@ type migrateCmd struct {
 
 	flagProviderDir         string
 	flagOldWebsiteSourceDir string
-	flagNewWebsiteSourceDir string
+	flagTemplatesDir        string
+	flagExamplesDir         string
 }
 
 func (cmd *migrateCmd) Synopsis() string {
@@ -65,8 +66,9 @@ func (cmd *migrateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("migrate", flag.ExitOnError)
 
 	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory when running the command outside the root provider code directory")
-	fs.StringVar(&cmd.flagOldWebsiteSourceDir, "old-website-source-dir", "website", "old website directory based on provider-dir")
-	fs.StringVar(&cmd.flagNewWebsiteSourceDir, "new-website-source-dir", "templates", "new website templates directory based on provider-dir")
+	fs.StringVar(&cmd.flagOldWebsiteSourceDir, "old-website-source-dir", "website", "old website directory based on provider-dir; files will be migrated from this directory")
+	fs.StringVar(&cmd.flagTemplatesDir, "templates-dir", "templates", "new website templates directory based on provider-dir; files will be migrated to this directory")
+	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir")
 	return fs
 }
 
@@ -86,7 +88,8 @@ func (cmd *migrateCmd) runInternal() error {
 		cmd.ui,
 		cmd.flagProviderDir,
 		cmd.flagOldWebsiteSourceDir,
-		cmd.flagNewWebsiteSourceDir,
+		cmd.flagTemplatesDir,
+		cmd.flagExamplesDir,
 	)
 	if err != nil {
 		return fmt.Errorf("unable to migrate website: %w", err)

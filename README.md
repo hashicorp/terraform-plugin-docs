@@ -59,6 +59,19 @@ $ tfplugindocs validate --help
 Usage: tfplugindocs validate [<args>]
 ```
 
+`migrate` command:
+
+```shell
+$ tfplugindocs migrate --help
+
+Usage: tfplugindocs migrate [<args>]
+
+    --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
+    --old-website-source-dir <ARG>   old website directory based on provider-dir; files will be migrated from this directory                                            (default: "website")
+    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
+    --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
+```
+
 ### How it Works
 
 When you run `tfplugindocs`, by default from the root directory of a provider codebase, the tool takes the following actions:
@@ -100,6 +113,18 @@ Otherwise, the provider developer can set an arbitrary description like this:
     // ...
 ```
 
+#### Migrate subcommand
+
+The `migrate` subcommand can be used to migrate from the old directory structure (`website/docs/r`) to the `tfplugindocs` supported structure (`templates/`).
+
+The `migrate` subcommand takes the following actions:
+- Copies the `--old-website-source-dir` folder to the `--tempates-dir` folder (will create this folder if it doesn't exist)
+- Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
+- Change file suffixes for template files from `.html.markdown` to `.md.tmpl`
+- Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
+- replace extracted example code in website templates with `tfplugindocs` template code referring to example files.
+- Copies non-template files to `--templates-dir` folder
+
 ### Conventional Paths
 
 The generation of missing documentation is based on a number of assumptions / conventional paths.
@@ -129,6 +154,17 @@ For examples:
 | `examples/data-sources/<data source name>/data-source.tf` | Data source example config      |
 | `examples/resources/<resource name>/resource.tf`          | Resource example config         |
 | `examples/resources/<resource name>/import.sh`            | Resource example import command |
+
+#### Migration
+
+The `migrate` subcommand assumes the following conventional paths for the old website structure:
+
+| Path                                              | Description          |
+|---------------------------------------------------|----------------------|
+| `website/`                                        | Root of website docs |
+| `website/docs/index.html.markdown`                | Docs index page      |
+| `website/docs/d/<data source name>.html.markdown` | Data source page     |
+| `website/docs/r/<resource name>.html.markdown`    | Resource page        |
 
 ### Templates
 
@@ -179,7 +215,7 @@ using the following data fields and functions:
 | `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
 | `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
 | `upper`         | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                            |
-
+ 
 ## Disclaimer
 
 This is still under development: while it's being used for production-ready providers, you might still find bugs

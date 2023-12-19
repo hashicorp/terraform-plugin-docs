@@ -51,7 +51,6 @@ func Test_SchemaJson_MigrateAcceptanceTests(t *testing.T) {
 	t.Parallel()
 
 	testscript.Run(t, testscript.Params{
-		Dir:         "testdata/scripts/schema-json/migrate",
-		WorkdirRoot: "/Users/sgoods/test",
+		Dir: "testdata/scripts/schema-json/migrate",
 	})
 }

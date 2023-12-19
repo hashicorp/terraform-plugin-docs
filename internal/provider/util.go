@@ -12,7 +12,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Kunde21/markdownfmt/v3/markdown"
 	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
 )
 
 func providerShortName(n string) string {
@@ -94,6 +99,31 @@ func writeFile(path string, data string) error {
 	return nil
 }
 
+// appendFile appends data to the specified file or creates the file if it doesn't exist.
+func appendFile(path string, data []byte) error {
+	dir, _ := filepath.Split(path)
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		return fmt.Errorf("unable to make dir %q: %w", dir, err)
+	}
+
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return fmt.Errorf("unable to open file %q: %w", path, err)
+	}
+
+	_, err = f.Write(data)
+	if err != nil {
+		return fmt.Errorf("unable to write file %q: %w", path, err)
+	}
+	err = f.Close()
+	if err != nil {
+		return fmt.Errorf("unable to close file %q: %w", path, err)
+	}
+
+	return nil
+}
+
 func runCmd(cmd *exec.Cmd) ([]byte, error) {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -159,4 +189,22 @@ func extractSchemaFromFile(path string) (*tfjson.ProviderSchemas, error) {
 	}
 
 	return schemas, nil
+}
+
+func newMarkdownRenderer() goldmark.Markdown {
+	mr := markdown.NewRenderer()
+	extensions := []goldmark.Extender{
+		extension.GFM,
+		meta.Meta, // We need this to skip YAML frontmatter when parsing.
+	}
+	parserOptions := []parser.Option{
+		parser.WithAttribute(), // We need this to enable # headers {#custom-ids}.
+	}
+
+	gm := goldmark.New(
+		goldmark.WithExtensions(extensions...),
+		goldmark.WithParserOptions(parserOptions...),
+		goldmark.WithRenderer(mr),
+	)
+	return gm
 }
