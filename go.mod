@@ -29,8 +29,8 @@ require (
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
-	github.com/fatih/color v1.16.0 // indirect
-	github.com/google/uuid v1.4.0 // indirect
+	github.com/fatih/color v1.13.0 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-checkpoint v0.5.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
@@ -38,18 +38,16 @@ require (
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.15 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
-	github.com/spf13/cast v1.6.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
-	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
-	golang.org/x/tools v0.16.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	github.com/spf13/cast v1.5.0 // indirect
+	golang.org/x/crypto v0.13.0 // indirect
+	golang.org/x/mod v0.13.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/tools v0.13.0 // indirect
+	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
