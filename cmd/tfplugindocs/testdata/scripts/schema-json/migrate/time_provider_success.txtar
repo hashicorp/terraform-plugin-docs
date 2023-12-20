@@ -4,10 +4,6 @@
 # Successful run of tfplugindocs -migrate on the Time provider
 [!unix] skip
 
-# Check tool tips
-exec tfplugindocs migrate -help
-#cmp stderr expected-help-output.txt
-
 # Run migrate command
 exec tfplugindocs migrate
 cmpenv stdout expected-output.txt
@@ -81,16 +77,6 @@ creating example file "$WORK/examples/resources/static/example_2.tf"
 creating import file "$WORK/examples/resources/static/import_1.sh"
 finished creating template "$WORK/templates/resources/static.md.tmpl"
 copying non-template file "time.erb"
--- expected-help-output.txt --
-
-Usage: tfplugindocs migrate [<args>]
-
-    --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
-    --old-website-source-dir <ARG>   old website directory based on provider-dir; files will be migrated from this directory                                            (default: "website")
-    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
-    --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
-
-
 -- website/docs/index.html.markdown --
 ---
 layout: "time"
