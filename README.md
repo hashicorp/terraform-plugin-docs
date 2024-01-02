@@ -15,9 +15,11 @@ the tool can also generate missing template files to make website creation extre
 
 ### Installation
 
-You can install a copy of the binary manually from the [releases](https://github.com/hashicorp/terraform-plugin-docs/releases),
-or you can optionally use the [tools.go model](https://github.com/go-modules-by-example/index/blob/master/010_tools/README.md)
-for tool installation.
+You can install a copy of the binary manually from the [releases](https://github.com/hashicorp/terraform-plugin-docs/releases), or install via the Go toolchain:
+```bash
+go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@latest
+```
+
 
 ### Usage
 
