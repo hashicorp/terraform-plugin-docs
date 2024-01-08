@@ -180,7 +180,9 @@ Docs website directory structure:
 | `docs/data-sources/<data source name>.html.markdown` | Data source page     |
 | `docs/resources/<resource name>.html.markdown`       | Resource page        |
 
-Files in these directories will be migrated to the `templates/` directory.
+Files named `index` (before the first `.`) and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
+and `docs/resources/` subdirectories will be converted to `tfplugindocs` templates. All other files in the conventional 
+paths will be copied to the `--templates-dir` folder.
 
 ### Templates
 

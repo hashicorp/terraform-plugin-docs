@@ -114,7 +114,7 @@ func (m *migrator) Migrate() error {
 
 		switch relDir {
 		case "docs/d/", "data-sources/": //data-sources
-			datasourceName := strings.TrimSuffix(relFile, ".html.markdown")
+			datasourceName, _, _ := strings.Cut(relFile, ".")
 			m.infof("migrating data source %q", datasourceName)
 
 			exampleRelDir := filepath.Join("data-sources", datasourceName)
@@ -126,7 +126,7 @@ func (m *migrator) Migrate() error {
 			}
 
 		case "docs/r/", "resources/": //resources
-			resourceName := strings.TrimSuffix(relFile, ".html.markdown")
+			resourceName, _, _ := strings.Cut(relFile, ".")
 			m.infof("migrating resource %q", resourceName)
 
 			exampleRelDir := filepath.Join("resources", resourceName)
@@ -138,7 +138,8 @@ func (m *migrator) Migrate() error {
 			}
 
 		case "docs/": // provider
-			if relFile == "index.html.markdown" {
+			fileName, _, _ := strings.Cut(relFile, ".")
+			if fileName == "index" {
 				m.infof("migrating provider index")
 				err := m.MigrateTemplate(data, "", "", "index.md.tmpl")
 				if err != nil {
@@ -146,7 +147,8 @@ func (m *migrator) Migrate() error {
 				}
 			}
 		default:
-			if relFile == "index.html.markdown" {
+			fileName, _, _ := strings.Cut(relFile, ".")
+			if fileName == "index" {
 				m.infof("migrating provider index")
 				err := m.MigrateTemplate(data, "", "", "index.md.tmpl")
 				if err != nil {
