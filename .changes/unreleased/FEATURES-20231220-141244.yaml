@@ -1,6 +1,6 @@
 kind: FEATURES
 body: 'migrate: Added new `migrate` subcommand that migrates existing provider docs using the
-  old website directory structure (`website/docs/`) to a `terraform-plugin-docs`-supported
+  rendered website source directories (`website/docs/` or `/docs/`) to a `terraform-plugin-docs`-supported
   templates directory.'
 time: 2023-12-20T14:12:44.820323-05:00
 custom:

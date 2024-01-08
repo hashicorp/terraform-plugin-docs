@@ -5,7 +5,7 @@ The primary way users will interact with this is the `tfplugindocs` CLI tool to 
 
 ## `tfplugindocs`
 
-The `tfplugindocs` CLI has two main commands, `validate` and `generate` (`generate` is the default).
+The `tfplugindocs` CLI has three main commands, `migrate`, `validate` and `generate` (`generate` is the default).
 This tool will let you generate documentation for your provider from live example `.tf` files and markdown templates.
 It will also export schema information from the provider (using `terraform providers schema -json`),
 and sync the schema with the reference documents.
@@ -28,6 +28,7 @@ Usage: tfplugindocs [--version] [--help] <command> [<args>]
 Available commands are:
                 the generate command is run by default
     generate    generates a plugin website from code, templates, and examples
+    migrate     migrates website files from either the legacy rendered website directory (`website/docs/r`) or the docs rendered website directory (`docs/resources`) to the tfplugindocs supported structure (`templates/`).
     validate    validates a plugin website for the current directory
        
 ```
@@ -67,7 +68,6 @@ $ tfplugindocs migrate --help
 Usage: tfplugindocs migrate [<args>]
 
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
-    --old-website-source-dir <ARG>   old website directory based on provider-dir; files will be migrated from this directory                                            (default: "website")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
     --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
 ```
@@ -115,12 +115,15 @@ Otherwise, the provider developer can set an arbitrary description like this:
 
 #### Migrate subcommand
 
-The `migrate` subcommand can be used to migrate from the old directory structure (`website/docs/r`) to the `tfplugindocs` supported structure (`templates/`).
+The `migrate` subcommand can be used to migrate website files from either the legacy rendered website directory (`website/docs/r`) or the docs 
+rendered website directory (`docs/resources`) to the `tfplugindocs` supported structure (`templates/`). Markdown files in the rendered website 
+directory will be converted to `tfplugindocs` templates.
 
 The `migrate` subcommand takes the following actions:
-- Copies the `--old-website-source-dir` folder to the `--tempates-dir` folder (will create this folder if it doesn't exist)
-- Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
-- Change file suffixes for template files from `.html.markdown` to `.md.tmpl`
+- Determines the rendered website directory based on the `--provider-dir` argument
+- Copies the contents of the rendered website directory to the `--tempates-dir` folder (will create this folder if it doesn't exist)
+- (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
+- Change file suffixes for Markdown files to `.md.tmpl` to create website templates
 - Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
 - replace extracted example code in website templates with `tfplugindocs` template code referring to example files.
 - Copies non-template files to `--templates-dir` folder
@@ -157,7 +160,9 @@ For examples:
 
 #### Migration
 
-The `migrate` subcommand assumes the following conventional paths for the old website structure:
+The `migrate` subcommand assumes the following conventional paths for the rendered website directory:
+
+Legacy website directory structure:
 
 | Path                                              | Description          |
 |---------------------------------------------------|----------------------|
@@ -165,6 +170,17 @@ The `migrate` subcommand assumes the following conventional paths for the old we
 | `website/docs/index.html.markdown`                | Docs index page      |
 | `website/docs/d/<data source name>.html.markdown` | Data source page     |
 | `website/docs/r/<resource name>.html.markdown`    | Resource page        |
+
+Docs website directory structure:
+
+| Path                                                 | Description          |
+|------------------------------------------------------|----------------------|
+| `docs/`                                              | Root of website docs |
+| `docs/index.html.markdown`                           | Docs index page      |
+| `docs/data-sources/<data source name>.html.markdown` | Data source page     |
+| `docs/resources/<resource name>.html.markdown`       | Resource page        |
+
+Files in these directories will be migrated to the `templates/` directory.
 
 ### Templates
 

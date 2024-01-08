@@ -26,9 +26,9 @@ type migrator struct {
 	// providerDir is the absolute path to the root provider directory
 	providerDir string
 
-	oldWebsiteDir string
-	templatesDir  string
-	examplesDir   string
+	websiteDir   string
+	templatesDir string
+	examplesDir  string
 
 	ui cli.Ui
 }
@@ -41,7 +41,7 @@ func (m *migrator) warnf(format string, a ...interface{}) {
 	m.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Migrate(ui cli.Ui, providerDir string, oldWebsiteDir string, templatesDir string, examplesDir string) error {
+func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir string) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -72,31 +72,36 @@ func Migrate(ui cli.Ui, providerDir string, oldWebsiteDir string, templatesDir s
 		return fmt.Errorf("expected %q to be a directory", providerDir)
 	}
 
-	m := &migrator{
-		providerDir:   providerDir,
-		oldWebsiteDir: oldWebsiteDir,
-		templatesDir:  templatesDir,
-		examplesDir:   examplesDir,
+	// Determine website directory
+	websiteDir, err := determineWebsiteDir(providerDir)
+	if err != nil {
+		return err
+	}
 
-		ui: ui,
+	m := &migrator{
+		providerDir:  providerDir,
+		templatesDir: templatesDir,
+		examplesDir:  examplesDir,
+		websiteDir:   websiteDir,
+		ui:           ui,
 	}
 
 	return m.Migrate()
 }
 
 func (m *migrator) Migrate() error {
-	m.infof("migrating website from %q to %q", m.OldProviderWebsiteDir(), m.ProviderTemplatesDir())
+	m.infof("migrating website from %q to %q", m.ProviderWebsiteDir(), m.ProviderTemplatesDir())
 
-	err := filepath.Walk(m.OldProviderWebsiteDir(), func(path string, info os.FileInfo, _ error) error {
+	err := filepath.Walk(m.ProviderWebsiteDir(), func(path string, info os.FileInfo, _ error) error {
 		if info.IsDir() {
 			// skip directories
 			return nil
 		}
 
-		rel, err := filepath.Rel(filepath.Join(m.OldProviderWebsiteDir()), path)
+		rel, err := filepath.Rel(filepath.Join(m.ProviderWebsiteDir()), path)
 		if err != nil {
 			return fmt.Errorf("unable to retrieve the relative path of basepath %q and targetpath %q: %w",
-				filepath.Join(m.OldProviderWebsiteDir()), path, err)
+				filepath.Join(m.ProviderWebsiteDir()), path, err)
 		}
 
 		relDir, relFile := filepath.Split(rel)
@@ -108,7 +113,7 @@ func (m *migrator) Migrate() error {
 		}
 
 		switch relDir {
-		case "docs/d/": //data-sources
+		case "docs/d/", "data-sources/": //data-sources
 			datasourceName := strings.TrimSuffix(relFile, ".html.markdown")
 			m.infof("migrating data source %q", datasourceName)
 
@@ -120,7 +125,7 @@ func (m *migrator) Migrate() error {
 				return fmt.Errorf("unable to migrate template %q: %w", rel, err)
 			}
 
-		case "docs/r/": //resources
+		case "docs/r/", "resources/": //resources
 			resourceName := strings.TrimSuffix(relFile, ".html.markdown")
 			m.infof("migrating resource %q", resourceName)
 
@@ -141,10 +146,18 @@ func (m *migrator) Migrate() error {
 				}
 			}
 		default:
-			m.infof("copying non-template file %q", rel)
-			err := cp(path, filepath.Join(m.ProviderTemplatesDir(), relFile))
-			if err != nil {
-				return fmt.Errorf("unable to copy file %q: %w", rel, err)
+			if relFile == "index.html.markdown" {
+				m.infof("migrating provider index")
+				err := m.MigrateTemplate(data, "", "", "index.md.tmpl")
+				if err != nil {
+					return fmt.Errorf("unable to migrate template %q: %w", rel, err)
+				}
+			} else {
+				m.infof("copying non-template file %q", rel)
+				err := cp(path, filepath.Join(m.ProviderTemplatesDir(), relFile))
+				if err != nil {
+					return fmt.Errorf("unable to copy file %q: %w", rel, err)
+				}
 			}
 		}
 		if err != nil {
@@ -311,10 +324,10 @@ func (m *migrator) ExtractCodeExamples(content []byte, newRelDir string, templat
 	return nil
 }
 
-// OldProviderWebsiteDir returns the absolute path to the joined provider and
-// given old website directory, which defaults to "website".
-func (m *migrator) OldProviderWebsiteDir() string {
-	return filepath.Join(m.providerDir, m.oldWebsiteDir)
+// ProviderWebsiteDir returns the absolute path to the joined provider and
+// the website directory that templates will be migrated from, which defaults to either "website" or "docs".
+func (m *migrator) ProviderWebsiteDir() string {
+	return filepath.Join(m.providerDir, m.websiteDir)
 }
 
 // ProviderTemplatesDir returns the absolute path to the joined provider and
@@ -327,4 +340,33 @@ func (m *migrator) ProviderTemplatesDir() string {
 // given examples directory, which defaults to "examples".
 func (m *migrator) ProviderExamplesDir() string {
 	return filepath.Join(m.providerDir, m.examplesDir)
+}
+
+func determineWebsiteDir(providerDir string) (string, error) {
+	// Check for legacy website directory
+	providerWebsiteDirFileInfo, err := os.Stat(filepath.Join(providerDir, "website"))
+
+	if err != nil {
+		if os.IsNotExist(err) {
+			// Legacy website directory does not exist, check for docs directory
+		} else {
+			return "", fmt.Errorf("error getting information for provider website directory %q: %w", providerDir, err)
+		}
+	} else if providerWebsiteDirFileInfo.IsDir() {
+		return "website", nil
+	}
+
+	// Check for docs directory
+	providerDocsDirFileInfo, err := os.Stat(filepath.Join(providerDir, "docs"))
+
+	if err != nil {
+		return "", fmt.Errorf("error getting information for provider docs directory %q: %w", providerDir, err)
+	}
+
+	if providerDocsDirFileInfo.IsDir() {
+		return "docs", nil
+	}
+
+	return "", fmt.Errorf("unable to determine website directory for provider %q", providerDir)
+
 }

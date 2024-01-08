@@ -21,7 +21,7 @@ type migrateCmd struct {
 }
 
 func (cmd *migrateCmd) Synopsis() string {
-	return "migrates website files from old directory structure (website/docs/r) to tfplugindocs supported structure (templates/)"
+	return "migrates website files from either the legacy rendered website directory (`website/docs/r`) or the docs rendered website directory (`docs/resources`) to the tfplugindocs supported structure (`templates/`)."
 }
 
 func (cmd *migrateCmd) Help() string {
@@ -66,7 +66,6 @@ func (cmd *migrateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("migrate", flag.ExitOnError)
 
 	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory when running the command outside the root provider code directory")
-	fs.StringVar(&cmd.flagOldWebsiteSourceDir, "old-website-source-dir", "website", "old website directory based on provider-dir; files will be migrated from this directory")
 	fs.StringVar(&cmd.flagTemplatesDir, "templates-dir", "templates", "new website templates directory based on provider-dir; files will be migrated to this directory")
 	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir")
 	return fs
@@ -87,7 +86,6 @@ func (cmd *migrateCmd) runInternal() error {
 	err := provider.Migrate(
 		cmd.ui,
 		cmd.flagProviderDir,
-		cmd.flagOldWebsiteSourceDir,
 		cmd.flagTemplatesDir,
 		cmd.flagExamplesDir,
 	)
