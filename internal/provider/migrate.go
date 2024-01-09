@@ -205,6 +205,10 @@ func (m *migrator) ExtractFrontMatter(content []byte, templateFile string) error
 	}
 	exited := false
 	for fileScanner.Scan() {
+		if strings.Contains(fileScanner.Text(), "layout:") {
+			// skip layout front matter
+			continue
+		}
 		err = appendFile(templateFile, []byte(fileScanner.Text()+"\n"))
 		if err != nil {
 			return fmt.Errorf("unable to append frontmatter to %q: %w", templateFile, err)

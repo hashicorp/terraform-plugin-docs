@@ -621,7 +621,6 @@ resource "aws_instance" "server" {
 $ terraform import time_static.example 2020-02-12T06:36:13Z
 -- exp-templates/index.md.tmpl --
 ---
-layout: "time"
 page_title: "Provider: Time"
 description: |-
   The time provider is used to interact with time-based resources.
@@ -651,7 +650,6 @@ For example:
 To force a these actions to reoccur without updating `triggers`, the [`terraform taint` command](https://www.terraform.io/docs/commands/taint.html) can be used to produce the action on the next run.
 -- exp-templates/resources/offset.md.tmpl --
 ---
-layout: "time"
 page_title: "Time: time_offset"
 description: |-
   Manages a offset time resource.
@@ -710,7 +708,6 @@ This resource can be imported using the base UTC RFC3339 timestamp and offset ye
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/rotating.md.tmpl --
 ---
-layout: "time"
 page_title: "Time: time_rotating"
 description: |-
   Manages a rotating time resource.
@@ -768,7 +765,6 @@ Otherwise, to import with the rotation RFC3339 value, the base UTC RFC3339 value
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/sleep.md.tmpl --
 ---
-layout: "time"
 page_title: "Time: time_sleep"
 description: |-
   Manages a static time resource.
@@ -822,7 +818,6 @@ e.g. For 30 seconds destroy duration with no create duration:
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/static.md.tmpl --
 ---
-layout: "time"
 page_title: "Time: time_static"
 description: |-
   Manages a static time resource.
