@@ -164,25 +164,30 @@ The `migrate` subcommand assumes the following conventional paths for the render
 
 Legacy website directory structure:
 
-| Path                                              | Description          |
-|---------------------------------------------------|----------------------|
-| `website/`                                        | Root of website docs |
-| `website/docs/index.html.markdown`                | Docs index page      |
-| `website/docs/d/<data source name>.html.markdown` | Data source page     |
-| `website/docs/r/<resource name>.html.markdown`    | Resource page        |
+| Path                                              | Description                 |
+|---------------------------------------------------|-----------------------------|
+| `website/`                                        | Root of website docs        |
+| `website/docs/guides`                             | Root of guides subdirectory |
+| `website/docs/index.html.markdown`                | Docs index page             |
+| `website/docs/d/<data source name>.html.markdown` | Data source page            |
+| `website/docs/r/<resource name>.html.markdown`    | Resource page               |
 
 Docs website directory structure:
 
-| Path                                                 | Description          |
-|------------------------------------------------------|----------------------|
-| `docs/`                                              | Root of website docs |
-| `docs/index.html.markdown`                           | Docs index page      |
-| `docs/data-sources/<data source name>.html.markdown` | Data source page     |
-| `docs/resources/<resource name>.html.markdown`       | Resource page        |
+| Path                                                 | Description                 |
+|------------------------------------------------------|-----------------------------|
+| `docs/`                                              | Root of website docs        |
+| `docs/guides`                                        | Root of guides subdirectory |
+| `docs/index.html.markdown`                           | Docs index page             |
+| `docs/data-sources/<data source name>.html.markdown` | Data source page            |
+| `docs/resources/<resource name>.html.markdown`       | Resource page               |
 
-Files named `index` (before the first `.`) and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
-and `docs/resources/` subdirectories will be converted to `tfplugindocs` templates. All other files in the conventional 
-paths will be copied to the `--templates-dir` folder.
+Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
+and `docs/resources/` subdirectories will be converted to `tfplugindocs` templates. 
+
+The `website/docs/guides/` and `docs/guides/` subdirectories will be copied as-is to the `--templates-dir` folder. 
+
+All other files in the conventional paths will be ignored.
 
 ### Templates
 

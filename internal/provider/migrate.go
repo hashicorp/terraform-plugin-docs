@@ -7,8 +7,10 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -20,6 +22,7 @@ import (
 var (
 	exampleImportCodeTemplate = "{{codefile \"shell\" \"%s\"}}"
 	exampleTFCodeTemplate     = "{{tffile \"%s\"}}"
+	indexFileNameRegex        = regexp.MustCompile(`index.*`)
 )
 
 type migrator struct {
@@ -92,79 +95,47 @@ func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir str
 func (m *migrator) Migrate() error {
 	m.infof("migrating website from %q to %q", m.ProviderWebsiteDir(), m.ProviderTemplatesDir())
 
-	err := filepath.Walk(m.ProviderWebsiteDir(), func(path string, info os.FileInfo, _ error) error {
-		if info.IsDir() {
-			// skip directories
-			return nil
-		}
-
-		rel, err := filepath.Rel(filepath.Join(m.ProviderWebsiteDir()), path)
-		if err != nil {
-			return fmt.Errorf("unable to retrieve the relative path of basepath %q and targetpath %q: %w",
-				filepath.Join(m.ProviderWebsiteDir()), path, err)
-		}
-
-		relDir, relFile := filepath.Split(rel)
-		relDir = filepath.ToSlash(relDir)
-
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return fmt.Errorf("unable to read file %q: %w", rel, err)
-		}
-
-		switch relDir {
-		case "docs/d/", "data-sources/": //data-sources
-			datasourceName, _, _ := strings.Cut(relFile, ".")
-			m.infof("migrating data source %q", datasourceName)
-
-			exampleRelDir := filepath.Join("data-sources", datasourceName)
-			templateRelDir := "data-sources"
-			fileName := datasourceName + ".md.tmpl"
-			err := m.MigrateTemplate(data, templateRelDir, exampleRelDir, fileName)
-			if err != nil {
-				return fmt.Errorf("unable to migrate template %q: %w", rel, err)
-			}
-
-		case "docs/r/", "resources/": //resources
-			resourceName, _, _ := strings.Cut(relFile, ".")
-			m.infof("migrating resource %q", resourceName)
-
-			exampleRelDir := filepath.Join("resources", resourceName)
-			templateRelDir := "resources"
-			fileName := resourceName + ".md.tmpl"
-			err := m.MigrateTemplate(data, templateRelDir, exampleRelDir, fileName)
-			if err != nil {
-				return fmt.Errorf("unable to migrate template %q: %w", rel, err)
-			}
-
-		case "docs/": // provider
-			fileName, _, _ := strings.Cut(relFile, ".")
-			if fileName == "index" {
-				m.infof("migrating provider index")
-				err := m.MigrateTemplate(data, "", "", "index.md.tmpl")
+	err := filepath.WalkDir(m.ProviderWebsiteDir(), func(path string, d os.DirEntry, _ error) error {
+		switch d.IsDir() {
+		case true: //directories
+			switch d.Name() {
+			case "d", "data-sources": //data-sources
+				m.infof("migrating data-sources directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("data-sources"))
 				if err != nil {
-					return fmt.Errorf("unable to migrate template %q: %w", rel, err)
+					return err
 				}
+				return filepath.SkipDir
+			case "r", "resources": //resources
+				m.infof("migrating resources directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("resources"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
+			case "guides":
+				m.infof("copying guides directory: %s", d.Name())
+				err := cp(path, filepath.Join(m.ProviderTemplatesDir(), "guides"))
+				if err != nil {
+					return fmt.Errorf("unable to copy guides directory %q: %w", path, err)
+				}
+				return filepath.SkipDir
 			}
-		default:
-			fileName, _, _ := strings.Cut(relFile, ".")
-			if fileName == "index" {
-				m.infof("migrating provider index")
-				err := m.MigrateTemplate(data, "", "", "index.md.tmpl")
+		case false: //files
+			switch {
+			case indexFileNameRegex.MatchString(d.Name()): //index file
+				m.infof("migrating provider index: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate(""))
 				if err != nil {
-					return fmt.Errorf("unable to migrate template %q: %w", rel, err)
+					return err
 				}
-			} else {
-				m.infof("copying non-template file %q", rel)
-				err := cp(path, filepath.Join(m.ProviderTemplatesDir(), relFile))
-				if err != nil {
-					return fmt.Errorf("unable to copy file %q: %w", rel, err)
-				}
+				return nil
+			default:
+				//skip non-index files
+				return nil
 			}
 		}
-		if err != nil {
-			return fmt.Errorf("unable to migrate template %q: %w", rel, err)
-		}
+
 		return nil
 	})
 	if err != nil {
@@ -174,24 +145,49 @@ func (m *migrator) Migrate() error {
 	return nil
 }
 
-func (m *migrator) MigrateTemplate(data []byte, templateRelDir string, exampleRelDir, filename string) error {
-	templateFilePath := filepath.Join(m.ProviderTemplatesDir(), templateRelDir, filename)
+func (m *migrator) MigrateTemplate(relDir string) fs.WalkDirFunc {
+	return func(path string, d fs.DirEntry, err error) error {
+		if d.IsDir() {
+			//skip processing directories
+			return nil
+		}
 
-	err := os.MkdirAll(filepath.Dir(templateFilePath), 0755)
-	if err != nil {
-		return fmt.Errorf("unable to create directory %q: %w", templateFilePath, err)
+		m.infof("migrating file %q", d.Name())
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("unable to read file %q: %w", d.Name(), err)
+		}
+
+		baseName, _, _ := strings.Cut(d.Name(), ".")
+
+		var exampleRelDir string
+		if baseName == "index" {
+			exampleRelDir = relDir
+		} else {
+			exampleRelDir = filepath.Join(relDir, baseName)
+		}
+		templateFilePath := filepath.Join(m.ProviderTemplatesDir(), relDir, baseName+".md.tmpl")
+
+		err = os.MkdirAll(filepath.Dir(templateFilePath), 0755)
+		if err != nil {
+			return fmt.Errorf("unable to create directory %q: %w", templateFilePath, err)
+		}
+
+		m.infof("extracting YAML frontmatter to %q", templateFilePath)
+		err = m.ExtractFrontMatter(data, templateFilePath)
+		if err != nil {
+			return fmt.Errorf("unable to extract front matter to %q: %w", templateFilePath, err)
+		}
+
+		m.infof("extracting code examples from %q", d.Name())
+		err = m.ExtractCodeExamples(data, exampleRelDir, templateFilePath)
+		if err != nil {
+			return fmt.Errorf("unable to extract code examples from %q: %w", templateFilePath, err)
+		}
+
+		return nil
 	}
-	m.infof("extracting YAML frontmatter to %q", templateFilePath)
-	err = m.ExtractFrontMatter(data, templateFilePath)
-	if err != nil {
-		return fmt.Errorf("unable to extract front matter to %q: %w", templateFilePath, err)
-	}
-	m.infof("extracting code examples from %q", filename)
-	err = m.ExtractCodeExamples(data, exampleRelDir, templateFilePath)
-	if err != nil {
-		return fmt.Errorf("unable to extract code examples from %q: %w", templateFilePath, err)
-	}
-	return nil
+
 }
 
 func (m *migrator) ExtractFrontMatter(content []byte, templateFile string) error {
@@ -327,7 +323,7 @@ func (m *migrator) ExtractCodeExamples(content []byte, newRelDir string, templat
 }
 
 // ProviderWebsiteDir returns the absolute path to the joined provider and
-// the website directory that templates will be migrated from, which defaults to either "website" or "docs".
+// the website directory that templates will be migrated from, which defaults to either "website/docs/" or "docs".
 func (m *migrator) ProviderWebsiteDir() string {
 	return filepath.Join(m.providerDir, m.websiteDir)
 }
@@ -346,7 +342,7 @@ func (m *migrator) ProviderExamplesDir() string {
 
 func determineWebsiteDir(providerDir string) (string, error) {
 	// Check for legacy website directory
-	providerWebsiteDirFileInfo, err := os.Stat(filepath.Join(providerDir, "website"))
+	providerWebsiteDirFileInfo, err := os.Stat(filepath.Join(providerDir, "website/docs"))
 
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -355,7 +351,7 @@ func determineWebsiteDir(providerDir string) (string, error) {
 			return "", fmt.Errorf("error getting information for provider website directory %q: %w", providerDir, err)
 		}
 	} else if providerWebsiteDirFileInfo.IsDir() {
-		return "website", nil
+		return "website/docs", nil
 	}
 
 	// Check for docs directory

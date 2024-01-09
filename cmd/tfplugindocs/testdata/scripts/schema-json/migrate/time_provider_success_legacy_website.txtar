@@ -15,9 +15,6 @@ cmpenv templates/resources/rotating.md.tmpl exp-templates/resources/rotating.md.
 cmpenv templates/resources/sleep.md.tmpl exp-templates/resources/sleep.md.tmpl
 cmpenv templates/resources/static.md.tmpl exp-templates/resources/static.md.tmpl
 
-# Check copied non-template files
-cmpenv website/time.erb templates/time.erb
-
 # Check generated example files
 cmpenv examples/example_1.tf examples/example_1.tf
 
@@ -40,43 +37,44 @@ cmpenv examples/resources/static/example_2.tf examples/resources/static/example_
 cmpenv examples/resources/static/import_1.sh examples/resources/static/import_1.sh
 
 -- expected-output.txt --
-migrating website from "$WORK/website" to "$WORK/templates"
-migrating provider index
+migrating website from "$WORK/website/docs" to "$WORK/templates"
+migrating provider index: index.html.markdown
+migrating file "index.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/index.md.tmpl"
-extracting code examples from "index.md.tmpl"
+extracting code examples from "index.html.markdown"
 creating example file "$WORK/examples/example_1.tf"
 finished creating template "$WORK/templates/index.md.tmpl"
-migrating resource "offset"
+migrating resources directory: r
+migrating file "offset.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/resources/offset.md.tmpl"
-extracting code examples from "offset.md.tmpl"
+extracting code examples from "offset.html.markdown"
 creating example file "$WORK/examples/resources/offset/example_1.tf"
 creating example file "$WORK/examples/resources/offset/example_2.tf"
 creating import file "$WORK/examples/resources/offset/import_1.sh"
 finished creating template "$WORK/templates/resources/offset.md.tmpl"
-migrating resource "rotating"
+migrating file "rotating.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/resources/rotating.md.tmpl"
-extracting code examples from "rotating.md.tmpl"
+extracting code examples from "rotating.html.markdown"
 creating example file "$WORK/examples/resources/rotating/example_1.tf"
 creating import file "$WORK/examples/resources/rotating/import_1.sh"
 creating import file "$WORK/examples/resources/rotating/import_2.sh"
 finished creating template "$WORK/templates/resources/rotating.md.tmpl"
-migrating resource "sleep"
+migrating file "sleep.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/resources/sleep.md.tmpl"
-extracting code examples from "sleep.md.tmpl"
+extracting code examples from "sleep.html.markdown"
 creating example file "$WORK/examples/resources/sleep/example_1.tf"
 creating example file "$WORK/examples/resources/sleep/example_2.tf"
 creating example file "$WORK/examples/resources/sleep/example_3.tf"
 creating import file "$WORK/examples/resources/sleep/import_1.sh"
 creating import file "$WORK/examples/resources/sleep/import_2.sh"
 finished creating template "$WORK/templates/resources/sleep.md.tmpl"
-migrating resource "static"
+migrating file "static.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/resources/static.md.tmpl"
-extracting code examples from "static.md.tmpl"
+extracting code examples from "static.html.markdown"
 creating example file "$WORK/examples/resources/static/example_1.tf"
 creating example file "$WORK/examples/resources/static/example_2.tf"
 creating import file "$WORK/examples/resources/static/import_1.sh"
 finished creating template "$WORK/templates/resources/static.md.tmpl"
-copying non-template file "time.erb"
 -- website/docs/index.html.markdown --
 ---
 layout: "time"
@@ -478,40 +476,6 @@ $ terraform import time_static.example 2020-02-12T06:36:13Z
 ```
 
 The `triggers` argument cannot be imported.
--- website/time.erb --
-<% wrap_layout :inner do %>
-    <% content_for :sidebar do %>
-        <div class="docs-sidebar hidden-print affix-top" role="complementary">
-            <a href="#" class="subnav-toggle">(Expand/collapse all)</a>
-            <ul class="nav docs-sidenav">
-                <li>
-                    <a href="/docs/providers/index.html">All Providers</a>
-                </li>
-                <li>
-                    <a href="/docs/providers/time/index.html">Time Provider</a>
-                </li>
-                <li>
-                    <a href="#">Resources</a>
-                    <ul class="nav">
-                        <li>
-                            <a href="/docs/providers/time/r/offset.html">time_offset</a>
-                        </li>
-                        <li>
-                            <a href="/docs/providers/time/r/rotating.html">time_rotating</a>
-                        </li>
-                        <li>
-                            <a href="/docs/providers/time/r/sleep.html">time_sleep</a>
-                        </li>
-                        <li>
-                            <a href="/docs/providers/time/r/static.html">time_static</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    <% end %>
-    <%= yield %>
-<% end %>
 
 -- exp-examples/example_1.tf --
 resource "time_static" "ami_update" {
