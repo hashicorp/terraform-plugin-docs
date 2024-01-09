@@ -14,10 +14,9 @@ import (
 type migrateCmd struct {
 	commonCmd
 
-	flagProviderDir         string
-	flagOldWebsiteSourceDir string
-	flagTemplatesDir        string
-	flagExamplesDir         string
+	flagProviderDir  string
+	flagTemplatesDir string
+	flagExamplesDir  string
 }
 
 func (cmd *migrateCmd) Synopsis() string {
