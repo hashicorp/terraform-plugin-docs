@@ -36,6 +36,9 @@ cmpenv examples/resources/static/example_1.tf examples/resources/static/example_
 cmpenv examples/resources/static/example_2.tf examples/resources/static/example_2.tf
 cmpenv examples/resources/static/import_1.sh examples/resources/static/import_1.sh
 
+# Verify legacy website directory is removed
+! exists website/
+
 -- expected-output.txt --
 migrating website from "$WORK/website/docs" to "$WORK/templates"
 migrating provider index: index.html.markdown

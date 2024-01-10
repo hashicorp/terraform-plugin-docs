@@ -117,7 +117,8 @@ Otherwise, the provider developer can set an arbitrary description like this:
 
 The `migrate` subcommand can be used to migrate website files from either the legacy rendered website directory (`website/docs/r`) or the docs 
 rendered website directory (`docs/resources`) to the `tfplugindocs` supported structure (`templates/`). Markdown files in the rendered website 
-directory will be converted to `tfplugindocs` templates.
+directory will be converted to `tfplugindocs` templates. The legacy `website/` directory will be removed after migration to avoid Terraform Registry 
+ingress issues.
 
 The `migrate` subcommand takes the following actions:
 - Determines the rendered website directory based on the `--provider-dir` argument
@@ -127,6 +128,7 @@ The `migrate` subcommand takes the following actions:
 - Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
 - replace extracted example code in website templates with `tfplugindocs` template code referring to example files.
 - Copies non-template files to `--templates-dir` folder
+- Removes the `website/` directory
 
 ### Conventional Paths
 

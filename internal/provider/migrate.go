@@ -142,6 +142,12 @@ func (m *migrator) Migrate() error {
 		return fmt.Errorf("unable to migrate website: %w", err)
 	}
 
+	//remove legacy website directory
+	err = os.RemoveAll(filepath.Join(m.providerDir, "website"))
+	if err != nil {
+		return fmt.Errorf("unable to remove legacy website directory: %w", err)
+	}
+
 	return nil
 }
 
