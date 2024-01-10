@@ -234,6 +234,9 @@ func (m *migrator) ExtractFrontMatter(content []byte, templateFile string) error
 
 	// add comment to end of front matter briefly explaining template functionality
 	err = appendFile(templateFile, []byte(migrateProviderTemplateComment+"\n"))
+	if err != nil {
+		return fmt.Errorf("unable to append template comment to %q: %w", templateFile, err)
+	}
 
 	return nil
 }
