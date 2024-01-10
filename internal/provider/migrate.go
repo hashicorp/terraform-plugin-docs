@@ -226,6 +226,9 @@ func (m *migrator) ExtractFrontMatter(content []byte, templateFile string) error
 		return fmt.Errorf("cannot find ending of frontmatter block in %q", templateFile)
 	}
 
+	// add comment to end of front matter briefly explaining template functionality
+	err = appendFile(templateFile, []byte(migrateProviderTemplateComment+"\n"))
+
 	return nil
 }
 
