@@ -85,3 +85,32 @@ func Test_resourceSchema(t *testing.T) {
 		})
 	}
 }
+
+func Test_extractSchemaFromFile(t *testing.T) {
+	t.Parallel()
+
+	filepath := "testdata/schema.json"
+	schema, err := extractSchemaFromFile(filepath)
+	if err != nil {
+		t.Errorf("received error %v:", err)
+	}
+
+	providerSchema := schema.Schemas["registry.terraform.io/hashicorp/null"]
+	if providerSchema == nil {
+		t.Fatalf("null provider not found")
+	}
+
+	if providerSchema.ResourceSchemas["null_resource"] == nil {
+		t.Fatalf("null_resource not found")
+	}
+	if providerSchema.DataSourceSchemas["null_data_source"] == nil {
+		t.Fatalf("null_data_source not found")
+	}
+	if providerSchema.ResourceSchemas["null_resource"].Block.Attributes["id"] == nil {
+		t.Fatalf("null_resoruce id attribute not found")
+	}
+	if providerSchema.DataSourceSchemas["null_data_source"].Block.Attributes["id"] == nil {
+		t.Fatalf("null_data_source id attribute not found")
+	}
+
+}

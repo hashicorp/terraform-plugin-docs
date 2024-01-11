@@ -1,0 +1,210 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+# Successful run of tfplugindocs on a Framework provider with static files
+[!unix] skip
+exec tfplugindocs --provider-name=terraform-provider-scaffolding --providers-schema=schema.json
+cmp stdout expected-output.txt
+
+# Check that static files copied successfully to rendered docs directory
+cmp templates/resources/example.md docs/resources/example.md
+cmp templates/resources/example.markdown docs/resources/example.markdown
+cmp templates/resources/example.html.markdown docs/resources/example.html.markdown
+cmp templates/resources/example.html.md docs/resources/example.html.md
+
+cmp templates/data-sources/example.md docs/data-sources/example.md
+cmp templates/data-sources/example.markdown docs/data-sources/example.markdown
+cmp templates/data-sources/example.html.markdown docs/data-sources/example.html.markdown
+cmp templates/data-sources/example.html.md docs/data-sources/example.html.md
+
+cmp templates/index.md docs/index.md
+cmp templates/index.markdown docs/index.markdown
+cmp templates/index.html.markdown docs/index.html.markdown
+cmp templates/index.html.md docs/index.html.md
+-- expected-output.txt --
+rendering website for provider "terraform-provider-scaffolding" (as "terraform-provider-scaffolding")
+copying any existing content to tmp dir
+exporting schema from JSON file
+getting provider schema
+generating missing templates
+generating missing resource content
+resource "scaffolding_example" static file exists, skipping
+generating missing data source content
+data-source "scaffolding_example" static file exists, skipping
+generating missing provider content
+provider "terraform-provider-scaffolding" static file exists, skipping
+rendering static website
+cleaning rendered website dir
+rendering templated website to static markdown
+copying non-template file: "data-sources/example.html.markdown"
+copying non-template file: "data-sources/example.html.md"
+copying non-template file: "data-sources/example.markdown"
+copying non-template file: "data-sources/example.md"
+copying non-template file: "index.html.markdown"
+copying non-template file: "index.html.md"
+copying non-template file: "index.markdown"
+copying non-template file: "index.md"
+copying non-template file: "resources/example.html.markdown"
+copying non-template file: "resources/example.html.md"
+copying non-template file: "resources/example.markdown"
+copying non-template file: "resources/example.md"
+-- templates/resources/example.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/resources/example.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/resources/example.html.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/resources/example.html.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/data-sources/example.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/data-sources/example.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/data-sources/example.html.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/data-sources/example.html.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/index.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/index.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/index.html.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/index.html.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- examples/README.md --
+# Examples
+
+This directory contains examples that are mostly used for documentation, but can also be run/tested manually via the Terraform CLI.
+
+The document generation tool looks for files in the following locations by default. All other *.tf files besides the ones mentioned below are ignored by the documentation tool. This is useful for creating examples that can run and/or ar testable even if some parts are not relevant for the documentation.
+
+* **provider/provider.tf** example file for the provider index page
+* **data-sources/`full data source name`/data-source.tf** example file for the named data source page
+* **resources/`full resource name`/resource.tf** example file for the named data source page
+-- examples/data-sources/scaffolding_example/data-source.tf --
+data "scaffolding_example" "example" {
+  configurable_attribute = "some-value"
+}
+-- examples/provider/provider.tf --
+provider "scaffolding" {
+  # example configuration here
+}
+-- examples/resources/scaffolding_example/resource.tf --
+resource "scaffolding_example" "example" {
+  configurable_attribute = "some-value"
+}
+-- examples/resources/scaffolding_example/import.sh --
+terraform import scaffolding_example.example
+-- schema.json --
+{
+  "format_version": "1.0",
+  "provider_schemas": {
+    "registry.terraform.io/hashicorp/scaffolding": {
+      "provider": {
+        "version": 0,
+        "block": {
+          "attributes": {
+            "endpoint": {
+              "type": "string",
+              "description": "Example provider attribute",
+              "description_kind": "markdown",
+              "optional": true
+            }
+          },
+          "description": "Example provider",
+          "description_kind": "markdown"
+        }
+      },
+      "resource_schemas": {
+        "scaffolding_example": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "configurable_attribute": {
+                "type": "string",
+                "description": "Example configurable attribute",
+                "description_kind": "markdown",
+                "optional": true
+              },
+              "defaulted": {
+                "type": "string",
+                "description": "Example configurable attribute with default value",
+                "description_kind": "markdown",
+                "optional": true,
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "description": "Example identifier",
+                "description_kind": "markdown",
+                "computed": true
+              }
+            },
+            "description": "Example resource",
+            "description_kind": "markdown"
+          }
+        }
+      },
+      "data_source_schemas": {
+        "scaffolding_example": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "configurable_attribute": {
+                "type": "string",
+                "description": "Example configurable attribute",
+                "description_kind": "markdown",
+                "optional": true
+              },
+              "id": {
+                "type": "string",
+                "description": "Example identifier",
+                "description_kind": "markdown",
+                "computed": true
+              }
+            },
+            "description": "Example data source",
+            "description_kind": "markdown"
+          }
+        }
+      }
+    }
+  }
+}

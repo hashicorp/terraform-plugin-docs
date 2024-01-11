@@ -1,0 +1,892 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+# Successful run of tfplugindocs -migrate on the Time provider using the docs website layout
+[!unix] skip
+
+# Run migrate command
+exec tfplugindocs migrate
+cmpenv stdout expected-output.txt
+
+# Check template files
+cmpenv templates/index.md.tmpl exp-templates/index.md.tmpl
+cmpenv templates/resources/offset.md.tmpl exp-templates/resources/offset.md.tmpl
+cmpenv templates/resources/rotating.md.tmpl exp-templates/resources/rotating.md.tmpl
+cmpenv templates/resources/sleep.md.tmpl exp-templates/resources/sleep.md.tmpl
+cmpenv templates/resources/static.md.tmpl exp-templates/resources/static.md.tmpl
+
+# Check generated example files
+cmpenv examples/example_1.tf examples/example_1.tf
+
+cmpenv examples/resources/offset/example_1.tf exp-examples/resources/offset/example_1.tf
+cmpenv examples/resources/offset/example_2.tf exp-examples/resources/offset/example_2.tf
+cmpenv examples/resources/offset/import_1.sh exp-examples/resources/offset/import_1.sh
+
+cmpenv examples/resources/rotating/example_1.tf exp-examples/resources/rotating/example_1.tf
+cmpenv examples/resources/rotating/import_1.sh exp-examples/resources/rotating/import_1.sh
+cmpenv examples/resources/rotating/import_2.sh exp-examples/resources/rotating/import_2.sh
+
+cmpenv examples/resources/sleep/example_1.tf exp-examples/resources/sleep/example_1.tf
+cmpenv examples/resources/sleep/example_2.tf exp-examples/resources/sleep/example_2.tf
+cmpenv examples/resources/sleep/example_3.tf exp-examples/resources/sleep/example_3.tf
+cmpenv examples/resources/sleep/import_1.sh exp-examples/resources/sleep/import_1.sh
+cmpenv examples/resources/sleep/import_2.sh exp-examples/resources/sleep/import_2.sh
+
+cmpenv examples/resources/static/example_1.tf examples/resources/static/example_1.tf
+cmpenv examples/resources/static/example_2.tf examples/resources/static/example_2.tf
+cmpenv examples/resources/static/import_1.sh examples/resources/static/import_1.sh
+
+-- expected-output.txt --
+migrating website from "$WORK/docs" to "$WORK/templates"
+migrating provider index: index.html.markdown
+migrating file "index.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/index.md.tmpl"
+extracting code examples from "index.html.markdown"
+creating example file "$WORK/examples/example_1.tf"
+finished creating template "$WORK/templates/index.md.tmpl"
+migrating resources directory: resources
+migrating file "offset.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/resources/offset.md.tmpl"
+extracting code examples from "offset.html.markdown"
+creating example file "$WORK/examples/resources/offset/example_1.tf"
+creating example file "$WORK/examples/resources/offset/example_2.tf"
+creating import file "$WORK/examples/resources/offset/import_1.sh"
+finished creating template "$WORK/templates/resources/offset.md.tmpl"
+migrating file "rotating.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/resources/rotating.md.tmpl"
+extracting code examples from "rotating.html.markdown"
+creating example file "$WORK/examples/resources/rotating/example_1.tf"
+creating import file "$WORK/examples/resources/rotating/import_1.sh"
+creating import file "$WORK/examples/resources/rotating/import_2.sh"
+finished creating template "$WORK/templates/resources/rotating.md.tmpl"
+migrating file "sleep.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/resources/sleep.md.tmpl"
+extracting code examples from "sleep.html.markdown"
+creating example file "$WORK/examples/resources/sleep/example_1.tf"
+creating example file "$WORK/examples/resources/sleep/example_2.tf"
+creating example file "$WORK/examples/resources/sleep/example_3.tf"
+creating import file "$WORK/examples/resources/sleep/import_1.sh"
+creating import file "$WORK/examples/resources/sleep/import_2.sh"
+finished creating template "$WORK/templates/resources/sleep.md.tmpl"
+migrating file "static.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/resources/static.md.tmpl"
+extracting code examples from "static.html.markdown"
+creating example file "$WORK/examples/resources/static/example_1.tf"
+creating example file "$WORK/examples/resources/static/example_2.tf"
+creating import file "$WORK/examples/resources/static/import_1.sh"
+finished creating template "$WORK/templates/resources/static.md.tmpl"
+-- docs/index.html.markdown --
+---
+layout: "time"
+page_title: "Provider: Time"
+description: |-
+  The time provider is used to interact with time-based resources.
+---
+
+# Time Provider
+
+The time provider is used to interact with time-based resources. The provider itself has no configuration options.
+
+Use the navigation to the left to read about the available resources.
+
+## Resource "Triggers"
+
+Certain time resources, only perform actions during specific lifecycle actions:
+
+- `time_offset`: Saves base timestamp into Terraform state only when created.
+- `time_sleep`: Sleeps when created and/or destroyed.
+- `time_static`: Saves base timestamp into Terraform state only when created.
+
+These resources provide an optional map argument called `triggers` that can be populated with arbitrary key/value pairs. When the keys or values of this argument are updated, Terraform will re-perform the desired action, such as updating the base timestamp or sleeping again.
+
+For example:
+
+```hcl
+resource "time_static" "ami_update" {
+  triggers = {
+    # Save the time each switch of an AMI id
+    ami_id = data.aws_ami.example.id
+  }
+}
+
+resource "aws_instance" "server" {
+  # Read the AMI id "through" the time_static resource to ensure that
+  # both will change together.
+  ami = time_static.ami_update.triggers.ami_id
+
+  tags = {
+    AmiUpdateTime = time_static.ami_update.rfc3339
+  }
+
+  # ... (other aws_instance arguments) ...
+}
+```
+
+`triggers` are *not* treated as sensitive attributes; a value used for `triggers` will be displayed in Terraform UI output as plaintext.
+
+To force a these actions to reoccur without updating `triggers`, the [`terraform taint` command](https://www.terraform.io/docs/commands/taint.html) can be used to produce the action on the next run.
+-- docs/resources/offset.html.markdown --
+---
+layout: "time"
+page_title: "Time: time_offset"
+description: |-
+  Manages a offset time resource.
+---
+
+# Resource: time_offset
+
+Manages an offset time resource, which keeps an UTC timestamp stored in the Terraform state that is offset from a locally sourced base timestamp. This prevents perpetual differences caused by using the [`timestamp()` function](https://www.terraform.io/docs/configuration/functions/timestamp.html).
+
+-> Further manipulation of incoming or outgoing values can be accomplished with the [`formatdate()` function](https://www.terraform.io/docs/configuration/functions/formatdate.html) and the [`timeadd()` function](https://www.terraform.io/docs/configuration/functions/timeadd.html).
+
+## Example Usage
+
+### Basic Usage
+
+```hcl
+resource "time_offset" "example" {
+  offset_days = 7
+}
+
+output "one_week_from_now" {
+  value = time_offset.example.rfc3339
+}
+```
+
+### Triggers Usage
+
+```hcl
+resource "time_offset" "ami_update" {
+  triggers = {
+    # Save the time each switch of an AMI id
+    ami_id = data.aws_ami.example.id
+  }
+
+  offset_days = 7
+}
+
+resource "aws_instance" "server" {
+  # Read the AMI id "through" the time_offset resource to ensure that
+  # both will change together.
+  ami = time_offset.ami_update.triggers.ami_id
+
+  tags = {
+    ExpirationTime = time_offset.ami_update.rfc3339
+  }
+
+  # ... (other aws_instance arguments) ...
+}
+```
+
+## Argument Reference
+
+~> **NOTE:** At least one of the `offset_` arguments must be configured.
+
+The following arguments are optional:
+
+* `base_rfc3339` - (Optional) Configure the base timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). Defaults to the current time.
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will trigger a new base timestamp value to be saved. See [the main provider documentation](../index.html) for more information.
+* `offset_days` - (Optional) Number of days to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_hours` - (Optional) Number of hours to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_minutes` - (Optional) Number of minutes to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_months` - (Optional) Number of months to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_seconds` - (Optional) Number of seconds to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_years` - (Optional) Number of years to offset the base timestamp. Conflicts with other `offset_` arguments.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `day` - Number day of offset timestamp.
+* `hour` - Number hour of offset timestamp.
+* `id` - UTC RFC3339 format of the base timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `minute` - Number minute of offset timestamp.
+* `month` - Number month of offset timestamp.
+* `rfc3339` - UTC RFC3339 format of the offset timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `second` - Number second of offset timestamp.
+* `unix` - Number of seconds since epoch time, e.g. `1581489373`.
+* `year` - Number year of offset timestamp.
+
+## Import
+
+This resource can be imported using the base UTC RFC3339 timestamp and offset years, months, days, hours, minutes, and seconds, separated by commas (`,`), e.g.
+
+```console
+$ terraform import time_offset.example 2020-02-12T06:36:13Z,0,0,7,0,0,0
+```
+
+The `triggers` argument cannot be imported.
+-- docs/resources/rotating.html.markdown --
+---
+layout: "time"
+page_title: "Time: time_rotating"
+description: |-
+  Manages a rotating time resource.
+---
+
+# Resource: time_rotating
+
+Manages a rotating time resource, which keeps a rotating UTC timestamp stored in the Terraform state and proposes resource recreation when the locally sourced current time is beyond the rotation time. This rotation only occurs when Terraform is executed, meaning there will be drift between the rotation timestamp and actual rotation. The new rotation timestamp offset includes this drift. This prevents perpetual differences caused by using the [`timestamp()` function](https://www.terraform.io/docs/configuration/functions/timestamp.html) by only forcing a new value on the set cadence.
+
+-> Further manipulation of incoming or outgoing values can be accomplished with the [`formatdate()` function](https://www.terraform.io/docs/configuration/functions/formatdate.html) and the [`timeadd()` function](https://www.terraform.io/docs/configuration/functions/timeadd.html).
+
+## Example Usage
+
+This example configuration will rotate (destroy/create) the resource every 30 days.
+
+```hcl
+resource "time_rotating" "example" {
+  rotation_days = 30
+}
+```
+
+## Argument Reference
+
+~> **NOTE:** At least one of the `rotation_` arguments must be configured.
+
+The following arguments are optional:
+
+* `rfc3339` - (Optional) Configure the base timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). Defaults to the current time.
+* `rotation_days` - (Optional) Number of days to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_hours` - (Optional) Number of hours to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_minutes` - (Optional) Number of minutes to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_months` - (Optional) Number of months to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_rfc3339` - (Optional) Configure the rotation timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_years` - (Optional) Number of years to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will trigger a new base timestamp value to be saved. These conditions recreate the resource in addition to other rotation arguments. See [the main provider documentation](../index.html) for more information.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `day` - Number day of timestamp.
+* `hour` - Number hour of timestamp.
+* `id` - UTC RFC3339 format of the base timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `minute` - Number minute of timestamp.
+* `month` - Number month of timestamp.
+* `second` - Number second of timestamp.
+* `unix` - Number of seconds since epoch time, e.g. `1581489373`.
+* `year` - Number year of timestamp.
+
+## Import
+
+This resource can be imported using the base UTC RFC3339 value and rotation years, months, days, hours, and minutes, separated by commas (`,`), e.g. for 30 days
+
+```console
+$ terraform import time_rotation.example 2020-02-12T06:36:13Z,0,0,30,0,0
+```
+
+Otherwise, to import with the rotation RFC3339 value, the base UTC RFC3339 value and rotation UTC RFC3339 value, separated by commas (`,`), e.g.
+
+```console
+$ terraform import time_rotation.example 2020-02-12T06:36:13Z,2020-02-13T06:36:13Z
+```
+
+The `triggers` argument cannot be imported.
+-- docs/resources/sleep.html.markdown --
+---
+layout: "time"
+page_title: "Time: time_sleep"
+description: |-
+  Manages a static time resource.
+---
+
+# Resource: time_sleep
+
+Manages a resource that delays creation and/or destruction, typically for further resources. This prevents cross-platform compatibility and destroy-time issues with using the [`local-exec` provisioner](https://www.terraform.io/docs/provisioners/local-exec.html).
+
+-> In many cases, this resource should be considered a workaround for issues that should be reported and handled in downstream Terraform Provider logic. Downstream resources can usually introduce or adjust retries in their code to handle time delay issues for all Terraform configurations or upstream resources can be improved to better wait for a resource to be fully ready and available.
+
+## Example Usage
+
+### Delay Create Usage
+
+```hcl
+# This resource will destroy (potentially immediately) after null_resource.next
+resource "null_resource" "previous" {}
+
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [null_resource.previous]
+
+  create_duration = "30s"
+}
+
+# This resource will create (at least) 30 seconds after null_resource.previous
+resource "null_resource" "next" {
+  depends_on = [time_sleep.wait_30_seconds]
+}
+```
+
+### Delay Destroy Usage
+
+```hcl
+# This resource will destroy (at least) 30 seconds after null_resource.next
+resource "null_resource" "previous" {}
+
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [null_resource.previous]
+
+  destroy_duration = "30s"
+}
+
+# This resource will create (potentially immediately) after null_resource.previous
+resource "null_resource" "next" {
+  depends_on = [time_sleep.wait_30_seconds]
+}
+```
+
+### Triggers Usage
+
+```hcl
+resource "aws_ram_resource_association" "example" {
+  resource_arn       = aws_subnet.example.arn
+  resource_share_arn = aws_ram_resource_share.example.arn
+}
+
+# AWS resources shared via Resource Access Manager can take a few seconds to
+# propagate across AWS accounts after RAM returns a successful association.
+resource "time_sleep" "ram_resource_propagation" {
+  create_duration = "60s"
+
+  triggers = {
+    # This sets up a proper dependency on the RAM association
+    subnet_arn = aws_ram_resource_association.example.resource_arn
+    subnet_id  = aws_subnet.example.id
+  }
+}
+
+resource "aws_db_subnet_group" "example" {
+  name = "example"
+
+  # Read the Subnet identifier "through" the time_sleep resource to ensure a
+  # proper dependency and that both will change together.
+  subnet_ids = [time_sleep.ram_resource_propagation.triggers["subnet_id"]]
+}
+```
+
+## Argument Reference
+
+The following arguments are optional:
+
+* `create_duration` - (Optional) [Time duration][1] to delay resource creation. For example, `30s` for 30 seconds or `5m` for 5 minutes. Updating this value by itself will not trigger a delay.
+* `destroy_duration` - (Optional) [Time duration][1] to delay resource destroy. For example, `30s` for 30 seconds or `5m` for 5 minutes. Updating this value by itself will not trigger a delay. This value or any updates to it must be successfully applied into the Terraform state before destroying this resource to take effect.
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will run any creation or destroy delays again. See [the main provider documentation](../index.html) for more information.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `id` - UTC RFC3339 timestamp of the creation or import, e.g. `2020-02-12T06:36:13Z`.
+
+## Import
+
+This resource can be imported with the `create_duration` and `destroy_duration`, separated by a comma (`,`).
+
+e.g. For 30 seconds create duration with no destroy duration:
+
+```console
+$ terraform import time_sleep.example 30s,
+```
+
+e.g. For 30 seconds destroy duration with no create duration:
+
+```console
+$ terraform import time_sleep.example ,30s
+```
+
+The `triggers` argument cannot be imported.
+
+[1]: https://golang.org/pkg/time/#ParseDuration
+-- docs/resources/static.html.markdown --
+---
+layout: "time"
+page_title: "Time: time_static"
+description: |-
+  Manages a static time resource.
+---
+
+# Resource: time_static
+
+Manages a static time resource, which keeps a locally sourced UTC timestamp stored in the Terraform state. This prevents perpetual differences caused by using the [`timestamp()` function](https://www.terraform.io/docs/configuration/functions/timestamp.html).
+
+-> Further manipulation of incoming or outgoing values can be accomplished with the [`formatdate()` function](https://www.terraform.io/docs/configuration/functions/formatdate.html) and the [`timeadd()` function](https://www.terraform.io/docs/configuration/functions/timeadd.html).
+
+## Example Usage
+
+### Basic Usage
+
+```hcl
+resource "time_static" "example" {}
+
+output "current_time" {
+  value = time_static.example.rfc3339
+}
+```
+
+### Triggers Usage
+
+```hcl
+resource "time_static" "ami_update" {
+  triggers = {
+    # Save the time each switch of an AMI id
+    ami_id = data.aws_ami.example.id
+  }
+}
+
+resource "aws_instance" "server" {
+  # Read the AMI id "through" the time_static resource to ensure that
+  # both will change together.
+  ami = time_static.ami_update.triggers.ami_id
+
+  tags = {
+    AmiUpdateTime = time_static.ami_update.rfc3339
+  }
+
+  # ... (other aws_instance arguments) ...
+}
+```
+
+## Argument Reference
+
+The following arguments are optional:
+
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will trigger a new base timestamp value to be saved. See [the main provider documentation](../index.html) for more information.
+* `rfc3339` - (Optional) Configure the base timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). Defaults to the current time.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `day` - Number day of timestamp.
+* `hour` - Number hour of timestamp.
+* `id` - UTC RFC3339 timestamp format, e.g. `2020-02-12T06:36:13Z`.
+* `minute` - Number minute of timestamp.
+* `month` - Number month of timestamp.
+* `rfc3339` - UTC RFC3339 format of timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `second` - Number second of timestamp.
+* `unix` - Number of seconds since epoch time, e.g. `1581489373`.
+* `year` - Number year of timestamp.
+
+## Import
+
+This resource can be imported using the UTC RFC3339 value, e.g.
+
+```console
+$ terraform import time_static.example 2020-02-12T06:36:13Z
+```
+
+The `triggers` argument cannot be imported.
+-- exp-examples/example_1.tf --
+resource "time_static" "ami_update" {
+  triggers = {
+    # Save the time each switch of an AMI id
+    ami_id = data.aws_ami.example.id
+  }
+}
+
+resource "aws_instance" "server" {
+  # Read the AMI id "through" the time_static resource to ensure that
+  # both will change together.
+  ami = time_static.ami_update.triggers.ami_id
+
+  tags = {
+    AmiUpdateTime = time_static.ami_update.rfc3339
+  }
+
+  # ... (other aws_instance arguments) ...
+}
+-- exp-examples/resources/offset/example_1.tf --
+resource "time_offset" "example" {
+  offset_days = 7
+}
+
+output "one_week_from_now" {
+  value = time_offset.example.rfc3339
+}
+-- exp-examples/resources/offset/example_2.tf --
+resource "time_offset" "ami_update" {
+  triggers = {
+    # Save the time each switch of an AMI id
+    ami_id = data.aws_ami.example.id
+  }
+
+  offset_days = 7
+}
+
+resource "aws_instance" "server" {
+  # Read the AMI id "through" the time_offset resource to ensure that
+  # both will change together.
+  ami = time_offset.ami_update.triggers.ami_id
+
+  tags = {
+    ExpirationTime = time_offset.ami_update.rfc3339
+  }
+
+  # ... (other aws_instance arguments) ...
+}
+-- exp-examples/resources/offset/import_1.sh --
+$ terraform import time_offset.example 2020-02-12T06:36:13Z,0,0,7,0,0,0
+-- exp-examples/resources/rotating/example_1.tf --
+resource "time_rotating" "example" {
+  rotation_days = 30
+}
+-- exp-examples/resources/rotating/import_1.sh --
+$ terraform import time_rotation.example 2020-02-12T06:36:13Z,0,0,30,0,0
+-- exp-examples/resources/rotating/import_2.sh --
+$ terraform import time_rotation.example 2020-02-12T06:36:13Z,2020-02-13T06:36:13Z
+-- exp-examples/resources/sleep/example_1.tf --
+# This resource will destroy (potentially immediately) after null_resource.next
+resource "null_resource" "previous" {}
+
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [null_resource.previous]
+
+  create_duration = "30s"
+}
+
+# This resource will create (at least) 30 seconds after null_resource.previous
+resource "null_resource" "next" {
+  depends_on = [time_sleep.wait_30_seconds]
+}
+-- exp-examples/resources/sleep/example_2.tf --
+# This resource will destroy (at least) 30 seconds after null_resource.next
+resource "null_resource" "previous" {}
+
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [null_resource.previous]
+
+  destroy_duration = "30s"
+}
+
+# This resource will create (potentially immediately) after null_resource.previous
+resource "null_resource" "next" {
+  depends_on = [time_sleep.wait_30_seconds]
+}
+-- exp-examples/resources/sleep/example_3.tf --
+resource "aws_ram_resource_association" "example" {
+  resource_arn       = aws_subnet.example.arn
+  resource_share_arn = aws_ram_resource_share.example.arn
+}
+
+# AWS resources shared via Resource Access Manager can take a few seconds to
+# propagate across AWS accounts after RAM returns a successful association.
+resource "time_sleep" "ram_resource_propagation" {
+  create_duration = "60s"
+
+  triggers = {
+    # This sets up a proper dependency on the RAM association
+    subnet_arn = aws_ram_resource_association.example.resource_arn
+    subnet_id  = aws_subnet.example.id
+  }
+}
+
+resource "aws_db_subnet_group" "example" {
+  name = "example"
+
+  # Read the Subnet identifier "through" the time_sleep resource to ensure a
+  # proper dependency and that both will change together.
+  subnet_ids = [time_sleep.ram_resource_propagation.triggers["subnet_id"]]
+}
+-- exp-examples/resources/sleep/import_1.sh --
+$ terraform import time_sleep.example 30s,
+-- exp-examples/resources/sleep/import_2.sh --
+$ terraform import time_sleep.example ,30s
+-- exp-examples/resources/static/example_1.tf --
+resource "time_static" "example" {}
+
+output "current_time" {
+  value = time_static.example.rfc3339
+}
+-- exp-examples/resources/static/example_2.tf --
+resource "time_static" "ami_update" {
+  triggers = {
+    # Save the time each switch of an AMI id
+    ami_id = data.aws_ami.example.id
+  }
+}
+
+resource "aws_instance" "server" {
+  # Read the AMI id "through" the time_static resource to ensure that
+  # both will change together.
+  ami = time_static.ami_update.triggers.ami_id
+
+  tags = {
+    AmiUpdateTime = time_static.ami_update.rfc3339
+  }
+
+  # ... (other aws_instance arguments) ...
+}
+-- exp-examples/resources/static/import_1.sh --
+$ terraform import time_static.example 2020-02-12T06:36:13Z
+-- exp-templates/index.md.tmpl --
+---
+page_title: "Provider: Time"
+description: |-
+  The time provider is used to interact with time-based resources.
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
+# Time Provider
+
+The time provider is used to interact with time-based resources. The provider itself has no configuration options.
+
+Use the navigation to the left to read about the available resources.
+
+## Resource "Triggers"
+
+Certain time resources, only perform actions during specific lifecycle actions:
+
+- `time_offset`: Saves base timestamp into Terraform state only when created.
+- `time_sleep`: Sleeps when created and/or destroyed.
+- `time_static`: Saves base timestamp into Terraform state only when created.
+
+These resources provide an optional map argument called `triggers` that can be populated with arbitrary key/value pairs. When the keys or values of this argument are updated, Terraform will re-perform the desired action, such as updating the base timestamp or sleeping again.
+
+For example:
+
+{{tffile "$WORK/examples/example_1.tf"}}
+
+`triggers` are *not* treated as sensitive attributes; a value used for `triggers` will be displayed in Terraform UI output as plaintext.
+
+To force a these actions to reoccur without updating `triggers`, the [`terraform taint` command](https://www.terraform.io/docs/commands/taint.html) can be used to produce the action on the next run.
+-- exp-templates/resources/offset.md.tmpl --
+---
+page_title: "Time: time_offset"
+description: |-
+  Manages a offset time resource.
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
+# Resource: time_offset
+
+Manages an offset time resource, which keeps an UTC timestamp stored in the Terraform state that is offset from a locally sourced base timestamp. This prevents perpetual differences caused by using the [`timestamp()` function](https://www.terraform.io/docs/configuration/functions/timestamp.html).
+
+-> Further manipulation of incoming or outgoing values can be accomplished with the [`formatdate()` function](https://www.terraform.io/docs/configuration/functions/formatdate.html) and the [`timeadd()` function](https://www.terraform.io/docs/configuration/functions/timeadd.html).
+
+## Example Usage
+
+### Basic Usage
+
+{{tffile "$WORK/examples/resources/offset/example_1.tf"}}
+
+### Triggers Usage
+
+{{tffile "$WORK/examples/resources/offset/example_2.tf"}}
+
+## Argument Reference
+
+~> **NOTE:** At least one of the `offset_` arguments must be configured.
+
+The following arguments are optional:
+
+* `base_rfc3339` - (Optional) Configure the base timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). Defaults to the current time.
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will trigger a new base timestamp value to be saved. See [the main provider documentation](../index.html) for more information.
+* `offset_days` - (Optional) Number of days to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_hours` - (Optional) Number of hours to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_minutes` - (Optional) Number of minutes to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_months` - (Optional) Number of months to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_seconds` - (Optional) Number of seconds to offset the base timestamp. Conflicts with other `offset_` arguments.
+* `offset_years` - (Optional) Number of years to offset the base timestamp. Conflicts with other `offset_` arguments.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `day` - Number day of offset timestamp.
+* `hour` - Number hour of offset timestamp.
+* `id` - UTC RFC3339 format of the base timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `minute` - Number minute of offset timestamp.
+* `month` - Number month of offset timestamp.
+* `rfc3339` - UTC RFC3339 format of the offset timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `second` - Number second of offset timestamp.
+* `unix` - Number of seconds since epoch time, e.g. `1581489373`.
+* `year` - Number year of offset timestamp.
+
+## Import
+
+This resource can be imported using the base UTC RFC3339 timestamp and offset years, months, days, hours, minutes, and seconds, separated by commas (`,`), e.g.
+
+{{codefile "shell" "$WORK/examples/resources/offset/import_1.sh"}}
+
+The `triggers` argument cannot be imported.
+-- exp-templates/resources/rotating.md.tmpl --
+---
+page_title: "Time: time_rotating"
+description: |-
+  Manages a rotating time resource.
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
+# Resource: time_rotating
+
+Manages a rotating time resource, which keeps a rotating UTC timestamp stored in the Terraform state and proposes resource recreation when the locally sourced current time is beyond the rotation time. This rotation only occurs when Terraform is executed, meaning there will be drift between the rotation timestamp and actual rotation. The new rotation timestamp offset includes this drift. This prevents perpetual differences caused by using the [`timestamp()` function](https://www.terraform.io/docs/configuration/functions/timestamp.html) by only forcing a new value on the set cadence.
+
+-> Further manipulation of incoming or outgoing values can be accomplished with the [`formatdate()` function](https://www.terraform.io/docs/configuration/functions/formatdate.html) and the [`timeadd()` function](https://www.terraform.io/docs/configuration/functions/timeadd.html).
+
+## Example Usage
+
+This example configuration will rotate (destroy/create) the resource every 30 days.
+
+{{tffile "$WORK/examples/resources/rotating/example_1.tf"}}
+
+## Argument Reference
+
+~> **NOTE:** At least one of the `rotation_` arguments must be configured.
+
+The following arguments are optional:
+
+* `rfc3339` - (Optional) Configure the base timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). Defaults to the current time.
+* `rotation_days` - (Optional) Number of days to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_hours` - (Optional) Number of hours to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_minutes` - (Optional) Number of minutes to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_months` - (Optional) Number of months to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_rfc3339` - (Optional) Configure the rotation timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `rotation_years` - (Optional) Number of years to add to the base timestamp to configure the rotation timestamp. When the current time has passed the rotation timestamp, the resource will trigger recreation. Conflicts with other `rotation_` arguments.
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will trigger a new base timestamp value to be saved. These conditions recreate the resource in addition to other rotation arguments. See [the main provider documentation](../index.html) for more information.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `day` - Number day of timestamp.
+* `hour` - Number hour of timestamp.
+* `id` - UTC RFC3339 format of the base timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `minute` - Number minute of timestamp.
+* `month` - Number month of timestamp.
+* `second` - Number second of timestamp.
+* `unix` - Number of seconds since epoch time, e.g. `1581489373`.
+* `year` - Number year of timestamp.
+
+## Import
+
+This resource can be imported using the base UTC RFC3339 value and rotation years, months, days, hours, and minutes, separated by commas (`,`), e.g. for 30 days
+
+{{codefile "shell" "$WORK/examples/resources/rotating/import_1.sh"}}
+
+Otherwise, to import with the rotation RFC3339 value, the base UTC RFC3339 value and rotation UTC RFC3339 value, separated by commas (`,`), e.g.
+
+{{codefile "shell" "$WORK/examples/resources/rotating/import_2.sh"}}
+
+The `triggers` argument cannot be imported.
+-- exp-templates/resources/sleep.md.tmpl --
+---
+page_title: "Time: time_sleep"
+description: |-
+  Manages a static time resource.
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
+# Resource: time_sleep
+
+Manages a resource that delays creation and/or destruction, typically for further resources. This prevents cross-platform compatibility and destroy-time issues with using the [`local-exec` provisioner](https://www.terraform.io/docs/provisioners/local-exec.html).
+
+-> In many cases, this resource should be considered a workaround for issues that should be reported and handled in downstream Terraform Provider logic. Downstream resources can usually introduce or adjust retries in their code to handle time delay issues for all Terraform configurations or upstream resources can be improved to better wait for a resource to be fully ready and available.
+
+## Example Usage
+
+### Delay Create Usage
+
+{{tffile "$WORK/examples/resources/sleep/example_1.tf"}}
+
+### Delay Destroy Usage
+
+{{tffile "$WORK/examples/resources/sleep/example_2.tf"}}
+
+### Triggers Usage
+
+{{tffile "$WORK/examples/resources/sleep/example_3.tf"}}
+
+## Argument Reference
+
+The following arguments are optional:
+
+* `create_duration` - (Optional) [Time duration](https://golang.org/pkg/time/#ParseDuration) to delay resource creation. For example, `30s` for 30 seconds or `5m` for 5 minutes. Updating this value by itself will not trigger a delay.
+* `destroy_duration` - (Optional) [Time duration](https://golang.org/pkg/time/#ParseDuration) to delay resource destroy. For example, `30s` for 30 seconds or `5m` for 5 minutes. Updating this value by itself will not trigger a delay. This value or any updates to it must be successfully applied into the Terraform state before destroying this resource to take effect.
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will run any creation or destroy delays again. See [the main provider documentation](../index.html) for more information.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `id` - UTC RFC3339 timestamp of the creation or import, e.g. `2020-02-12T06:36:13Z`.
+
+## Import
+
+This resource can be imported with the `create_duration` and `destroy_duration`, separated by a comma (`,`).
+
+e.g. For 30 seconds create duration with no destroy duration:
+
+{{codefile "shell" "$WORK/examples/resources/sleep/import_1.sh"}}
+
+e.g. For 30 seconds destroy duration with no create duration:
+
+{{codefile "shell" "$WORK/examples/resources/sleep/import_2.sh"}}
+
+The `triggers` argument cannot be imported.
+-- exp-templates/resources/static.md.tmpl --
+---
+page_title: "Time: time_static"
+description: |-
+  Manages a static time resource.
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
+# Resource: time_static
+
+Manages a static time resource, which keeps a locally sourced UTC timestamp stored in the Terraform state. This prevents perpetual differences caused by using the [`timestamp()` function](https://www.terraform.io/docs/configuration/functions/timestamp.html).
+
+-> Further manipulation of incoming or outgoing values can be accomplished with the [`formatdate()` function](https://www.terraform.io/docs/configuration/functions/formatdate.html) and the [`timeadd()` function](https://www.terraform.io/docs/configuration/functions/timeadd.html).
+
+## Example Usage
+
+### Basic Usage
+
+{{tffile "$WORK/examples/resources/static/example_1.tf"}}
+
+### Triggers Usage
+
+{{tffile "$WORK/examples/resources/static/example_2.tf"}}
+
+## Argument Reference
+
+The following arguments are optional:
+
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will trigger a new base timestamp value to be saved. See [the main provider documentation](../index.html) for more information.
+* `rfc3339` - (Optional) Configure the base timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). Defaults to the current time.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `day` - Number day of timestamp.
+* `hour` - Number hour of timestamp.
+* `id` - UTC RFC3339 timestamp format, e.g. `2020-02-12T06:36:13Z`.
+* `minute` - Number minute of timestamp.
+* `month` - Number month of timestamp.
+* `rfc3339` - UTC RFC3339 format of timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `second` - Number second of timestamp.
+* `unix` - Number of seconds since epoch time, e.g. `1581489373`.
+* `year` - Number year of timestamp.
+
+## Import
+
+This resource can be imported using the UTC RFC3339 value, e.g.
+
+{{codefile "shell" "$WORK/examples/resources/static/import_1.sh"}}
+
+The `triggers` argument cannot be imported.

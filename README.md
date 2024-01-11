@@ -5,7 +5,7 @@ The primary way users will interact with this is the `tfplugindocs` CLI tool to 
 
 ## `tfplugindocs`
 
-The `tfplugindocs` CLI has two main commands, `validate` and `generate` (`generate` is the default).
+The `tfplugindocs` CLI has three main commands, `migrate`, `validate` and `generate` (`generate` is the default).
 This tool will let you generate documentation for your provider from live example `.tf` files and markdown templates.
 It will also export schema information from the provider (using `terraform providers schema -json`),
 and sync the schema with the reference documents.
@@ -51,6 +51,7 @@ Usage: tfplugindocs [--version] [--help] <command> [<args>]
 Available commands are:
                 the generate command is run by default
     generate    generates a plugin website from code, templates, and examples
+    migrate     migrates website files from either the legacy rendered website directory (`website/docs/r`) or the docs rendered website directory (`docs/resources`) to the tfplugindocs supported structure (`templates/`).
     validate    validates a plugin website for the current directory
        
 ```
@@ -66,6 +67,7 @@ Usage: tfplugindocs generate [<args>]
     --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources                                                             (default: "false")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory  
     --provider-name <ARG>            provider name, as used in Terraform configurations                                                                               
+    --providers-schema <ARG>         path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI                                                                               
     --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)                                                              
     --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
     --tf-version <ARG>               terraform binary version to download                                                                                             
@@ -79,6 +81,18 @@ Usage: tfplugindocs generate [<args>]
 $ tfplugindocs validate --help
 
 Usage: tfplugindocs validate [<args>]
+```
+
+`migrate` command:
+
+```shell
+$ tfplugindocs migrate --help
+
+Usage: tfplugindocs migrate [<args>]
+
+    --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
+    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
+    --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
 ```
 
 ### How it Works
@@ -122,6 +136,23 @@ Otherwise, the provider developer can set an arbitrary description like this:
     // ...
 ```
 
+#### Migrate subcommand
+
+The `migrate` subcommand can be used to migrate website files from either the legacy rendered website directory (`website/docs/r`) or the docs 
+rendered website directory (`docs/resources`) to the `tfplugindocs` supported structure (`templates/`). Markdown files in the rendered website 
+directory will be converted to `tfplugindocs` templates. The legacy `website/` directory will be removed after migration to avoid Terraform Registry 
+ingress issues.
+
+The `migrate` subcommand takes the following actions:
+1. Determines the rendered website directory based on the `--provider-dir` argument
+2. Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
+3. (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
+4. Change file suffixes for Markdown files to `.md.tmpl` to create website templates
+5. Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
+6. Replace extracted example code in website templates with `codefile`/`tffile` template functions referencing the example files.
+7. Copies non-template files to `--templates-dir` folder
+8. Removes the `website/` directory
+
 ### Conventional Paths
 
 The generation of missing documentation is based on a number of assumptions / conventional paths.
@@ -152,6 +183,37 @@ For examples:
 | `examples/resources/<resource name>/resource.tf`          | Resource example config         |
 | `examples/resources/<resource name>/import.sh`            | Resource example import command |
 
+#### Migration
+
+The `migrate` subcommand assumes the following conventional paths for the rendered website directory:
+
+Legacy website directory structure:
+
+| Path                                              | Description                 |
+|---------------------------------------------------|-----------------------------|
+| `website/`                                        | Root of website docs        |
+| `website/docs/guides`                             | Root of guides subdirectory |
+| `website/docs/index.html.markdown`                | Docs index page             |
+| `website/docs/d/<data source name>.html.markdown` | Data source page            |
+| `website/docs/r/<resource name>.html.markdown`    | Resource page               |
+
+Docs website directory structure:
+
+| Path                                                 | Description                 |
+|------------------------------------------------------|-----------------------------|
+| `docs/`                                              | Root of website docs        |
+| `docs/guides`                                        | Root of guides subdirectory |
+| `docs/index.html.markdown`                           | Docs index page             |
+| `docs/data-sources/<data source name>.html.markdown` | Data source page            |
+| `docs/resources/<resource name>.html.markdown`       | Resource page               |
+
+Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
+and `docs/resources/` subdirectories will be converted to `tfplugindocs` templates. 
+
+The `website/docs/guides/` and `docs/guides/` subdirectories will be copied as-is to the `--templates-dir` folder. 
+
+All other files in the conventional paths will be ignored.
+
 ### Templates
 
 The templates are implemented with Go [`text/template`](https://golang.org/pkg/text/template/)
@@ -169,6 +231,7 @@ using the following data fields and functions:
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
 |    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+|       `.SchemaMarkdown` | string | a Markdown formatted Provider Schema definition                                           |
 
 ##### Resources / Data Source
 
@@ -184,6 +247,7 @@ using the following data fields and functions:
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
 |    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+|       `.SchemaMarkdown` | string | a Markdown formatted Resource / Data Source Schema definition                             |
 
 #### Functions
 
@@ -193,12 +257,13 @@ using the following data fields and functions:
 | `lower`         | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToLower).                            |
 | `plainmarkdown` | Render Markdown content as plaintext.                                                             |
 | `prefixlines`   | Add a prefix to all (newline-separated) lines in a string.                                        |
+| `printf`        | Equivalent to [`fmt.Printf`](https://pkg.go.dev/fmt#Printf).                                      |
 | `split`         | Split string into sub-strings, by a given separator (ex. `split .Name "_"`).                      |
 | `title`         | Equivalent to [`cases.Title`](https://pkg.go.dev/golang.org/x/text/cases#Title).                  |
 | `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
 | `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
 | `upper`         | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                            |
-
+ 
 ## Disclaimer
 
 This is still under development: while it's being used for production-ready providers, you might still find bugs
@@ -213,3 +278,20 @@ Your help and patience is truly appreciated.
 All source code files in this repository (excluding autogenerated files like `go.mod`, prose, and files excluded in [.copywrite.hcl](.copywrite.hcl)) must have a license header at the top.
 
 This can be autogenerated by running `make generate` or running `go generate ./...` in the [/tools](/tools) directory.
+
+### Acceptance Tests
+
+This repo uses the `testscript` [package](https://pkg.go.dev/github.com/rogpeppe/go-internal/testscript) for acceptance testing.
+
+There are two types of acceptance tests: full provider build tests in `tfplugindocs/testdata/scripts/provider-build` and provider schema json tests in `tfplugindocs/testdata/scripts/schema-json`.
+
+Provider build tests run the default `tfplugindocs` command which builds the provider source code and runs Terraform to retrieve the schema. These tests require the full provider source code to build a valid provider binary. 
+
+Schema json tests run the `tfplugindocs` command with the `--providers-schema=<arg>` flag to specify a provider schemas json file. This allows the test to skip the provider build and Terraform CLI call, instead using the specified file to generate docs. 
+
+You can run `make testacc` to run the full suite of acceptance tests. By default, the provider build acceptance tests will create a temporary directory in `/tmp/tftmp` for testing, but you can change this location in `cmd/tfplugindocs/main_test.go`. The schema json tests uses the `testscript` package's [default work directory](https://pkg.go.dev/github.com/rogpeppe/go-internal/testscript#Params.WorkdirRoot).
+
+The test scripts are defined in the `tfplugindocs/testdata/scripts` directory. Each script includes the test, golden files, and the provider source code or schema JSON file needed to run the test.
+
+Each script is a [text archive](https://pkg.go.dev/golang.org/x/tools/txtar). You can install the `txtar` CLI locally by running `go install golang.org/x/exp/cmd/txtar@latest` to extract the files in the test script for debugging. 
+You can also use `txtar` CLI archive files into the `.txtar` format to create new tests or modify existing ones.
