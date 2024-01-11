@@ -19,12 +19,6 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-var (
-	exampleImportCodeTemplate = "{{codefile \"shell\" \"%s\"}}"
-	exampleTFCodeTemplate     = "{{tffile \"%s\"}}"
-	indexFileNameRegex        = regexp.MustCompile(`index.*`)
-)
-
 type migrator struct {
 	// providerDir is the absolute path to the root provider directory
 	providerDir string
@@ -95,9 +89,12 @@ func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir str
 func (m *migrator) Migrate() error {
 	m.infof("migrating website from %q to %q", m.ProviderWebsiteDir(), m.ProviderTemplatesDir())
 
-	err := filepath.WalkDir(m.ProviderWebsiteDir(), func(path string, d os.DirEntry, _ error) error {
-		switch d.IsDir() {
-		case true: //directories
+	err := filepath.WalkDir(m.ProviderWebsiteDir(), func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return fmt.Errorf("unable to walk path %q: %w", path, err)
+		}
+
+		if d.IsDir() {
 			switch d.Name() {
 			case "d", "data-sources": //data-sources
 				m.infof("migrating data-sources directory: %s", d.Name())
@@ -121,9 +118,9 @@ func (m *migrator) Migrate() error {
 				}
 				return filepath.SkipDir
 			}
-		case false: //files
+		} else {
 			switch {
-			case indexFileNameRegex.MatchString(d.Name()): //index file
+			case regexp.MustCompile(`index.*`).MatchString(d.Name()): //index file
 				m.infof("migrating provider index: %s", d.Name())
 				err := filepath.WalkDir(path, m.MigrateTemplate(""))
 				if err != nil {
@@ -199,18 +196,29 @@ func (m *migrator) MigrateTemplate(relDir string) fs.WalkDirFunc {
 
 }
 
-func (m *migrator) ExtractFrontMatter(content []byte, templateFile string) error {
+func (m *migrator) ExtractFrontMatter(content []byte, templateFilePath string) error {
+	templateFile, err := os.OpenFile(templateFilePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return fmt.Errorf("unable to open file %q: %w", templateFilePath, err)
+	}
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			m.warnf("unable to close file %q: %q", templateFilePath, err)
+		}
+	}(templateFile)
+
 	fileScanner := bufio.NewScanner(bytes.NewReader(content))
 	fileScanner.Split(bufio.ScanLines)
 
 	hasFirstLine := fileScanner.Scan()
 	if !hasFirstLine || fileScanner.Text() != "---" {
-		m.warnf("no frontmatter found in %q", templateFile)
+		m.warnf("no frontmatter found in %q", templateFilePath)
 		return nil
 	}
-	err := appendFile(templateFile, []byte(fileScanner.Text()+"\n"))
+	_, err = templateFile.WriteString(fileScanner.Text() + "\n")
 	if err != nil {
-		return fmt.Errorf("unable to append frontmatter to %q: %w", templateFile, err)
+		return fmt.Errorf("unable to append frontmatter to %q: %w", templateFilePath, err)
 	}
 	exited := false
 	for fileScanner.Scan() {
@@ -218,9 +226,9 @@ func (m *migrator) ExtractFrontMatter(content []byte, templateFile string) error
 			// skip layout front matter
 			continue
 		}
-		err = appendFile(templateFile, []byte(fileScanner.Text()+"\n"))
+		_, err = templateFile.WriteString(fileScanner.Text() + "\n")
 		if err != nil {
-			return fmt.Errorf("unable to append frontmatter to %q: %w", templateFile, err)
+			return fmt.Errorf("unable to append frontmatter to %q: %w", templateFilePath, err)
 		}
 		if fileScanner.Text() == "---" {
 			exited = true
@@ -229,13 +237,13 @@ func (m *migrator) ExtractFrontMatter(content []byte, templateFile string) error
 	}
 
 	if !exited {
-		return fmt.Errorf("cannot find ending of frontmatter block in %q", templateFile)
+		return fmt.Errorf("cannot find ending of frontmatter block in %q", templateFilePath)
 	}
 
 	// add comment to end of front matter briefly explaining template functionality
-	err = appendFile(templateFile, []byte(migrateProviderTemplateComment+"\n"))
+	_, err = templateFile.WriteString(migrateProviderTemplateComment + "\n")
 	if err != nil {
-		return fmt.Errorf("unable to append template comment to %q: %w", templateFile, err)
+		return fmt.Errorf("unable to append template comment to %q: %w", templateFilePath, err)
 	}
 
 	return nil
@@ -276,14 +284,14 @@ func (m *migrator) ExtractCodeExamples(content []byte, newRelDir string, templat
 				ext = ".tf"
 				exampleName = "example_" + strconv.Itoa(exampleCount) + ext
 				examplePath = filepath.Join(m.ProviderExamplesDir(), newRelDir, exampleName)
-				template = fmt.Sprintf(exampleTFCodeTemplate, examplePath)
+				template = fmt.Sprintf("{{tffile \"%s\"}}", examplePath)
 				m.infof("creating example file %q", examplePath)
 			case "console":
 				importCount++
 				ext = ".sh"
 				exampleName = "import_" + strconv.Itoa(importCount) + ext
 				examplePath = filepath.Join(m.ProviderExamplesDir(), newRelDir, exampleName)
-				template = fmt.Sprintf(exampleImportCodeTemplate, examplePath)
+				template = fmt.Sprintf("{{codefile \"shell\" \"%s\"}}", examplePath)
 				m.infof("creating import file %q", examplePath)
 			default:
 				// Render node as is

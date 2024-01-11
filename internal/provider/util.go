@@ -99,31 +99,6 @@ func writeFile(path string, data string) error {
 	return nil
 }
 
-// appendFile appends data to the specified file or creates the file if it doesn't exist.
-func appendFile(path string, data []byte) error {
-	dir, _ := filepath.Split(path)
-	err := os.MkdirAll(dir, 0755)
-	if err != nil {
-		return fmt.Errorf("unable to make dir %q: %w", dir, err)
-	}
-
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-	if err != nil {
-		return fmt.Errorf("unable to open file %q: %w", path, err)
-	}
-
-	_, err = f.Write(data)
-	if err != nil {
-		return fmt.Errorf("unable to write file %q: %w", path, err)
-	}
-	err = f.Close()
-	if err != nil {
-		return fmt.Errorf("unable to close file %q: %w", path, err)
-	}
-
-	return nil
-}
-
 func runCmd(cmd *exec.Cmd) ([]byte, error) {
 	output, err := cmd.CombinedOutput()
 	if err != nil {

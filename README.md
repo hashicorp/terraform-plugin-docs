@@ -121,14 +121,14 @@ directory will be converted to `tfplugindocs` templates. The legacy `website/` d
 ingress issues.
 
 The `migrate` subcommand takes the following actions:
-- Determines the rendered website directory based on the `--provider-dir` argument
-- Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
-- (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
-- Change file suffixes for Markdown files to `.md.tmpl` to create website templates
-- Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
-- replace extracted example code in website templates with `tfplugindocs` template code referring to example files.
-- Copies non-template files to `--templates-dir` folder
-- Removes the `website/` directory
+1. Determines the rendered website directory based on the `--provider-dir` argument
+2. Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
+3. (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
+4. Change file suffixes for Markdown files to `.md.tmpl` to create website templates
+5. Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
+6. Replace extracted example code in website templates with `codefile`/`tffile` template functions referencing the example files.
+7. Copies non-template files to `--templates-dir` folder
+8. Removes the `website/` directory
 
 ### Conventional Paths
 

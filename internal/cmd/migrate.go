@@ -64,9 +64,9 @@ func (cmd *migrateCmd) Help() string {
 func (cmd *migrateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("migrate", flag.ExitOnError)
 
-	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory when running the command outside the root provider code directory")
+	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory; this will default to the current working directory if not set")
 	fs.StringVar(&cmd.flagTemplatesDir, "templates-dir", "templates", "new website templates directory based on provider-dir; files will be migrated to this directory")
-	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir")
+	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir; extracted code examples will be migrated to this directory")
 	return fs
 }
 
