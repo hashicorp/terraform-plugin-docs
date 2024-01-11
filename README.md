@@ -19,6 +19,29 @@ You can install a copy of the binary manually from the [releases](https://github
 or you can optionally use the [tools.go model](https://github.com/go-modules-by-example/index/blob/master/010_tools/README.md)
 for tool installation.
 
+> [!NOTE]
+>
+> Here is a brief `./tools/tools.go` example from https://github.com/hashicorp/terraform-provider-scaffolding-framework:
+>
+> ```go
+> //go:build tools
+>
+> package tools
+>
+> import (
+>   // Documentation generation
+>   _ "github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs"
+> )
+> ```
+>
+> Then run the following to install and verify `tfplugindocs`:
+> ```console
+> export GOBIN=$PWD/bin
+> export PATH=$GOBIN:$PATH
+> go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+> which tfplugindocs
+> ```
+
 ### Usage
 
 ```shell
