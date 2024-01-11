@@ -5,7 +5,7 @@ The primary way users will interact with this is the `tfplugindocs` CLI tool to 
 
 ## `tfplugindocs`
 
-The `tfplugindocs` CLI has two main commands, `validate` and `generate` (`generate` is the default).
+The `tfplugindocs` CLI has three main commands, `migrate`, `validate` and `generate` (`generate` is the default).
 This tool will let you generate documentation for your provider from live example `.tf` files and markdown templates.
 It will also export schema information from the provider (using `terraform providers schema -json`),
 and sync the schema with the reference documents.
@@ -28,6 +28,7 @@ Usage: tfplugindocs [--version] [--help] <command> [<args>]
 Available commands are:
                 the generate command is run by default
     generate    generates a plugin website from code, templates, and examples
+    migrate     migrates website files from either the legacy rendered website directory (`website/docs/r`) or the docs rendered website directory (`docs/resources`) to the tfplugindocs supported structure (`templates/`).
     validate    validates a plugin website for the current directory
        
 ```
@@ -57,6 +58,18 @@ Usage: tfplugindocs generate [<args>]
 $ tfplugindocs validate --help
 
 Usage: tfplugindocs validate [<args>]
+```
+
+`migrate` command:
+
+```shell
+$ tfplugindocs migrate --help
+
+Usage: tfplugindocs migrate [<args>]
+
+    --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
+    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
+    --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
 ```
 
 ### How it Works
@@ -100,6 +113,23 @@ Otherwise, the provider developer can set an arbitrary description like this:
     // ...
 ```
 
+#### Migrate subcommand
+
+The `migrate` subcommand can be used to migrate website files from either the legacy rendered website directory (`website/docs/r`) or the docs 
+rendered website directory (`docs/resources`) to the `tfplugindocs` supported structure (`templates/`). Markdown files in the rendered website 
+directory will be converted to `tfplugindocs` templates. The legacy `website/` directory will be removed after migration to avoid Terraform Registry 
+ingress issues.
+
+The `migrate` subcommand takes the following actions:
+1. Determines the rendered website directory based on the `--provider-dir` argument
+2. Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
+3. (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
+4. Change file suffixes for Markdown files to `.md.tmpl` to create website templates
+5. Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
+6. Replace extracted example code in website templates with `codefile`/`tffile` template functions referencing the example files.
+7. Copies non-template files to `--templates-dir` folder
+8. Removes the `website/` directory
+
 ### Conventional Paths
 
 The generation of missing documentation is based on a number of assumptions / conventional paths.
@@ -129,6 +159,37 @@ For examples:
 | `examples/data-sources/<data source name>/data-source.tf` | Data source example config      |
 | `examples/resources/<resource name>/resource.tf`          | Resource example config         |
 | `examples/resources/<resource name>/import.sh`            | Resource example import command |
+
+#### Migration
+
+The `migrate` subcommand assumes the following conventional paths for the rendered website directory:
+
+Legacy website directory structure:
+
+| Path                                              | Description                 |
+|---------------------------------------------------|-----------------------------|
+| `website/`                                        | Root of website docs        |
+| `website/docs/guides`                             | Root of guides subdirectory |
+| `website/docs/index.html.markdown`                | Docs index page             |
+| `website/docs/d/<data source name>.html.markdown` | Data source page            |
+| `website/docs/r/<resource name>.html.markdown`    | Resource page               |
+
+Docs website directory structure:
+
+| Path                                                 | Description                 |
+|------------------------------------------------------|-----------------------------|
+| `docs/`                                              | Root of website docs        |
+| `docs/guides`                                        | Root of guides subdirectory |
+| `docs/index.html.markdown`                           | Docs index page             |
+| `docs/data-sources/<data source name>.html.markdown` | Data source page            |
+| `docs/resources/<resource name>.html.markdown`       | Resource page               |
+
+Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
+and `docs/resources/` subdirectories will be converted to `tfplugindocs` templates. 
+
+The `website/docs/guides/` and `docs/guides/` subdirectories will be copied as-is to the `--templates-dir` folder. 
+
+All other files in the conventional paths will be ignored.
 
 ### Templates
 
@@ -179,7 +240,7 @@ using the following data fields and functions:
 | `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
 | `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
 | `upper`         | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                            |
-
+ 
 ## Disclaimer
 
 This is still under development: while it's being used for production-ready providers, you might still find bugs

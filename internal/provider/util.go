@@ -12,7 +12,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Kunde21/markdownfmt/v3/markdown"
 	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
 )
 
 func providerShortName(n string) string {
@@ -159,4 +164,22 @@ func extractSchemaFromFile(path string) (*tfjson.ProviderSchemas, error) {
 	}
 
 	return schemas, nil
+}
+
+func newMarkdownRenderer() goldmark.Markdown {
+	mr := markdown.NewRenderer()
+	extensions := []goldmark.Extender{
+		extension.GFM,
+		meta.Meta, // We need this to skip YAML frontmatter when parsing.
+	}
+	parserOptions := []parser.Option{
+		parser.WithAttribute(), // We need this to enable # headers {#custom-ids}.
+	}
+
+	gm := goldmark.New(
+		goldmark.WithExtensions(extensions...),
+		goldmark.WithParserOptions(parserOptions...),
+		goldmark.WithRenderer(mr),
+	)
+	return gm
 }
