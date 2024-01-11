@@ -122,7 +122,7 @@ ingress issues.
 
 The `migrate` subcommand takes the following actions:
 - Determines the rendered website directory based on the `--provider-dir` argument
-- Copies the contents of the rendered website directory to the `--tempates-dir` folder (will create this folder if it doesn't exist)
+- Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
 - (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
 - Change file suffixes for Markdown files to `.md.tmpl` to create website templates
 - Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
