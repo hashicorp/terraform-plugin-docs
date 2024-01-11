@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mitchellh/cli"
+	"github.com/hashicorp/cli"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
 )
