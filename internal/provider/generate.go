@@ -13,6 +13,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/hashicorp/cli"
 	"github.com/hashicorp/go-version"
 	install "github.com/hashicorp/hc-install"
 	"github.com/hashicorp/hc-install/checkpoint"
@@ -22,7 +23,6 @@ import (
 	"github.com/hashicorp/hc-install/src"
 	"github.com/hashicorp/terraform-exec/tfexec"
 	tfjson "github.com/hashicorp/terraform-json"
-	"github.com/mitchellh/cli"
 	"golang.org/x/exp/slices"
 )
 

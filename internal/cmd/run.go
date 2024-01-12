@@ -8,8 +8,8 @@ import (
 	"io"
 	"os"
 
+	"github.com/hashicorp/cli"
 	"github.com/mattn/go-colorable"
-	"github.com/mitchellh/cli"
 
 	"github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs/build"
 )
