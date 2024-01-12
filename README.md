@@ -70,7 +70,7 @@ Usage: tfplugindocs generate [<args>]
     --providers-schema <ARG>         path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI                                                                               
     --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)                                                              
     --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
-    --tf-version <ARG>               terraform binary version to download                                                                                             
+    --tf-version <ARG>               terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform                                                                                             
     --website-source-dir <ARG>       templates directory based on provider-dir                                                                                          (default: "templates")
     --website-temp-dir <ARG>         temporary directory (used during generation)  
 ```
@@ -114,6 +114,14 @@ and [`terraform-provider-tls`](https://github.com/hashicorp/terraform-provider-t
 You can browse their respective docs on the Terraform Registry,
 [here](https://registry.terraform.io/providers/hashicorp/random/latest/docs)
 and [here](https://registry.terraform.io/providers/hashicorp/tls/latest/docs).
+
+### Usage of Terraform binary
+
+If the `--providers-schema` flag is not provided, `tfplugindocs` will use the [Terraform binary](https://github.com/hashicorp/terraform) to generate the provider schema with the commands:
+- [`terraform init`](https://developer.hashicorp.com/terraform/cli/commands/init)
+- [`terraform providers schema`](https://developer.hashicorp.com/terraform/cli/commands/providers/schema)
+
+We recommend using the latest version of Terraform when using `tfplugindocs`, however, the version can be specified with the `--tf-version` flag if needed.
 
 #### About the `id` attribute
 
@@ -263,7 +271,7 @@ using the following data fields and functions:
 | `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
 | `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
 | `upper`         | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                            |
- 
+
 ## Disclaimer
 
 This is still under development: while it's being used for production-ready providers, you might still find bugs
