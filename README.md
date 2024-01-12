@@ -117,11 +117,11 @@ and [here](https://registry.terraform.io/providers/hashicorp/tls/latest/docs).
 
 ### Usage of Terraform binary
 
-`tfplugindocs` uses the [Terraform binary](https://github.com/hashicorp/terraform) to generate provider documentation with the commands:
+If the `--providers-schema` flag is not provided, `tfplugindocs` will use the [Terraform binary](https://github.com/hashicorp/terraform) to generate the provider schema with the commands:
 - [`terraform init`](https://developer.hashicorp.com/terraform/cli/commands/init)
 - [`terraform providers schema`](https://developer.hashicorp.com/terraform/cli/commands/providers/schema)
 
-The version of Terraform used can be controlled with the `--tf-version` flag.
+We recommend using the latest version of Terraform when using `tfplugindocs`, however, the version can be specified with the `--tf-version` flag if needed.
 
 #### About the `id` attribute
 
