@@ -1,3 +1,26 @@
+## 0.17.0 (January 17, 2024)
+
+BREAKING CHANGES:
+
+* generate: templates using `printf` with either `codefile` or `tffile` to render code examples in markdown will need to switch to using those functions directly.
+For example, switch the following template code:
+`{{printf "{{codefile \"shell\" %q}}" .ImportFile}}`
+to
+`{{codefile "shell" .ImportFile}}`  ([#300](https://github.com/hashicorp/terraform-plugin-docs/issues/300))
+
+FEATURES:
+
+* migrate: Added new `migrate` subcommand that migrates existing provider docs using the rendered website source directories (`website/docs/` or `/docs/`) to a `terraform-plugin-docs`-supported templates directory. ([#314](https://github.com/hashicorp/terraform-plugin-docs/issues/314))
+
+ENHANCEMENTS:
+
+* generate: Add `provider-schema` flag to pass in a file path to a provider schema JSON file, allowing the command to skip building the provider and calling Terraform CLI ([#299](https://github.com/hashicorp/terraform-plugin-docs/issues/299))
+
+BUG FIXES:
+
+* generate: fix `no such file or directory` error when running `generate` with no existing rendered website directory. ([#296](https://github.com/hashicorp/terraform-plugin-docs/issues/296))
+* generate: fix incorrect rendering of example and import files for providers with no docs templates or with generic fallback templates. ([#300](https://github.com/hashicorp/terraform-plugin-docs/issues/300))
+
 ## 0.16.0 (July 06, 2023)
 
 ENHANCEMENTS:

@@ -1,6 +1,0 @@
-kind: ENHANCEMENTS
-body: 'generate: Add `provider-schema` flag to pass in a file path to a provider schema JSON
-  file, allowing the command to skip building the provider and calling Terraform CLI'
-time: 2023-11-17T15:10:29.850914-05:00
-custom:
-  Issue: "299"
