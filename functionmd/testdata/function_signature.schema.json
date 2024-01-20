@@ -1,0 +1,49 @@
+{
+  "description": "Given a string value, returns the same value.",
+  "summary": "Echo a string",
+  "return_type": "string",
+  "parameters": [
+    {
+      "name": "input",
+      "description": "Value to echo.",
+      "type": "string"
+    },
+    {
+      "name": "int64Input",
+      "description": "Int64 Value to echo.",
+      "type": "number"
+    },
+    {
+      "name": "listStringInput",
+      "description": "List of strings to echo.",
+      "type": [
+        "list",
+        "string"
+      ]
+    },
+    {
+      "name": "mapStringInput",
+      "description": "Map of strings to echo.",
+      "type": [
+        "map",
+        "string"
+      ]
+    },
+    {
+      "name": "objectInput",
+      "description": "Object to echo.",
+      "type": [
+        "object",
+        {
+          "attr1": "string",
+          "attr2": "number"
+        }
+      ]
+    }
+  ],
+  "variadic_parameter": {
+    "name": "variadicInput",
+    "description": "Variadic input to echo.",
+    "type": "string"
+  }
+}

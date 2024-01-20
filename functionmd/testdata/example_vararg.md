@@ -1,0 +1,1 @@
+1. `variadicInput` (Variadic, String) Variadic input to echo.
