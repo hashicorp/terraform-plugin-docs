@@ -1,0 +1,6 @@
+kind: ENHANCEMENTS
+body: 'validate: Add `functions` to list of allowed template and rendered website
+  subdirectories'
+time: 2024-01-22T16:03:17.035362-05:00
+custom:
+  Issue: "328"
