@@ -302,7 +302,7 @@ const defaultFunctionTemplate functionTemplate = `---
 page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
-{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+{{ .Summary | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
 # {{.Type}}: {{.Name}}
@@ -351,5 +351,11 @@ description: |-
 const migrateProviderTemplateComment string = `
 {{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
 
-For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+`
+
+const migrateFunctionTemplateComment string = `
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ .FunctionArgumentsMarkdown }} template can be used to replace manual argument documentation if descriptions of function arguments are added in the provider source code. */ -}}
 `

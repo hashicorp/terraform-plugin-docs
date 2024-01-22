@@ -10,6 +10,7 @@ cmpenv stdout expected-output.txt
 
 # Check template files
 cmpenv templates/index.md.tmpl exp-templates/index.md.tmpl
+cmpenv templates/functions/rfc3339_parse.md.tmpl exp-templates/functions/rfc3339_parse.md.tmpl
 cmpenv templates/resources/offset.md.tmpl exp-templates/resources/offset.md.tmpl
 cmpenv templates/resources/rotating.md.tmpl exp-templates/resources/rotating.md.tmpl
 cmpenv templates/resources/sleep.md.tmpl exp-templates/resources/sleep.md.tmpl
@@ -17,6 +18,8 @@ cmpenv templates/resources/static.md.tmpl exp-templates/resources/static.md.tmpl
 
 # Check generated example files
 cmpenv examples/example_1.tf examples/example_1.tf
+
+cmpenv examples/functions/rfc3339_parse/example_1.tf exp-examples/functions/rfc3339_parse/example_1.tf
 
 cmpenv examples/resources/offset/example_1.tf exp-examples/resources/offset/example_1.tf
 cmpenv examples/resources/offset/example_2.tf exp-examples/resources/offset/example_2.tf
@@ -41,6 +44,13 @@ cmpenv examples/resources/static/import_1.sh examples/resources/static/import_1.
 
 -- expected-output.txt --
 migrating website from "$WORK/website/docs" to "$WORK/templates"
+migrating functons directory: functions
+migrating file "rfc3339_parse.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/functions/rfc3339_parse.md.tmpl"
+extracting code examples from "rfc3339_parse.html.markdown"
+creating example file "$WORK/examples/functions/rfc3339_parse/example_1.tf"
+skipping code block with unknown language "text"
+finished creating template "$WORK/templates/functions/rfc3339_parse.md.tmpl"
 migrating provider index: index.html.markdown
 migrating file "index.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/index.md.tmpl"
@@ -128,6 +138,35 @@ resource "aws_instance" "server" {
 `triggers` are *not* treated as sensitive attributes; a value used for `triggers` will be displayed in Terraform UI output as plaintext.
 
 To force a these actions to reoccur without updating `triggers`, the [`terraform taint` command](https://www.terraform.io/docs/commands/taint.html) can be used to produce the action on the next run.
+-- website/docs/functions/rfc3339_parse.html.markdown --
+---
+page_title: "rfc3339_parse Function - Time"
+subcategory: ""
+description: |-
+  Parse an RFC3339 timestamp string
+---
+
+# rfc3339_parse Function
+
+Given an RFC3339 timestamp string, will parse and return an object representation of that date and time.
+
+## Example Usage
+
+```terraform
+output "test" {
+ value = provider::time::rfc3339_parse("2023-07-25T23:43:16-00:00")
+}
+```
+
+## Signature
+
+```text
+rfc3339_parse(timestamp string) Object
+```
+
+## Arguments
+
+1. `timestamp` (string) RFC3339 timestamp string to parse
 -- website/docs/r/offset.html.markdown --
 ---
 layout: "time"
@@ -499,6 +538,10 @@ resource "aws_instance" "server" {
 
   # ... (other aws_instance arguments) ...
 }
+-- exp-examples/functions/rfc3339_parse/example_1.tf --
+output "test" {
+ value = provider::time::rfc3339_parse("2023-07-25T23:43:16-00:00")
+}
 -- exp-examples/resources/offset/example_1.tf --
 resource "time_offset" "example" {
   offset_days = 7
@@ -631,7 +674,7 @@ description: |-
 
 {{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
 
-For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
 
 # Time Provider
 
@@ -656,6 +699,35 @@ For example:
 `triggers` are *not* treated as sensitive attributes; a value used for `triggers` will be displayed in Terraform UI output as plaintext.
 
 To force a these actions to reoccur without updating `triggers`, the [`terraform taint` command](https://www.terraform.io/docs/commands/taint.html) can be used to produce the action on the next run.
+-- exp-templates/functions/rfc3339_parse.md.tmpl --
+---
+page_title: "rfc3339_parse Function - Time"
+subcategory: ""
+description: |-
+  Parse an RFC3339 timestamp string
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ .FunctionArgumentsMarkdown }} template can be used to replace manual argument documentation if descriptions of function arguments are added in the provider source code. */ -}}
+
+# rfc3339_parse Function
+
+Given an RFC3339 timestamp string, will parse and return an object representation of that date and time.
+
+## Example Usage
+
+{{tffile "$WORK/examples/functions/rfc3339_parse/example_1.tf"}}
+
+## Signature
+
+```text
+rfc3339_parse(timestamp string) Object
+```
+
+## Arguments
+
+1. `timestamp` (string) RFC3339 timestamp string to parse
 -- exp-templates/resources/offset.md.tmpl --
 ---
 page_title: "Time: time_offset"
@@ -665,7 +737,7 @@ description: |-
 
 {{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
 
-For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
 
 # Resource: time_offset
 
@@ -728,7 +800,7 @@ description: |-
 
 {{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
 
-For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
 
 # Resource: time_rotating
 
@@ -790,7 +862,7 @@ description: |-
 
 {{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
 
-For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
 
 # Resource: time_sleep
 
@@ -848,7 +920,7 @@ description: |-
 
 {{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
 
-For example, the {{ SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
 
 # Resource: time_static
 

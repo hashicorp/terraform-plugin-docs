@@ -200,13 +200,14 @@ The `migrate` subcommand assumes the following conventional paths for the render
 
 Legacy website directory structure:
 
-| Path                                              | Description                 |
-|---------------------------------------------------|-----------------------------|
-| `website/`                                        | Root of website docs        |
-| `website/docs/guides`                             | Root of guides subdirectory |
-| `website/docs/index.html.markdown`                | Docs index page             |
-| `website/docs/d/<data source name>.html.markdown` | Data source page            |
-| `website/docs/r/<resource name>.html.markdown`    | Resource page               |
+| Path                                                  | Description                 |
+|-------------------------------------------------------|-----------------------------|
+| `website/`                                            | Root of website docs        |
+| `website/docs/guides`                                 | Root of guides subdirectory |
+| `website/docs/index.html.markdown`                    | Docs index page             |
+| `website/docs/d/<data source name>.html.markdown`     | Data source page            |
+| `website/docs/functons/<function name>.html.markdown` | Functions page              |
+| `website/docs/r/<resource name>.html.markdown`        | Resource page               |
 
 Docs website directory structure:
 
@@ -216,6 +217,7 @@ Docs website directory structure:
 | `docs/guides`                                        | Root of guides subdirectory |
 | `docs/index.html.markdown`                           | Docs index page             |
 | `docs/data-sources/<data source name>.html.markdown` | Data source page            |
+| `docs/functions/<function name>.html.markdown`       | Function page               |
 | `docs/resources/<resource name>.html.markdown`       | Resource page               |
 
 Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
@@ -262,20 +264,21 @@ using the following data fields and functions:
 
 ##### Provider-defined Function Fields
 
-|                                Field |  Type  | Description                                                                               |
-|-------------------------------------:|:------:|-------------------------------------------------------------------------------------------|
-|                              `.Name` | string | Name of the function (ex. `echo`)                                                         |
-|                              `.Type` | string | Returns `Function`                                                                        |
-|                       `.Description` | string | Function description                                                                      |
-|                        `.HasExample` |  bool  | Is there an example file?                                                                 |
-|                       `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
-|                      `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|                 `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
-|              `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
-|         `.FunctionSignatureMarkdown` | string | a Markdown formatted Function signature                                                   |
-|         `.FunctionArgumentsMarkdown` | string | a Markdown formatted Function arguments definition                                        |
-|                       `.HasVariadic` |  bool  | Does this function have a variadic argument?                                              |
-|  `.FunctionVariadicArgumentMarkdown` | string | a Markdown formatted Function variadic argument definition                                |
+|                               Field |  Type  | Description                                                                               |
+|------------------------------------:|:------:|-------------------------------------------------------------------------------------------|
+|                             `.Name` | string | Name of the function (ex. `echo`)                                                         |
+|                             `.Type` | string | Returns `Function`                                                                        |
+|                      `.Description` | string | Function description                                                                      |
+|                          `.Summary` | string | Function summary                                                                          |
+|                       `.HasExample` |  bool  | Is there an example file?                                                                 |
+|                      `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
+|                     `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
+|                `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|             `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+|        `.FunctionSignatureMarkdown` | string | a Markdown formatted Function signature                                                   |
+|        `.FunctionArgumentsMarkdown` | string | a Markdown formatted Function arguments definition                                        |
+|                      `.HasVariadic` |  bool  | Does this function have a variadic argument?                                              |
+| `.FunctionVariadicArgumentMarkdown` | string | a Markdown formatted Function variadic argument definition                                |
 
 #### Template Functions
 

@@ -67,7 +67,7 @@ data "scaffolding_example" "example" {
 page_title: "example function - terraform-provider-scaffolding"
 subcategory: ""
 description: |-
-  Given a string value, returns the same value.
+  Echo a string
 ---
 
 # function: example
