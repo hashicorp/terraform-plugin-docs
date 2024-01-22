@@ -10,19 +10,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-docs/schemamd"
 )
 
-// Render writes a Markdown formatted Schema definition to the specified writer.
-// A Schema contains a Version and the root Block, for example:
-//
-//	"aws_accessanalyzer_analyzer": {
-//	  "block": {
-//	  },
-//		 "version": 0
-//	},
-
-// Todo: writes function definition comment
+// RenderArguments returns a Markdown formatted string of the function arguments.
 func RenderArguments(signature *tfjson.FunctionSignature) (string, error) {
 	argBuffer := bytes.NewBuffer(nil)
-	for _, p := range signature.Parameters {
+	for i, p := range signature.Parameters {
 		name := p.Name
 		desc := strings.TrimSpace(p.Description)
 
@@ -33,9 +24,13 @@ func RenderArguments(signature *tfjson.FunctionSignature) (string, error) {
 		}
 
 		if p.IsNullable {
-			argBuffer.WriteString(fmt.Sprintf("1. `%s` (%s, Nullable) %s\n", name, typeBuffer.String(), desc))
+			argBuffer.WriteString(fmt.Sprintf("1. `%s` (%s, Nullable) %s", name, typeBuffer.String(), desc))
 		} else {
-			argBuffer.WriteString(fmt.Sprintf("1. `%s` (%s) %s\n", name, typeBuffer.String(), desc))
+			argBuffer.WriteString(fmt.Sprintf("1. `%s` (%s) %s", name, typeBuffer.String(), desc))
+		}
+
+		if i != len(signature.Parameters)-1 {
+			argBuffer.WriteString("\n")
 		}
 
 	}
@@ -43,6 +38,7 @@ func RenderArguments(signature *tfjson.FunctionSignature) (string, error) {
 
 }
 
+// RenderSignature returns a Markdown formatted string of the function signature.
 func RenderSignature(funcName string, signature *tfjson.FunctionSignature) (string, error) {
 
 	returnType := signature.ReturnType.FriendlyName()
@@ -72,6 +68,8 @@ func RenderSignature(funcName string, signature *tfjson.FunctionSignature) (stri
 		funcName, paramBuffer.String(), returnType), nil
 }
 
+// RenderVariadicArg returns a Markdown formatted string of the variadic argument if it exists,
+// otherwise an empty string.
 func RenderVariadicArg(signature *tfjson.FunctionSignature) (string, error) {
 	if signature.VariadicParameter == nil {
 		return "", nil

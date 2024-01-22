@@ -46,7 +46,6 @@ func TestRenderArguments(t *testing.T) {
 	// Remove trailing newlines before comparing (some text editors remove them).
 	expectedStr = strings.TrimRight(expectedStr, "\n")
 	actual := strings.TrimRight(argStr, "\n")
-	println(actual)
 	if diff := cmp.Diff(expectedStr, actual); diff != "" {
 		t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 	}
@@ -87,7 +86,6 @@ func TestRenderSignature(t *testing.T) {
 	// Remove trailing newlines before comparing (some text editors remove them).
 	expectedStr = strings.TrimRight(expectedStr, "\n")
 	actual := strings.TrimRight(argStr, "\n")
-	println(actual)
 	if diff := cmp.Diff(expectedStr, actual); diff != "" {
 		t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 	}
@@ -128,7 +126,6 @@ func TestRenderVariadicArg(t *testing.T) {
 	// Remove trailing newlines before comparing (some text editors remove them).
 	expectedStr = strings.TrimRight(expectedStr, "\n")
 	actual := strings.TrimRight(argStr, "\n")
-	println(actual)
 	if diff := cmp.Diff(expectedStr, actual); diff != "" {
 		t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
 	}
