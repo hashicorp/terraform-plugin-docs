@@ -23,6 +23,7 @@ generating missing resource content
 generating new template for "scaffolding_example"
 generating missing data source content
 generating new template for data-source "scaffolding_example"
+generating missing function content
 generating missing provider content
 generating new template for "terraform-provider-scaffolding"
 rendering static website
