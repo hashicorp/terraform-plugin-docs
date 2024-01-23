@@ -105,6 +105,7 @@ When you run `tfplugindocs`, by default from the root directory of a provider co
 * Generate a default provider template file, if missing (**index.md**)
 * Generate resource template files, if missing
 * Generate data source template files, if missing
+* Generate function template files, if missing (Requires Terraform v1.8.0+)
 * Copy all non-template files to the output website directory
 * Process all the remaining templates to generate files for the output website directory
 
@@ -165,19 +166,21 @@ The `migrate` subcommand takes the following actions:
 
 The generation of missing documentation is based on a number of assumptions / conventional paths.
 
-> **NOTE:** In the following conventional paths, `<data source name>` and `<resource name>` include the provider prefix as well.
+> **NOTE:** In the following conventional paths, `<data source name>` and `<resource name>` include the provider prefix as well, but the provider prefix is **NOT** included in`<function name>`.
 > For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`
 
 For templates:
 
-| Path                                                      | Description                            |
-|-----------------------------------------------------------|----------------------------------------|
-| `templates/`                                              | Root of templated docs                 |
-| `templates/index.md[.tmpl]`                               | Docs index page (or template)          |
-| `templates/data-sources.md[.tmpl]`                        | Generic data source page (or template) |
-| `templates/data-sources/<data source name>.md[.tmpl]`     | Data source page (or template)         |
-| `templates/resources.md[.tmpl]`                           | Generic resource page (or template)    |
-| `templates/resources/<resource name>.md[.tmpl]`           | Resource page (or template)            |
+| Path                                                  | Description                            |
+|-------------------------------------------------------|----------------------------------------|
+| `templates/`                                          | Root of templated docs                 |
+| `templates/index.md[.tmpl]`                           | Docs index page (or template)          |
+| `templates/data-sources.md[.tmpl]`                    | Generic data source page (or template) |
+| `templates/data-sources/<data source name>.md[.tmpl]` | Data source page (or template)         |
+| `templates/functions.md[.tmpl]`                       | Generic function page (or template)    |
+| `templates/functions/<function name>.md[.tmpl]`       | Function page (or template)            |
+| `templates/resources.md[.tmpl]`                       | Generic resource page (or template)    |
+| `templates/resources/<resource name>.md[.tmpl]`       | Resource page (or template)            |
 
 Note: the `.tmpl` extension is necessary, for the file to be correctly handled as a template.
 
@@ -188,6 +191,7 @@ For examples:
 | `examples/`                                               | Root of examples                |
 | `examples/provider/provider.tf`                           | Provider example config         |
 | `examples/data-sources/<data source name>/data-source.tf` | Data source example config      |
+| `examples/functions/<function name>/function.tf`          | Function example config         |
 | `examples/resources/<resource name>/resource.tf`          | Resource example config         |
 | `examples/resources/<resource name>/import.sh`            | Resource example import command |
 
@@ -197,13 +201,14 @@ The `migrate` subcommand assumes the following conventional paths for the render
 
 Legacy website directory structure:
 
-| Path                                              | Description                 |
-|---------------------------------------------------|-----------------------------|
-| `website/`                                        | Root of website docs        |
-| `website/docs/guides`                             | Root of guides subdirectory |
-| `website/docs/index.html.markdown`                | Docs index page             |
-| `website/docs/d/<data source name>.html.markdown` | Data source page            |
-| `website/docs/r/<resource name>.html.markdown`    | Resource page               |
+| Path                                                  | Description                 |
+|-------------------------------------------------------|-----------------------------|
+| `website/`                                            | Root of website docs        |
+| `website/docs/guides`                                 | Root of guides subdirectory |
+| `website/docs/index.html.markdown`                    | Docs index page             |
+| `website/docs/d/<data source name>.html.markdown`     | Data source page            |
+| `website/docs/functons/<function name>.html.markdown` | Functions page              |
+| `website/docs/r/<resource name>.html.markdown`        | Resource page               |
 
 Docs website directory structure:
 
@@ -213,6 +218,7 @@ Docs website directory structure:
 | `docs/guides`                                        | Root of guides subdirectory |
 | `docs/index.html.markdown`                           | Docs index page             |
 | `docs/data-sources/<data source name>.html.markdown` | Data source page            |
+| `docs/functions/<function name>.html.markdown`       | Function page               |
 | `docs/resources/<resource name>.html.markdown`       | Resource page               |
 
 Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
@@ -229,7 +235,7 @@ using the following data fields and functions:
 
 #### Data fields
 
-##### Provider
+##### Provider Fields
 
 |                   Field |  Type  | Description                                                                               |
 |------------------------:|:------:|-------------------------------------------------------------------------------------------|
@@ -241,7 +247,7 @@ using the following data fields and functions:
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |       `.SchemaMarkdown` | string | a Markdown formatted Provider Schema definition                                           |
 
-##### Resources / Data Source
+##### Resources / Data Source Fields
 
 |                   Field |  Type  | Description                                                                               |
 |------------------------:|:------:|-------------------------------------------------------------------------------------------|
@@ -257,7 +263,25 @@ using the following data fields and functions:
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |       `.SchemaMarkdown` | string | a Markdown formatted Resource / Data Source Schema definition                             |
 
-#### Functions
+##### Provider-defined Function Fields
+
+|                               Field |  Type  | Description                                                                               |
+|------------------------------------:|:------:|-------------------------------------------------------------------------------------------|
+|                             `.Name` | string | Name of the function (ex. `echo`)                                                         |
+|                             `.Type` | string | Returns `Function`                                                                        |
+|                      `.Description` | string | Function description                                                                      |
+|                          `.Summary` | string | Function summary                                                                          |
+|                       `.HasExample` |  bool  | Is there an example file?                                                                 |
+|                      `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
+|                     `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
+|                `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|             `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+|        `.FunctionSignatureMarkdown` | string | a Markdown formatted Function signature                                                   |
+|        `.FunctionArgumentsMarkdown` | string | a Markdown formatted Function arguments definition                                        |
+|                      `.HasVariadic` |  bool  | Does this function have a variadic argument?                                              |
+| `.FunctionVariadicArgumentMarkdown` | string | a Markdown formatted Function variadic argument definition                                |
+
+#### Template Functions
 
 | Function        | Description                                                                                       |
 |-----------------|---------------------------------------------------------------------------------------------------|

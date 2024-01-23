@@ -22,6 +22,7 @@ generating missing resource content
 resource "null_resource" fallback template exists, creating template
 generating missing data source content
 data-source "null_data_source" fallback template exists, creating template
+generating missing function content
 generating missing provider content
 provider "terraform-provider-null" template exists, skipping
 rendering static website

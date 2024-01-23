@@ -17,6 +17,11 @@ cmp templates/data-sources/example.markdown docs/data-sources/example.markdown
 cmp templates/data-sources/example.html.markdown docs/data-sources/example.html.markdown
 cmp templates/data-sources/example.html.md docs/data-sources/example.html.md
 
+cmp templates/functions/example.md docs/functions/example.md
+cmp templates/functions/example.markdown docs/functions/example.markdown
+cmp templates/functions/example.html.markdown docs/functions/example.html.markdown
+cmp templates/functions/example.html.md docs/functions/example.html.md
+
 cmp templates/index.md docs/index.md
 cmp templates/index.markdown docs/index.markdown
 cmp templates/index.html.markdown docs/index.html.markdown
@@ -31,6 +36,8 @@ generating missing resource content
 resource "scaffolding_example" static file exists, skipping
 generating missing data source content
 data-source "scaffolding_example" static file exists, skipping
+generating missing function content
+function "example" static file exists, skipping
 generating missing provider content
 provider "terraform-provider-scaffolding" static file exists, skipping
 rendering static website
@@ -40,6 +47,10 @@ copying non-template file: "data-sources/example.html.markdown"
 copying non-template file: "data-sources/example.html.md"
 copying non-template file: "data-sources/example.markdown"
 copying non-template file: "data-sources/example.md"
+copying non-template file: "functions/example.html.markdown"
+copying non-template file: "functions/example.html.md"
+copying non-template file: "functions/example.markdown"
+copying non-template file: "functions/example.md"
 copying non-template file: "index.html.markdown"
 copying non-template file: "index.html.md"
 copying non-template file: "index.markdown"
@@ -84,6 +95,26 @@ Type: {{.Type}}
 Name: {{.Name}}
 Type: {{.Type}}
 -- templates/data-sources/example.html.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/functions/example.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/functions/example.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/functions/example.html.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/functions/example.html.md --
 # Data Fields
 
 Name: {{.Name}}
@@ -202,6 +233,25 @@ terraform import scaffolding_example.example
             },
             "description": "Example data source",
             "description_kind": "markdown"
+          }
+        }
+      },
+      "functions": {
+        "example": {
+          "description": "Given a string value, returns the same value.",
+          "summary": "Echo a string",
+          "return_type": "string",
+          "parameters": [
+            {
+              "name": "input",
+              "description": "Value to echo.",
+              "type": "string"
+            }
+          ],
+          "variadic_parameter": {
+            "name": "variadicInput",
+            "description": "Variadic input to echo.",
+            "type": "string"
           }
         }
       }

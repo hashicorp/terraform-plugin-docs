@@ -110,6 +110,13 @@ func (m *migrator) Migrate() error {
 					return err
 				}
 				return filepath.SkipDir
+			case "functions":
+				m.infof("migrating functons directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("functions"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
 			case "guides":
 				m.infof("copying guides directory: %s", d.Name())
 				err := cp(path, filepath.Join(m.ProviderTemplatesDir(), "guides"))
@@ -180,7 +187,7 @@ func (m *migrator) MigrateTemplate(relDir string) fs.WalkDirFunc {
 		}
 
 		m.infof("extracting YAML frontmatter to %q", templateFilePath)
-		err = m.ExtractFrontMatter(data, templateFilePath)
+		err = m.ExtractFrontMatter(data, relDir, templateFilePath)
 		if err != nil {
 			return fmt.Errorf("unable to extract front matter to %q: %w", templateFilePath, err)
 		}
@@ -196,7 +203,7 @@ func (m *migrator) MigrateTemplate(relDir string) fs.WalkDirFunc {
 
 }
 
-func (m *migrator) ExtractFrontMatter(content []byte, templateFilePath string) error {
+func (m *migrator) ExtractFrontMatter(content []byte, relDir string, templateFilePath string) error {
 	templateFile, err := os.OpenFile(templateFilePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return fmt.Errorf("unable to open file %q: %w", templateFilePath, err)
@@ -241,7 +248,11 @@ func (m *migrator) ExtractFrontMatter(content []byte, templateFilePath string) e
 	}
 
 	// add comment to end of front matter briefly explaining template functionality
-	_, err = templateFile.WriteString(migrateProviderTemplateComment + "\n")
+	if relDir == "functions" {
+		_, err = templateFile.WriteString(migrateFunctionTemplateComment + "\n")
+	} else {
+		_, err = templateFile.WriteString(migrateProviderTemplateComment + "\n")
+	}
 	if err != nil {
 		return fmt.Errorf("unable to append template comment to %q: %w", templateFilePath, err)
 	}
