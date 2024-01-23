@@ -105,6 +105,7 @@ When you run `tfplugindocs`, by default from the root directory of a provider co
 * Generate a default provider template file, if missing (**index.md**)
 * Generate resource template files, if missing
 * Generate data source template files, if missing
+* Generate function template files, if missing (Requires Terraform v1.8.0+)
 * Copy all non-template files to the output website directory
 * Process all the remaining templates to generate files for the output website directory
 

@@ -250,7 +250,6 @@ func (m *migrator) ExtractFrontMatter(content []byte, relDir string, templateFil
 	// add comment to end of front matter briefly explaining template functionality
 	if relDir == "functions" {
 		_, err = templateFile.WriteString(migrateFunctionTemplateComment + "\n")
-
 	} else {
 		_, err = templateFile.WriteString(migrateProviderTemplateComment + "\n")
 	}
