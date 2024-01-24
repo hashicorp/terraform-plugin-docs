@@ -1,5 +1,0 @@
-kind: FEATURES
-body: 'generate: Add support for Provider-defined Function documentation'
-time: 2024-01-22T16:00:26.052538-05:00
-custom:
-  Issue: "328"

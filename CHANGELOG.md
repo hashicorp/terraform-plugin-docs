@@ -1,3 +1,14 @@
+## 0.18.0 (January 24, 2024)
+
+FEATURES:
+
+* generate: Add support for Provider-defined Function documentation ([#328](https://github.com/hashicorp/terraform-plugin-docs/issues/328))
+* migrate: Add support for Provider-defined Function documentation ([#328](https://github.com/hashicorp/terraform-plugin-docs/issues/328))
+
+ENHANCEMENTS:
+
+* validate: Add `functions` to list of allowed template and rendered website subdirectories ([#328](https://github.com/hashicorp/terraform-plugin-docs/issues/328))
+
 ## 0.17.0 (January 17, 2024)
 
 BREAKING CHANGES:
