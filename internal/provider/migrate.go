@@ -294,16 +294,16 @@ func (m *migrator) ExtractCodeExamples(content []byte, newRelDir string, templat
 				exampleCount++
 				ext = ".tf"
 				exampleName = "example_" + strconv.Itoa(exampleCount) + ext
-				examplePath = filepath.Join(m.ProviderExamplesDir(), newRelDir, exampleName)
+				examplePath = filepath.Join(m.examplesDir, newRelDir, exampleName)
 				template = fmt.Sprintf("{{tffile \"%s\"}}", examplePath)
-				m.infof("creating example file %q", examplePath)
+				m.infof("creating example file %q", filepath.Join(m.providerDir, examplePath))
 			case "console":
 				importCount++
 				ext = ".sh"
 				exampleName = "import_" + strconv.Itoa(importCount) + ext
-				examplePath = filepath.Join(m.ProviderExamplesDir(), newRelDir, exampleName)
+				examplePath = filepath.Join(m.examplesDir, newRelDir, exampleName)
 				template = fmt.Sprintf("{{codefile \"shell\" \"%s\"}}", examplePath)
-				m.infof("creating import file %q", examplePath)
+				m.infof("creating import file %q", filepath.Join(m.providerDir, examplePath))
 			default:
 				// Render node as is
 				m.infof("skipping code block with unknown language %q", lang)

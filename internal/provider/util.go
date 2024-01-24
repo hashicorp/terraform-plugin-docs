@@ -86,9 +86,13 @@ func resourceSchema(schemas map[string]*tfjson.Schema, providerShortName, templa
 
 func writeFile(path string, data string) error {
 	dir, _ := filepath.Split(path)
-	err := os.MkdirAll(dir, 0755)
-	if err != nil {
-		return fmt.Errorf("unable to make dir %q: %w", dir, err)
+
+	var err error
+	if dir != "" {
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			return fmt.Errorf("unable to make dir %q: %w", dir, err)
+		}
 	}
 
 	err = os.WriteFile(path, []byte(data), 0644)
