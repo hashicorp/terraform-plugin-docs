@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Provider-related Feedback and Questions
+    url: https://registry.terraform.io/browse/providers
+    about: Each Terraform Provider (e.g. AWS, AzureRM, GCP, Kubernetes, etc.) has its own issue tracker and any provider specific feedback should be directed to appropriate provider repository.
+  - name: Terraform Language or Workflow Feedback and Questions
+    url: https://github.com/hashicorp/terraform/issues/new/choose
+    about: Terraform Core has its own repository, any language (HCL) or workflow related issues or questions should be directed there.
+  - name: Provider Development Questions
+    url: https://discuss.hashicorp.com/c/terraform-providers/tf-plugin-sdk
+    about: Please ask and answer provider development questions in HashiCorp Discuss.

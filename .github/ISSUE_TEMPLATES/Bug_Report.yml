@@ -1,0 +1,85 @@
+name: Bug Report
+description: Something is incorrect or not working as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to fill out this bug report! Please note that this issue tracker is only used for bug reports and feature requests. Other issues will be closed.
+
+        If you have a configuration, workflow, or other question, please go back to the issue chooser and select one of the question links.
+  - type: textarea
+    id: versions
+    attributes:
+      label: Terraform CLI and terraform-plugin-docs Versions
+      description: What versions of Terraform CLI and tfplugindocs?
+      placeholder: Output of `terraform version` and `tfplugindocs --version` from provider code directory
+    validations:
+      required: true
+  - type: textarea
+    id: provider-code
+    attributes:
+      label: Provider Code
+      description: Please copy and paste any relevant provider code. This will be automatically formatted into code, so no need for backticks.
+      render: go
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Description of what should have happened.
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Description of what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: List of steps to reproduce the issue.
+      value: |
+        1. `tfplugindocs generate --flags`
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: How much impact is this issue causing?
+      description: High represents completely not able to use the tool and no workaround. Medium represents an issue with potential workaround. Low represents documentation or minor tooling behavior issues.
+      options:
+        - Low
+        - Medium
+        - High
+    validations:
+      required: true
+  - type: input
+    id: logs
+    attributes:
+      label: Logs
+      description: If the command output is very long, please provide a link to a [GitHub Gist](https://gist.github.com) containing the full output.
+      placeholder: https://gist.github.com/example/12345678
+    validations:
+      required: false
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional Information
+      description: Are there any additional details about your environment, workflow, or recent changes that might be relevant? Have you discovered a workaround? Are there links to other related issues?
+    validations:
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Community Guidelines](https://www.hashicorp.com/community-guidelines).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
