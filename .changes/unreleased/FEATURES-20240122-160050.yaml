@@ -1,5 +1,0 @@
-kind: FEATURES
-body: 'migrate: Add support for Provider-defined Function documentation'
-time: 2024-01-22T16:00:50.279982-05:00
-custom:
-  Issue: "328"
