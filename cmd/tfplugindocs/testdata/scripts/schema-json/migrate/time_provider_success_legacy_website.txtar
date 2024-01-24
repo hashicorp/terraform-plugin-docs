@@ -694,7 +694,7 @@ These resources provide an optional map argument called `triggers` that can be p
 
 For example:
 
-{{tffile "$WORK/examples/example_1.tf"}}
+{{tffile "examples/example_1.tf"}}
 
 `triggers` are *not* treated as sensitive attributes; a value used for `triggers` will be displayed in Terraform UI output as plaintext.
 
@@ -717,7 +717,7 @@ Given an RFC3339 timestamp string, will parse and return an object representatio
 
 ## Example Usage
 
-{{tffile "$WORK/examples/functions/rfc3339_parse/example_1.tf"}}
+{{tffile "examples/functions/rfc3339_parse/example_1.tf"}}
 
 ## Signature
 
@@ -749,11 +749,11 @@ Manages an offset time resource, which keeps an UTC timestamp stored in the Terr
 
 ### Basic Usage
 
-{{tffile "$WORK/examples/resources/offset/example_1.tf"}}
+{{tffile "examples/resources/offset/example_1.tf"}}
 
 ### Triggers Usage
 
-{{tffile "$WORK/examples/resources/offset/example_2.tf"}}
+{{tffile "examples/resources/offset/example_2.tf"}}
 
 ## Argument Reference
 
@@ -788,7 +788,7 @@ In addition to all arguments above, the following attributes are exported:
 
 This resource can be imported using the base UTC RFC3339 timestamp and offset years, months, days, hours, minutes, and seconds, separated by commas (`,`), e.g.
 
-{{codefile "shell" "$WORK/examples/resources/offset/import_1.sh"}}
+{{codefile "shell" "examples/resources/offset/import_1.sh"}}
 
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/rotating.md.tmpl --
@@ -812,7 +812,7 @@ Manages a rotating time resource, which keeps a rotating UTC timestamp stored in
 
 This example configuration will rotate (destroy/create) the resource every 30 days.
 
-{{tffile "$WORK/examples/resources/rotating/example_1.tf"}}
+{{tffile "examples/resources/rotating/example_1.tf"}}
 
 ## Argument Reference
 
@@ -846,11 +846,11 @@ In addition to all arguments above, the following attributes are exported:
 
 This resource can be imported using the base UTC RFC3339 value and rotation years, months, days, hours, and minutes, separated by commas (`,`), e.g. for 30 days
 
-{{codefile "shell" "$WORK/examples/resources/rotating/import_1.sh"}}
+{{codefile "shell" "examples/resources/rotating/import_1.sh"}}
 
 Otherwise, to import with the rotation RFC3339 value, the base UTC RFC3339 value and rotation UTC RFC3339 value, separated by commas (`,`), e.g.
 
-{{codefile "shell" "$WORK/examples/resources/rotating/import_2.sh"}}
+{{codefile "shell" "examples/resources/rotating/import_2.sh"}}
 
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/sleep.md.tmpl --
@@ -874,15 +874,15 @@ Manages a resource that delays creation and/or destruction, typically for furthe
 
 ### Delay Create Usage
 
-{{tffile "$WORK/examples/resources/sleep/example_1.tf"}}
+{{tffile "examples/resources/sleep/example_1.tf"}}
 
 ### Delay Destroy Usage
 
-{{tffile "$WORK/examples/resources/sleep/example_2.tf"}}
+{{tffile "examples/resources/sleep/example_2.tf"}}
 
 ### Triggers Usage
 
-{{tffile "$WORK/examples/resources/sleep/example_3.tf"}}
+{{tffile "examples/resources/sleep/example_3.tf"}}
 
 ## Argument Reference
 
@@ -904,11 +904,11 @@ This resource can be imported with the `create_duration` and `destroy_duration`,
 
 e.g. For 30 seconds create duration with no destroy duration:
 
-{{codefile "shell" "$WORK/examples/resources/sleep/import_1.sh"}}
+{{codefile "shell" "examples/resources/sleep/import_1.sh"}}
 
 e.g. For 30 seconds destroy duration with no create duration:
 
-{{codefile "shell" "$WORK/examples/resources/sleep/import_2.sh"}}
+{{codefile "shell" "examples/resources/sleep/import_2.sh"}}
 
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/static.md.tmpl --
@@ -932,11 +932,11 @@ Manages a static time resource, which keeps a locally sourced UTC timestamp stor
 
 ### Basic Usage
 
-{{tffile "$WORK/examples/resources/static/example_1.tf"}}
+{{tffile "examples/resources/static/example_1.tf"}}
 
 ### Triggers Usage
 
-{{tffile "$WORK/examples/resources/static/example_2.tf"}}
+{{tffile "examples/resources/static/example_2.tf"}}
 
 ## Argument Reference
 
@@ -963,6 +963,6 @@ In addition to all arguments above, the following attributes are exported:
 
 This resource can be imported using the UTC RFC3339 value, e.g.
 
-{{codefile "shell" "$WORK/examples/resources/static/import_1.sh"}}
+{{codefile "shell" "examples/resources/static/import_1.sh"}}
 
 The `triggers` argument cannot be imported.
