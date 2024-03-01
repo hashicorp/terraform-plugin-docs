@@ -1,11 +1,13 @@
 module github.com/hashicorp/terraform-plugin-docs
 
-go 1.19
+go 1.20
 
 require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
+	github.com/bmatcuk/doublestar/v4 v4.6.1
 	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/cli v1.1.6
+	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-version v1.6.0
 	github.com/hashicorp/hc-install v0.6.2
 	github.com/hashicorp/terraform-exec v0.20.0
@@ -17,6 +19,7 @@ require (
 	github.com/zclconf/go-cty v1.14.2
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 	golang.org/x/text v0.14.0
+	gopkg.in/yaml.v2 v2.3.0
 )
 
 require (
@@ -33,7 +36,6 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-checkpoint v0.5.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/imdario/mergo v0.3.15 // indirect
@@ -48,5 +50,4 @@ require (
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
