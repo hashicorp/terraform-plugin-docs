@@ -39,10 +39,6 @@ func TestValidateStaticDocs(t *testing.T) {
 			BasePath: "testdata/valid-registry-directories-with-cdktf",
 		},
 		{
-			Name:     "valid mixed directories",
-			BasePath: "testdata/valid-mixed-directories",
-		},
-		{
 			Name:          "invalid registry directories",
 			BasePath:      "testdata/invalid-registry-directories",
 			ExpectError:   true,
@@ -91,10 +87,6 @@ func TestValidateLegacyWebsite(t *testing.T) {
 		{
 			Name:     "valid legacy directories with cdktf docs",
 			BasePath: "testdata/valid-legacy-directories-with-cdktf",
-		},
-		{
-			Name:     "valid mixed directories",
-			BasePath: "testdata/valid-mixed-directories",
 		},
 		{
 			Name:          "invalid legacy directories",

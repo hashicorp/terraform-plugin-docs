@@ -42,6 +42,38 @@ func TestNumberOfFilesCheck(t *testing.T) {
 	}
 }
 
+func TestMixedDirectoriesCheck(t *testing.T) {
+	testCases := []struct {
+		Name        string
+		BasePath    string
+		ExpectError bool
+	}{
+		{
+			Name:     "valid mixed directories",
+			BasePath: "testdata/valid-mixed-directories",
+		},
+		{
+			Name:        "invalid mixed directories",
+			BasePath:    "testdata/invalid-mixed-directories",
+			ExpectError: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			got := MixedDirectoriesCheck(testCase.BasePath)
+
+			if got == nil && testCase.ExpectError {
+				t.Errorf("expected error, got no error")
+			}
+
+			if got != nil && !testCase.ExpectError {
+				t.Errorf("expected no error, got error: %s", got)
+			}
+		})
+	}
+}
+
 func testGenerateDirectories(numberOfFiles int) map[string][]string {
 	files := make([]string, numberOfFiles)
 

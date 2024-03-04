@@ -3,6 +3,10 @@ package check
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/bmatcuk/doublestar/v4"
 )
 
 const (
@@ -19,6 +23,8 @@ const (
 	RegistryGuidesDirectory      = `guides`
 	RegistryResourcesDirectory   = `resources`
 	RegistryFunctionsDirectory   = `functions`
+
+	DocumentationGlobPattern = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources},website/docs}/**/*`
 
 	// Terraform Registry Storage Limits
 	// https://www.terraform.io/docs/registry/providers/docs.html#storage-limits
@@ -80,6 +86,42 @@ func InvalidDirectoriesCheck(dirPath string) error {
 
 	return fmt.Errorf("invalid Terraform Provider documentation directory found: %s", dirPath)
 
+}
+
+func MixedDirectoriesCheck(providerDir string) error {
+	var legacyDirectoryFound bool
+	var registryDirectoryFound bool
+	err := fmt.Errorf("mixed Terraform Provider documentation directory layouts found, must use only legacy or registry layout")
+
+	providerFs := os.DirFS(providerDir)
+
+	files, globErr := doublestar.Glob(providerFs, DocumentationGlobPattern)
+	if globErr != nil {
+		return fmt.Errorf("error finding documentation files: %w", err)
+	}
+
+	for _, file := range files {
+		directory := filepath.Dir(file)
+
+		// Allow docs/ with other files
+		if IsValidRegistryDirectory(directory) && directory != RegistryIndexDirectory {
+			registryDirectoryFound = true
+
+			if legacyDirectoryFound {
+				return err
+			}
+		}
+
+		if IsValidLegacyDirectory(directory) {
+			legacyDirectoryFound = true
+
+			if registryDirectoryFound {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 // NumberOfFilesCheck verifies that documentation is below the Terraform Registry storage limit.

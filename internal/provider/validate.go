@@ -112,9 +112,8 @@ func (v *validator) validate(ctx context.Context) error {
 		}
 	}
 
-	if dirExists(path.Join(v.providerDir, "docs")) && dirExists(path.Join(v.providerDir, "website")) {
-		result = errors.Join(result, errors.New("both static docs and legacy website directories detected, please remove one"))
-	}
+	err = check.MixedDirectoriesCheck(v.providerDir)
+	result = errors.Join(result, err)
 
 	if dirExists(path.Join(v.providerDir, "docs")) {
 		v.logger.infof("detected static docs directory, running checks")
