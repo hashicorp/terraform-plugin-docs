@@ -96,14 +96,10 @@ func TestFileMismatchCheck(t *testing.T) {
 		ExpectError   bool
 	}{
 		{
-			Name: "all found",
+			Name: "all found - resource",
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 				"resource2.md": {},
-			},
-			FunctionFiles: fstest.MapFS{
-				"function1.md": {},
-				"function2.md": {},
 			},
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
@@ -112,6 +108,18 @@ func TestFileMismatchCheck(t *testing.T) {
 						"test_resource1": {},
 						"test_resource2": {},
 					},
+				},
+			},
+		},
+		{
+			Name: "all found - function",
+			FunctionFiles: fstest.MapFS{
+				"function1.md": {},
+				"function2.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
 					Functions: map[string]*tfjson.FunctionSignature{
 						"function1": {},
 						"function2": {},
@@ -120,7 +128,7 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 		},
 		{
-			Name: "extra file",
+			Name: "extra file - resource",
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 				"resource2.md": {},
@@ -138,7 +146,25 @@ func TestFileMismatchCheck(t *testing.T) {
 			ExpectError: true,
 		},
 		{
-			Name: "ignore extra file",
+			Name: "extra file - function",
+			FunctionFiles: fstest.MapFS{
+				"function1.md": {},
+				"function2.md": {},
+				"function3.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					Functions: map[string]*tfjson.FunctionSignature{
+						"function1": {},
+						"function2": {},
+					},
+				},
+			},
+			ExpectError: true,
+		},
+		{
+			Name: "ignore extra file - resource",
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 				"resource2.md": {},
@@ -156,7 +182,26 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 		},
 		{
-			Name: "missing file",
+			Name: "ignore extra file - function",
+			FunctionFiles: fstest.MapFS{
+				"function1.md": {},
+				"function2.md": {},
+				"function3.md": {},
+			},
+			Options: &FileMismatchOptions{
+				IgnoreFileMismatch: []string{"function3"},
+				ProviderShortName:  "test",
+				Schema: &tfjson.ProviderSchema{
+					Functions: map[string]*tfjson.FunctionSignature{
+						"function1": {},
+						"function2": {},
+						"function3": {},
+					},
+				},
+			},
+		},
+		{
+			Name: "missing file - resource",
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 			},
@@ -172,7 +217,23 @@ func TestFileMismatchCheck(t *testing.T) {
 			ExpectError: true,
 		},
 		{
-			Name: "ignore missing file",
+			Name: "missing file - function",
+			FunctionFiles: fstest.MapFS{
+				"function1.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					Functions: map[string]*tfjson.FunctionSignature{
+						"function1": {},
+						"function2": {},
+					},
+				},
+			},
+			ExpectError: true,
+		},
+		{
+			Name: "ignore missing file - resource",
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 			},
@@ -188,6 +249,22 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 		},
 		{
+			Name: "ignore missing file - function",
+			FunctionFiles: fstest.MapFS{
+				"function1.md": {},
+			},
+			Options: &FileMismatchOptions{
+				IgnoreFileMissing: []string{"function2"},
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					Functions: map[string]*tfjson.FunctionSignature{
+						"function1": {},
+						"function2": {},
+					},
+				},
+			},
+		},
+		{
 			Name: "no files",
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
@@ -196,6 +273,10 @@ func TestFileMismatchCheck(t *testing.T) {
 						"test_resource1": {},
 						"test_resource2": {},
 					},
+					Functions: map[string]*tfjson.FunctionSignature{
+						"function1": {},
+						"function2": {},
+					},
 				},
 			},
 		},
@@ -203,6 +284,9 @@ func TestFileMismatchCheck(t *testing.T) {
 			Name: "no schemas",
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
+			},
+			FunctionFiles: fstest.MapFS{
+				"function1.md": {},
 			},
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
@@ -310,8 +394,6 @@ func TestFunctionHasFile(t *testing.T) {
 		})
 	}
 }
-
-//TODO: add functionMismatchCheck test
 
 func TestResourceNames(t *testing.T) {
 	testCases := []struct {
