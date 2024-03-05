@@ -113,7 +113,17 @@ func (v *validator) validate(ctx context.Context) error {
 		}
 	}
 
-	err = check.MixedDirectoriesCheck(v.providerDir)
+	providerFs := os.DirFS(v.providerDir)
+
+	files, globErr := doublestar.Glob(providerFs, DocumentationGlobPattern)
+	if globErr != nil {
+		return fmt.Errorf("error finding documentation files: %w", err)
+	}
+
+	err = check.MixedDirectoriesCheck(files)
+	result = errors.Join(result, err)
+
+	err = check.NumberOfFilesCheck(files)
 	result = errors.Join(result, err)
 
 	if dirExists(path.Join(v.providerDir, "docs")) {

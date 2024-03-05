@@ -5,28 +5,31 @@ package check
 
 import (
 	"fmt"
+	"os"
 	"testing"
+
+	"github.com/bmatcuk/doublestar/v4"
 )
 
 func TestNumberOfFilesCheck(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
 		Name        string
-		Directories map[string][]string
+		files       []string
 		ExpectError bool
 	}{
 		{
-			Name:        "under limit",
-			Directories: testGenerateDirectories(RegistryMaximumNumberOfFiles - 1),
+			Name:  "under limit",
+			files: testGenerateFiles(RegistryMaximumNumberOfFiles - 1),
 		},
 		{
 			Name:        "at limit",
-			Directories: testGenerateDirectories(RegistryMaximumNumberOfFiles),
+			files:       testGenerateFiles(RegistryMaximumNumberOfFiles),
 			ExpectError: true,
 		},
 		{
 			Name:        "over limit",
-			Directories: testGenerateDirectories(RegistryMaximumNumberOfFiles + 1),
+			files:       testGenerateFiles(RegistryMaximumNumberOfFiles + 1),
 			ExpectError: true,
 		},
 	}
@@ -35,7 +38,7 @@ func TestNumberOfFilesCheck(t *testing.T) {
 		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			got := NumberOfFilesCheck(testCase.Directories)
+			got := NumberOfFilesCheck(testCase.files)
 
 			if got == nil && testCase.ExpectError {
 				t.Errorf("expected error, got no error")
@@ -71,7 +74,14 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			got := MixedDirectoriesCheck(testCase.BasePath)
+			providerFs := os.DirFS(testCase.BasePath)
+
+			files, err := doublestar.Glob(providerFs, DocumentationGlobPattern)
+			if err != nil {
+				t.Fatalf("error finding documentation files: %s", err)
+			}
+
+			got := MixedDirectoriesCheck(files)
 
 			if got == nil && testCase.ExpectError {
 				t.Errorf("expected error, got no error")
@@ -84,16 +94,12 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 	}
 }
 
-func testGenerateDirectories(numberOfFiles int) map[string][]string {
+func testGenerateFiles(numberOfFiles int) []string {
 	files := make([]string, numberOfFiles)
 
 	for i := 0; i < numberOfFiles; i++ {
 		files[i] = fmt.Sprintf("thing%d.md", i)
 	}
 
-	directories := map[string][]string{
-		"docs/resources": files,
-	}
-
-	return directories
+	return files
 }

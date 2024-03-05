@@ -6,10 +6,7 @@ package check
 import (
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
-
-	"github.com/bmatcuk/doublestar/v4"
 )
 
 const (
@@ -91,19 +88,12 @@ func InvalidDirectoriesCheck(dirPath string) error {
 
 }
 
-func MixedDirectoriesCheck(providerDir string) error {
+func MixedDirectoriesCheck(docFiles []string) error {
 	var legacyDirectoryFound bool
 	var registryDirectoryFound bool
 	err := fmt.Errorf("mixed Terraform Provider documentation directory layouts found, must use only legacy or registry layout")
 
-	providerFs := os.DirFS(providerDir)
-
-	files, globErr := doublestar.Glob(providerFs, DocumentationGlobPattern)
-	if globErr != nil {
-		return fmt.Errorf("error finding documentation files: %w", err)
-	}
-
-	for _, file := range files {
+	for _, file := range docFiles {
 		directory := filepath.Dir(file)
 
 		// Allow docs/ with other files
@@ -130,18 +120,29 @@ func MixedDirectoriesCheck(providerDir string) error {
 // NumberOfFilesCheck verifies that documentation is below the Terraform Registry storage limit.
 // This check presumes that all provided directories are valid, e.g. that directory checking
 // for invalid or mixed directory structures was previously completed.
-func NumberOfFilesCheck(directories map[string][]string) error {
+func NumberOfFilesCheck(docFiles []string) error {
 	var numberOfFiles int
 
-	for directory, files := range directories {
+	directoryCounts := make(map[string]int)
+	for _, file := range docFiles {
+		directory := filepath.Dir(file)
+
 		// Ignore CDKTF files. The file limit is per-language and presumably there is one CDKTF file per source HCL file.
 		if IsValidCdktfDirectory(directory) {
 			continue
 		}
 
-		directoryNumberOfFiles := len(files)
-		log.Printf("[TRACE] Found %d documentation files in directory: %s", directoryNumberOfFiles, directory)
-		numberOfFiles = numberOfFiles + directoryNumberOfFiles
+		if directory == RegistryIndexDirectory || directory == LegacyIndexDirectory {
+			continue
+		}
+
+		directoryCounts[directory]++
+	}
+
+	for directory, count := range directoryCounts {
+
+		log.Printf("[TRACE] Found %d documentation files in directory: %s", count, directory)
+		numberOfFiles = numberOfFiles + count
 	}
 
 	log.Printf("[DEBUG] Found %d documentation files with limit of %d", numberOfFiles, RegistryMaximumNumberOfFiles)
