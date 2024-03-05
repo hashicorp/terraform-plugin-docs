@@ -152,7 +152,7 @@ Otherwise, the provider developer can set an arbitrary description like this:
 
 #### Validate subcommand
 
-The `validate` subcommand can be used to validate the provider website documentation against the [Terraform Registry's provider documentation guidelines](https://developer.hashicorp.com/terraform/registry/providers/docs) and provider documentation best practices. The current checks in the validate command are:
+The `validate` subcommand can be used to validate the provider website documentation against the [Terraform Registry's provider documentation guidelines](https://developer.hashicorp.com/terraform/registry/providers/docs) and provider documentation best practices. The current checks in the `validate` command are:
 
 | Check                     | Description                                                                                                                                                                         |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

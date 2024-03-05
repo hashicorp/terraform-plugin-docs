@@ -28,6 +28,7 @@ func TestValidator_validate(t *testing.T) {
 }
 
 func TestValidateStaticDocs(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name          string
 		BasePath      string
@@ -51,7 +52,9 @@ func TestValidateStaticDocs(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
 
 			v := &validator{
 				providerDir:  testCase.BasePath,
@@ -78,6 +81,7 @@ func TestValidateStaticDocs(t *testing.T) {
 }
 
 func TestValidateLegacyWebsite(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name          string
 		BasePath      string
@@ -101,7 +105,9 @@ func TestValidateLegacyWebsite(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
 
 			v := &validator{
 				providerDir:  testCase.BasePath,
@@ -128,6 +134,7 @@ func TestValidateLegacyWebsite(t *testing.T) {
 }
 
 func TestDocumentationDirGlobPattern(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name        string
 		ExpectMatch bool
@@ -175,7 +182,9 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
 
 			match, err := doublestar.Match(DocumentationDirGlobPattern, testCase.Name)
 			if err != nil {

@@ -143,6 +143,10 @@ func (v *validator) validateStaticDocs(dir string) error {
 	var files []string
 
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return fmt.Errorf("error walking directory %q: %w", dir, err)
+		}
+
 		rel, err := filepath.Rel(v.providerDir, path)
 		if err != nil {
 			return err
@@ -223,6 +227,10 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 
 	var files []string
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return fmt.Errorf("error walking directory %q: %w", dir, err)
+		}
+
 		rel, err := filepath.Rel(v.providerDir, path)
 		if err != nil {
 			return err

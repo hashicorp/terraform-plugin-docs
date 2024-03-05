@@ -103,6 +103,7 @@ func writeFile(path string, data string) error {
 	return nil
 }
 
+//nolint:unparam
 func runCmd(cmd *exec.Cmd) ([]byte, error) {
 	output, err := cmd.CombinedOutput()
 	if err != nil {

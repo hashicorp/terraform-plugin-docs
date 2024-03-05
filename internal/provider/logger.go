@@ -21,6 +21,7 @@ func (l *Logger) infof(format string, args ...interface{}) {
 	l.ui.Info(fmt.Sprintf(format, args...))
 }
 
+//nolint:unused
 func (l *Logger) warnf(format string, args ...interface{}) {
 	l.ui.Warn(fmt.Sprintf(format, args...))
 }

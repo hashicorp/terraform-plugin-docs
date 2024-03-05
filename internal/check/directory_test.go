@@ -70,6 +70,7 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+
 			got := MixedDirectoriesCheck(testCase.BasePath)
 
 			if got == nil && testCase.ExpectError {
