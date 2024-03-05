@@ -9,6 +9,7 @@ import (
 )
 
 func TestFileSizeCheck(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name        string
 		Size        int64
@@ -31,7 +32,10 @@ func TestFileSizeCheck(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
 			file, err := os.CreateTemp(os.TempDir(), "TestFileSizeCheck")
 
 			if err != nil {
@@ -58,6 +62,7 @@ func TestFileSizeCheck(t *testing.T) {
 }
 
 func TestFullPath(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name        string
 		FileOptions *FileOptions
@@ -81,7 +86,10 @@ func TestFullPath(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
 			got := testCase.FileOptions.FullPath(testCase.Path)
 			want := testCase.Expect
 

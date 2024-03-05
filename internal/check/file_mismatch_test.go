@@ -12,6 +12,7 @@ import (
 )
 
 func TestFileHasResource(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name      string
 		File      string
@@ -39,7 +40,10 @@ func TestFileHasResource(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
 			got := fileHasResource(testCase.Resources, "test", testCase.File)
 			want := testCase.Expect
 
@@ -51,6 +55,7 @@ func TestFileHasResource(t *testing.T) {
 }
 
 func TestFileResourceName(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name   string
 		File   string
@@ -79,7 +84,9 @@ func TestFileResourceName(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
 			got := fileResourceName("test", testCase.File)
 			want := testCase.Expect
 
@@ -91,6 +98,7 @@ func TestFileResourceName(t *testing.T) {
 }
 
 func TestFileMismatchCheck(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name          string
 		ResourceFiles fstest.MapFS
@@ -298,7 +306,10 @@ func TestFileMismatchCheck(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
 			resourceFiles, _ := testCase.ResourceFiles.ReadDir(".")
 			functionFiles, _ := testCase.FunctionFiles.ReadDir(".")
 			testCase.Options.ResourceEntries = resourceFiles
@@ -317,6 +328,7 @@ func TestFileMismatchCheck(t *testing.T) {
 }
 
 func TestResourceHasFile(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name         string
 		FS           fstest.MapFS
@@ -344,7 +356,10 @@ func TestResourceHasFile(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
 			files, _ := testCase.FS.ReadDir(".")
 
 			got := resourceHasFile(files, "test", testCase.ResourceName)
@@ -358,6 +373,7 @@ func TestResourceHasFile(t *testing.T) {
 }
 
 func TestFunctionHasFile(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name         string
 		FS           fstest.MapFS
@@ -385,7 +401,10 @@ func TestFunctionHasFile(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
 			files, _ := testCase.FS.ReadDir(".")
 
 			got := functionHasFile(files, testCase.FunctionName)
@@ -399,6 +418,7 @@ func TestFunctionHasFile(t *testing.T) {
 }
 
 func TestResourceNames(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name      string
 		Resources map[string]*tfjson.Schema
@@ -423,7 +443,10 @@ func TestResourceNames(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
 			got := resourceNames(testCase.Resources)
 			want := testCase.Expect
 

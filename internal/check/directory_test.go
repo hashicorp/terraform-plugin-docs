@@ -9,6 +9,7 @@ import (
 )
 
 func TestNumberOfFilesCheck(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name        string
 		Directories map[string][]string
@@ -31,7 +32,9 @@ func TestNumberOfFilesCheck(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
 			got := NumberOfFilesCheck(testCase.Directories)
 
 			if got == nil && testCase.ExpectError {
@@ -46,6 +49,7 @@ func TestNumberOfFilesCheck(t *testing.T) {
 }
 
 func TestMixedDirectoriesCheck(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name        string
 		BasePath    string
@@ -63,7 +67,9 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
 			got := MixedDirectoriesCheck(testCase.BasePath)
 
 			if got == nil && testCase.ExpectError {

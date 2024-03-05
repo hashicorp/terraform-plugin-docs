@@ -8,6 +8,7 @@ import (
 )
 
 func TestTrimFileExtension(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Name   string
 		Path   string
@@ -41,7 +42,9 @@ func TestTrimFileExtension(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		testCase := testCase
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
 			got := TrimFileExtension(testCase.Path)
 			want := testCase.Expect
 
