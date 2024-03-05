@@ -47,7 +47,7 @@ func TestValidateStaticDocs(t *testing.T) {
 			Name:          "invalid registry directories",
 			BasePath:      filepath.Join("testdata", "invalid-registry-directories"),
 			ExpectError:   true,
-			ExpectedError: "invalid Terraform Provider documentation directory found: docs/resources/invalid",
+			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("docs", "resources", "invalid"),
 		},
 	}
 
@@ -100,7 +100,7 @@ func TestValidateLegacyWebsite(t *testing.T) {
 			Name:          "invalid legacy directories",
 			BasePath:      filepath.Join("testdata", "invalid-legacy-directories"),
 			ExpectError:   true,
-			ExpectedError: "invalid Terraform Provider documentation directory found: website/docs/r/invalid",
+			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "r", "invalid"),
 		},
 	}
 
