@@ -4,6 +4,7 @@
 package check
 
 import (
+	"path/filepath"
 	"reflect"
 	"testing"
 	"testing/fstest"
@@ -73,12 +74,12 @@ func TestFileResourceName(t *testing.T) {
 		},
 		{
 			Name:   "full path with single extensions",
-			File:   "docs/resource/thing.md",
+			File:   filepath.Join("docs", "resource", "thing.md"),
 			Expect: "test_thing",
 		},
 		{
 			Name:   "full path with multiple extensions",
-			File:   "website/docs/r/thing.html.markdown",
+			File:   filepath.Join("website", "docs", "r", "thing.html.markdown"),
 			Expect: "test_thing",
 		},
 	}

@@ -4,7 +4,7 @@
 package provider
 
 import (
-	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -15,13 +15,13 @@ func TestValidator_validate(t *testing.T) {
 	t.Parallel()
 
 	v := &validator{
-		providerDir:  "testdata/valid-registry-directories",
+		providerDir:  filepath.Join("testdata", "valid-registry-directories"),
 		providerName: "terraform-provider-null",
 
 		logger: NewLogger(cli.NewMockUi()),
 	}
 
-	err := v.validateStaticDocs(path.Join(v.providerDir, "docs"))
+	err := v.validateStaticDocs(filepath.Join(v.providerDir, "docs"))
 	if err != nil {
 		t.Fatalf("error retrieving schema: %q", err)
 	}
@@ -37,15 +37,15 @@ func TestValidateStaticDocs(t *testing.T) {
 	}{
 		{
 			Name:     "valid registry directories",
-			BasePath: "testdata/valid-registry-directories",
+			BasePath: filepath.Join("testdata", "valid-registry-directories"),
 		},
 		{
 			Name:     "valid registry directories with cdktf docs",
-			BasePath: "testdata/valid-registry-directories-with-cdktf",
+			BasePath: filepath.Join("testdata", "valid-registry-directories-with-cdktf"),
 		},
 		{
 			Name:          "invalid registry directories",
-			BasePath:      "testdata/invalid-registry-directories",
+			BasePath:      filepath.Join("testdata", "invalid-registry-directories"),
 			ExpectError:   true,
 			ExpectedError: "invalid Terraform Provider documentation directory found: docs/resources/invalid",
 		},
@@ -63,7 +63,7 @@ func TestValidateStaticDocs(t *testing.T) {
 				logger: NewLogger(cli.NewMockUi()),
 			}
 
-			got := v.validateStaticDocs(path.Join(v.providerDir, "docs"))
+			got := v.validateStaticDocs(filepath.Join(v.providerDir, "docs"))
 
 			if got == nil && testCase.ExpectError {
 				t.Errorf("expected error, got no error")
@@ -90,15 +90,15 @@ func TestValidateLegacyWebsite(t *testing.T) {
 	}{
 		{
 			Name:     "valid legacy directories",
-			BasePath: "testdata/valid-legacy-directories",
+			BasePath: filepath.Join("testdata", "valid-legacy-directories"),
 		},
 		{
 			Name:     "valid legacy directories with cdktf docs",
-			BasePath: "testdata/valid-legacy-directories-with-cdktf",
+			BasePath: filepath.Join("testdata", "valid-legacy-directories-with-cdktf"),
 		},
 		{
 			Name:          "invalid legacy directories",
-			BasePath:      "testdata/invalid-legacy-directories",
+			BasePath:      filepath.Join("testdata", "invalid-legacy-directories"),
 			ExpectError:   true,
 			ExpectedError: "invalid Terraform Provider documentation directory found: website/docs/r/invalid",
 		},
@@ -116,7 +116,7 @@ func TestValidateLegacyWebsite(t *testing.T) {
 				logger: NewLogger(cli.NewMockUi()),
 			}
 
-			got := v.validateLegacyWebsite(path.Join(v.providerDir, "website"))
+			got := v.validateLegacyWebsite(filepath.Join(v.providerDir, "website"))
 
 			if got == nil && testCase.ExpectError {
 				t.Errorf("expected error, got no error")

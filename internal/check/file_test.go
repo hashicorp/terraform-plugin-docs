@@ -5,6 +5,7 @@ package check
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -72,16 +73,16 @@ func TestFullPath(t *testing.T) {
 		{
 			Name:        "without base path",
 			FileOptions: &FileOptions{},
-			Path:        "docs/resources/thing.md",
-			Expect:      "docs/resources/thing.md",
+			Path:        filepath.FromSlash("docs/resources/thing.md"),
+			Expect:      filepath.FromSlash("docs/resources/thing.md"),
 		},
 		{
-			Name: "without base path",
+			Name: "with base path",
 			FileOptions: &FileOptions{
-				BasePath: "/full/path/to",
+				BasePath: filepath.FromSlash("/full/path/to"),
 			},
-			Path:   "docs/resources/thing.md",
-			Expect: "/full/path/to/docs/resources/thing.md",
+			Path:   filepath.FromSlash("docs/resources/thing.md"),
+			Expect: filepath.FromSlash("/full/path/to/docs/resources/thing.md"),
 		},
 	}
 

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -455,7 +454,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		// Remove subdirectories managed by tfplugindocs
 		if file.IsDir() && slices.Contains(managedWebsiteSubDirectories, file.Name()) {
 			g.infof("removing directory: %q", file.Name())
-			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+			err = os.RemoveAll(filepath.Join(g.ProviderDocsDir(), file.Name()))
 			if err != nil {
 				return fmt.Errorf("unable to remove directory %q from rendered website directory: %w", file.Name(), err)
 			}
@@ -465,7 +464,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		// Remove files managed by tfplugindocs
 		if !file.IsDir() && slices.Contains(managedWebsiteFiles, file.Name()) {
 			g.infof("removing file: %q", file.Name())
-			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+			err = os.RemoveAll(filepath.Join(g.ProviderDocsDir(), file.Name()))
 			if err != nil {
 				return fmt.Errorf("unable to remove file %q from rendered website directory: %w", file.Name(), err)
 			}

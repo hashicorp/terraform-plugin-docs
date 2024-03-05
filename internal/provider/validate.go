@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -126,15 +125,15 @@ func (v *validator) validate(ctx context.Context) error {
 	err = check.NumberOfFilesCheck(files)
 	result = errors.Join(result, err)
 
-	if dirExists(path.Join(v.providerDir, "docs")) {
+	if dirExists(filepath.Join(v.providerDir, "docs")) {
 		v.logger.infof("detected static docs directory, running checks")
-		err = v.validateStaticDocs(path.Join(v.providerDir, "docs"))
+		err = v.validateStaticDocs(filepath.Join(v.providerDir, "docs"))
 		result = errors.Join(result, err)
 
 	}
-	if dirExists(path.Join(v.providerDir, "website/docs")) {
+	if dirExists(filepath.Join(v.providerDir, filepath.Join("website", "docs"))) {
 		v.logger.infof("detected legacy website directory, running checks")
-		err = v.validateLegacyWebsite(path.Join(v.providerDir, "website/docs"))
+		err = v.validateLegacyWebsite(filepath.Join(v.providerDir, "website/docs"))
 		result = errors.Join(result, err)
 	}
 
@@ -162,7 +161,7 @@ func (v *validator) validateStaticDocs(dir string) error {
 			return err
 		}
 		if d.IsDir() {
-			match, err := doublestar.Match(DocumentationDirGlobPattern, rel)
+			match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationDirGlobPattern), rel)
 			if err != nil {
 				return err
 			}
@@ -174,7 +173,7 @@ func (v *validator) validateStaticDocs(dir string) error {
 			result = errors.Join(result, check.InvalidDirectoriesCheck(rel))
 			return nil
 		}
-		match, err := doublestar.Match(DocumentationGlobPattern, rel)
+		match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationGlobPattern), rel)
 		if err != nil {
 			return err
 		}
@@ -246,7 +245,7 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 			return err
 		}
 		if d.IsDir() {
-			match, err := doublestar.Match(DocumentationDirGlobPattern, rel)
+			match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationDirGlobPattern), rel)
 			if err != nil {
 				return err
 			}
@@ -259,7 +258,7 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 			return nil
 		}
 
-		match, err := doublestar.Match(DocumentationGlobPattern, rel)
+		match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationGlobPattern), rel)
 		if err != nil {
 			return err
 		}

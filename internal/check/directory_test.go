@@ -6,6 +6,7 @@ package check
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -60,11 +61,11 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 	}{
 		{
 			Name:     "valid mixed directories",
-			BasePath: "testdata/valid-mixed-directories",
+			BasePath: filepath.Join("testdata", "valid-mixed-directories"),
 		},
 		{
 			Name:        "invalid mixed directories",
-			BasePath:    "testdata/invalid-mixed-directories",
+			BasePath:    filepath.Join("testdata", "invalid-mixed-directories"),
 			ExpectError: true,
 		},
 	}

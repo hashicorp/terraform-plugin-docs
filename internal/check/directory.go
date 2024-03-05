@@ -132,7 +132,7 @@ func NumberOfFilesCheck(docFiles []string) error {
 			continue
 		}
 
-		if directory == RegistryIndexDirectory || directory == LegacyIndexDirectory {
+		if directory == RegistryIndexDirectory || directory == filepath.FromSlash(LegacyIndexDirectory) {
 			continue
 		}
 
@@ -155,7 +155,7 @@ func NumberOfFilesCheck(docFiles []string) error {
 
 func IsValidLegacyDirectory(directory string) bool {
 	for _, validLegacyDirectory := range ValidLegacyDirectories {
-		if directory == validLegacyDirectory {
+		if directory == filepath.FromSlash(validLegacyDirectory) {
 			return true
 		}
 	}
@@ -165,7 +165,7 @@ func IsValidLegacyDirectory(directory string) bool {
 
 func IsValidRegistryDirectory(directory string) bool {
 	for _, validRegistryDirectory := range ValidRegistryDirectories {
-		if directory == validRegistryDirectory {
+		if directory == filepath.FromSlash(validRegistryDirectory) {
 			return true
 		}
 	}
@@ -174,32 +174,32 @@ func IsValidRegistryDirectory(directory string) bool {
 }
 
 func IsValidCdktfDirectory(directory string) bool {
-	if directory == fmt.Sprintf("%s/%s", LegacyIndexDirectory, CdktfIndexDirectory) {
+	if directory == filepath.FromSlash(fmt.Sprintf("%s/%s", LegacyIndexDirectory, CdktfIndexDirectory)) {
 		return true
 	}
 
-	if directory == fmt.Sprintf("%s/%s", RegistryIndexDirectory, CdktfIndexDirectory) {
+	if directory == filepath.FromSlash(fmt.Sprintf("%s/%s", RegistryIndexDirectory, CdktfIndexDirectory)) {
 		return true
 	}
 
 	for _, validCdktfLanguage := range ValidCdktfLanguages {
 
-		if directory == fmt.Sprintf("%s/%s/%s", LegacyIndexDirectory, CdktfIndexDirectory, validCdktfLanguage) {
+		if directory == filepath.FromSlash(fmt.Sprintf("%s/%s/%s", LegacyIndexDirectory, CdktfIndexDirectory, validCdktfLanguage)) {
 			return true
 		}
 
-		if directory == fmt.Sprintf("%s/%s/%s", RegistryIndexDirectory, CdktfIndexDirectory, validCdktfLanguage) {
+		if directory == filepath.FromSlash(fmt.Sprintf("%s/%s/%s", RegistryIndexDirectory, CdktfIndexDirectory, validCdktfLanguage)) {
 			return true
 		}
 
 		for _, validLegacySubdirectory := range ValidLegacySubdirectories {
-			if directory == fmt.Sprintf("%s/%s/%s/%s", LegacyIndexDirectory, CdktfIndexDirectory, validCdktfLanguage, validLegacySubdirectory) {
+			if directory == filepath.FromSlash(fmt.Sprintf("%s/%s/%s/%s", LegacyIndexDirectory, CdktfIndexDirectory, validCdktfLanguage, validLegacySubdirectory)) {
 				return true
 			}
 		}
 
 		for _, validRegistrySubdirectory := range ValidRegistrySubdirectories {
-			if directory == fmt.Sprintf("%s/%s/%s/%s", RegistryIndexDirectory, CdktfIndexDirectory, validCdktfLanguage, validRegistrySubdirectory) {
+			if directory == filepath.FromSlash(fmt.Sprintf("%s/%s/%s/%s", RegistryIndexDirectory, CdktfIndexDirectory, validCdktfLanguage, validRegistrySubdirectory)) {
 				return true
 			}
 		}
