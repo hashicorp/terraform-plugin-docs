@@ -1,6 +1,6 @@
 module github.com/hashicorp/terraform-plugin-docs
 
-go 1.20
+go 1.21
 
 require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
