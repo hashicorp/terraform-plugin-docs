@@ -1,0 +1,6 @@
+kind: FEATURES
+body: 'validate: Add `InvalidDirectoriesCheck` which checks for valid provider documentation
+  structure'
+time: 2024-03-05T13:57:26.273538-05:00
+custom:
+  Issue: "341"
