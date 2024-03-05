@@ -4,6 +4,7 @@ import (
 	"path"
 	"testing"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/hashicorp/cli"
 )
 
@@ -121,4 +122,59 @@ func TestValidateLegacyWebsite(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDocumentationDirGlobPattern(t *testing.T) {
+	testCases := []struct {
+		Name        string
+		ExpectMatch bool
+	}{
+		{
+			Name:        "docs/data-sources",
+			ExpectMatch: true,
+		},
+		{
+			Name:        "docs/guides",
+			ExpectMatch: true,
+		},
+		{
+			Name:        "docs/resources",
+			ExpectMatch: true,
+		},
+		{
+			Name:        "website/docs/r",
+			ExpectMatch: true,
+		},
+		{
+			Name:        "website/docs/d",
+			ExpectMatch: true,
+		},
+		{
+			Name:        "docs/resources/invalid",
+			ExpectMatch: true,
+		},
+		{
+			Name:        "docs/index.md",
+			ExpectMatch: false,
+		},
+		{
+			Name:        "docs/invalid",
+			ExpectMatch: false,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+
+			match, err := doublestar.Match(DocumentationDirGlobPattern, testCase.Name)
+			if err != nil {
+				t.Fatalf("error matching pattern: %q", err)
+			}
+
+			if match != testCase.ExpectMatch {
+				t.Errorf("expected match: %t, got match: %t", testCase.ExpectMatch, match)
+			}
+		})
+	}
+
 }

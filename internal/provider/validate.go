@@ -19,11 +19,12 @@ import (
 )
 
 const (
-	FileExtensionHtmlMarkdown = `.html.markdown`
-	FileExtensionHtmlMd       = `.html.md`
-	FileExtensionMarkdown     = `.markdown`
-	FileExtensionMd           = `.md`
-	DocumentationGlobPattern  = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources},website/docs}/**/*`
+	FileExtensionHtmlMarkdown   = `.html.markdown`
+	FileExtensionHtmlMd         = `.html.md`
+	FileExtensionMarkdown       = `.markdown`
+	FileExtensionMd             = `.md`
+	DocumentationGlobPattern    = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources,functions},website/docs}/**/*`
+	DocumentationDirGlobPattern = `{docs/{,cdktf/}{data-sources,guides,resources,functions}{,/*},website/docs/{d,r,guides,functions}{,/*}}`
 )
 
 var ValidLegacyFileExtensions = []string{
@@ -146,17 +147,25 @@ func (v *validator) validateStaticDocs(dir string) error {
 		if err != nil {
 			return err
 		}
+		if d.IsDir() {
+			match, err := doublestar.Match(DocumentationDirGlobPattern, rel)
+			if err != nil {
+				return err
+			}
+			if !match {
+				return nil // skip valid non-documentation directories
+			}
+
+			v.logger.infof("running invalid directories check on %s", rel)
+			result = errors.Join(result, check.InvalidDirectoriesCheck(rel))
+			return nil
+		}
 		match, err := doublestar.Match(DocumentationGlobPattern, rel)
 		if err != nil {
 			return err
 		}
 		if !match {
-			return nil // skip non-documentation directories/files
-		}
-		if d.IsDir() {
-			v.logger.infof("running invalid directories check on %s", rel)
-			result = errors.Join(result, check.InvalidDirectoriesCheck(rel))
-			return nil
+			return nil // skip valid non-documentation files
 		}
 
 		// Configure FrontMatterOptions based on file type
@@ -218,17 +227,26 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 		if err != nil {
 			return err
 		}
+		if d.IsDir() {
+			match, err := doublestar.Match(DocumentationDirGlobPattern, rel)
+			if err != nil {
+				return err
+			}
+			if !match {
+				return nil // skip valid non-documentation directories
+			}
+
+			v.logger.infof("running invalid directories check on %s", rel)
+			result = errors.Join(result, check.InvalidDirectoriesCheck(rel))
+			return nil
+		}
+
 		match, err := doublestar.Match(DocumentationGlobPattern, rel)
 		if err != nil {
 			return err
 		}
 		if !match {
-			return nil // skip non-documentation directories/files
-		}
-		if d.IsDir() {
-			v.logger.infof("running invalid directories check on %s", rel)
-			result = errors.Join(result, check.InvalidDirectoriesCheck(rel))
-			return nil
+			return nil // skip non-documentation files
 		}
 
 		// Configure FrontMatterOptions based on file type

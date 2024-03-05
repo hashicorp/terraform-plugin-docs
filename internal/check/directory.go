@@ -24,7 +24,7 @@ const (
 	RegistryResourcesDirectory   = `resources`
 	RegistryFunctionsDirectory   = `functions`
 
-	DocumentationGlobPattern = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources},website/docs}/**/*`
+	DocumentationGlobPattern = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources,functions},website/docs}/**/*`
 
 	// Terraform Registry Storage Limits
 	// https://www.terraform.io/docs/registry/providers/docs.html#storage-limits

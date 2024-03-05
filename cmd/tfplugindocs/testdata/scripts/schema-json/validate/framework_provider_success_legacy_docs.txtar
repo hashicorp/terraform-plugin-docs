@@ -14,10 +14,25 @@ running invalid directories check on website/docs/d
 running file checks on website/docs/d/example.html.md
 running invalid directories check on website/docs/functions
 running file checks on website/docs/functions/example.html.md
+running invalid directories check on website/docs/guides
+running file checks on website/docs/guides/example.html.md
 running file checks on website/docs/index.html.md
 running invalid directories check on website/docs/r
 running file checks on website/docs/r/example.html.md
 running file mismatch check
+-- website/docs/guides/example.html.md --
+---
+subcategory: "Example"
+layout: "example"
+page_title: "Example Guide"
+description: |-
+  Example description.
+---
+
+# Example Guide
+
+Example contents.
+
 -- website/docs/r/example.html.md --
 ---
 subcategory: "Example"

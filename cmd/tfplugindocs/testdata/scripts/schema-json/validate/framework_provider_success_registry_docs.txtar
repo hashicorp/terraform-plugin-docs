@@ -10,9 +10,27 @@ cmpenv stdout expected-output.txt
 exporting schema from JSON file
 getting provider schema
 detected static docs directory, running checks
+running invalid directories check on docs/data-sources
 running file checks on docs/data-sources/example.md
+running invalid directories check on docs/functions
+running file checks on docs/functions/example.md
+running invalid directories check on docs/guides
+running file checks on docs/guides/example.md
+running invalid directories check on docs/resources
 running file checks on docs/resources/example.md
 running file mismatch check
+-- docs/guides/example.md --
+---
+subcategory: "Example"
+page_title: "Example: example_thing"
+description: |-
+  Example description.
+---
+
+# Example Guide
+
+Example contents.
+
 -- docs/resources/example.md --
 ---
 subcategory: "Example"
