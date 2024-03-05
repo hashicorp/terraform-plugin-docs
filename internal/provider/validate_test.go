@@ -146,7 +146,15 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 			ExpectMatch: true,
 		},
 		{
+			Name:        "website/docs/r/invalid",
+			ExpectMatch: true,
+		},
+		{
 			Name:        "website/docs/d",
+			ExpectMatch: true,
+		},
+		{
+			Name:        "website/docs/invalid",
 			ExpectMatch: true,
 		},
 		{

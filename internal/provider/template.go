@@ -270,7 +270,7 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 
 const defaultResourceTemplate resourceTemplate = `---
 ` + frontmatterComment + `
-page_title: "{{.Name}} {{.Type}} - {{.ProviderShortName}}"
+page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
@@ -299,7 +299,7 @@ Import is supported using the following syntax:
 
 const defaultFunctionTemplate functionTemplate = `---
 ` + frontmatterComment + `
-page_title: "{{.Name}} {{.Type}} - {{.ProviderShortName}}"
+page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
 {{ .Summary | plainmarkdown | trimspace | prefixlines "  " }}
