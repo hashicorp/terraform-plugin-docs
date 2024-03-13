@@ -9,8 +9,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	tfjson "github.com/hashicorp/terraform-json"
-	"github.com/hashicorp/terraform-plugin-docs/schemamd"
 	"github.com/zclconf/go-cty/cty"
+
+	"github.com/hashicorp/terraform-plugin-docs/internal/schemamd"
 )
 
 func TestWriteNestedAttributeTypeDescription(t *testing.T) {
