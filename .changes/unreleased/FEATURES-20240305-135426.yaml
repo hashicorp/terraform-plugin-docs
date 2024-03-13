@@ -1,5 +1,5 @@
 kind: FEATURES
-body: 'validate: Add support for Provider-defined Function documentation'
+body: 'validate: Added support for Provider-defined Function documentation to all checks'
 time: 2024-03-05T13:54:26.307742-05:00
 custom:
   Issue: "341"

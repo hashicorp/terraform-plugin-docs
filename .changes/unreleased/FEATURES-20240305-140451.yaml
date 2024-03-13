@@ -1,5 +1,5 @@
 kind: FEATURES
-body: 'validate: Add `FrontMatterCheck` which checks the YAML frontmatter of provider
+body: 'validate: Added `FrontMatterCheck` which checks the YAML frontmatter of provider
   documentation for missing required fields or invalid fields'
 time: 2024-03-05T14:04:51.781688-05:00
 custom:

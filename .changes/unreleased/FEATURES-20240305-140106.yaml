@@ -1,5 +1,5 @@
 kind: FEATURES
-body: 'validate: Add `NumberOfFilesCheck` which checks the number of provider
+body: 'validate: Added `NumberOfFilesCheck` which checks the number of provider
   documentation files against the registry limit'
 time: 2024-03-05T14:01:06.742843-05:00
 custom:
