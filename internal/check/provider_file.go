@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/hashicorp/go-multierror"
 )
 
 type ProviderFileOptions struct {
@@ -66,16 +64,4 @@ func (check *ProviderFileCheck) Run(path string) error {
 	}
 
 	return nil
-}
-
-func (check *ProviderFileCheck) RunAll(files []string) error {
-	var result *multierror.Error
-
-	for _, file := range files {
-		if err := check.Run(file); err != nil {
-			result = multierror.Append(result, err)
-		}
-	}
-
-	return result.ErrorOrNil()
 }
