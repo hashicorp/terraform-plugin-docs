@@ -19,8 +19,6 @@ type ProviderFileOptions struct {
 }
 
 type ProviderFileCheck struct {
-	FileCheck
-
 	Options *ProviderFileOptions
 }
 

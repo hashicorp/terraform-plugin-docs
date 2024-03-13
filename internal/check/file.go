@@ -10,11 +10,6 @@ import (
 	"path/filepath"
 )
 
-type FileCheck interface {
-	Run(string) error
-	RunAll([]string) error
-}
-
 type FileOptions struct {
 	BasePath string
 }
