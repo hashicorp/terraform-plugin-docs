@@ -166,8 +166,8 @@ The `migrate` subcommand takes the following actions:
 
 The generation of missing documentation is based on a number of assumptions / conventional paths.
 
-> **NOTE:** In the following conventional paths, `<data source name>` and `<resource name>` include the provider prefix as well, but the provider prefix is **NOT** included in`<function name>`.
-> For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`
+> **NOTE:** In the following conventional paths, `<data source name>`, `<resource name>`, and `<function name>` **DO NOT**include the provider prefix; if `--use-provider-prefix=true` is specified, the provider prefix is included in `<data source name>` and `<resource name>` but it is **NOT** included in`<function name>`.
+> For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of `examples/data-sources/caller_identity/data-source.tf` by default, and `examples/data-sources/aws_caller_identity/data-source.tf` if `--use-provider-prefix=true` is specified.
 
 For templates:
 

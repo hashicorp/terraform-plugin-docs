@@ -80,8 +80,9 @@ var (
 )
 
 type generator struct {
-	ignoreDeprecated bool
-	tfVersion        string
+	ignoreDeprecated  bool
+	useProviderPrefix bool
+	tfVersion         string
 
 	// providerDir is the absolute path to the root provider directory
 	providerDir string
@@ -105,7 +106,7 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated, useProviderPrefix bool) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -148,6 +149,7 @@ func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, rendere
 		examplesDir:          examplesDir,
 		templatesDir:         templatesDir,
 		websiteTmpDir:        websiteTmpDir,
+		useProviderPrefix:    useProviderPrefix,
 
 		ui: ui,
 	}
@@ -266,7 +268,10 @@ func (g *generator) TempTemplatesDir() string {
 }
 
 func (g *generator) generateMissingResourceTemplate(resourceName string) error {
-	templatePath := fmt.Sprintf(websiteResourceFile, resourceShortName(resourceName, g.providerName))
+	templatePath := fmt.Sprintf(websiteResourceFile, resourceName)
+	if !g.useProviderPrefix {
+		templatePath = fmt.Sprintf(websiteResourceFile, resourceShortName(resourceName, g.providerName))
+	}
 	templatePath = filepath.Join(g.TempTemplatesDir(), templatePath)
 	if fileExists(templatePath) {
 		g.infof("resource %q template exists, skipping", resourceName)
@@ -284,7 +289,10 @@ func (g *generator) generateMissingResourceTemplate(resourceName string) error {
 	}
 
 	for _, candidate := range websiteResourceFileStaticCandidates {
-		candidatePath := fmt.Sprintf(candidate, resourceShortName(resourceName, g.providerName))
+		candidatePath := fmt.Sprintf(candidate, resourceName)
+		if !g.useProviderPrefix {
+			candidatePath = fmt.Sprintf(candidate, resourceShortName(resourceName, g.providerName))
+		}
 		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
 		if fileExists(candidatePath) {
 			g.infof("resource %q static file exists, skipping", resourceName)
@@ -302,7 +310,10 @@ func (g *generator) generateMissingResourceTemplate(resourceName string) error {
 }
 
 func (g *generator) generateMissingDataSourceTemplate(datasourceName string) error {
-	templatePath := fmt.Sprintf(websiteDataSourceFile, resourceShortName(datasourceName, g.providerName))
+	templatePath := fmt.Sprintf(websiteDataSourceFile, datasourceName)
+	if !g.useProviderPrefix {
+		templatePath = fmt.Sprintf(websiteDataSourceFile, resourceShortName(datasourceName, g.providerName))
+	}
 	templatePath = filepath.Join(g.TempTemplatesDir(), templatePath)
 	if fileExists(templatePath) {
 		g.infof("data-source %q template exists, skipping", datasourceName)
@@ -320,7 +331,10 @@ func (g *generator) generateMissingDataSourceTemplate(datasourceName string) err
 	}
 
 	for _, candidate := range websiteDataSourceFileStaticCandidates {
-		candidatePath := fmt.Sprintf(candidate, resourceShortName(datasourceName, g.providerName))
+		candidatePath := fmt.Sprintf(candidate, datasourceName)
+		if !g.useProviderPrefix {
+			candidatePath = fmt.Sprintf(candidate, resourceShortName(datasourceName, g.providerName))
+		}
 		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
 		if fileExists(candidatePath) {
 			g.infof("data-source %q static file exists, skipping", datasourceName)
@@ -528,7 +542,11 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		g.infof("rendering %q", rel)
 		switch relDir {
 		case "data-sources/":
-			resSchema, resName := resourceSchema(providerSchema.DataSourceSchemas, shortName, relFile)
+			// hack: if we're including the provider prefix we need to trim it out before passing to resourceSchema
+			resSchema, resName := resourceSchema(providerSchema.DataSourceSchemas, shortName, resourceShortName(relFile, shortName))
+			if !g.useProviderPrefix {
+				resSchema, resName = resourceSchema(providerSchema.DataSourceSchemas, shortName, relFile)
+			}
 			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "data-sources", resName, "data-source.tf")
 
 			if resSchema != nil {
@@ -545,7 +563,11 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 			}
 			g.warnf("data source entitled %q, or %q does not exist", shortName, resName)
 		case "resources/":
-			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
+			// hack: if we're including the provider prefix we need to trim it out before passing to resourceSchema
+			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, resourceShortName(relFile, shortName))
+			if !g.useProviderPrefix {
+				resSchema, resName = resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
+			}
 			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "resource.tf")
 			importFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import.sh")
 
