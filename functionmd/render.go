@@ -10,7 +10,7 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/hashicorp/terraform-plugin-docs/internal/schemamd"
+	"github.com/hashicorp/terraform-plugin-docs/schemamd"
 )
 
 // RenderArguments returns a Markdown formatted string of the function arguments.

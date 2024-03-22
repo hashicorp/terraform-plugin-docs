@@ -12,7 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/hashicorp/terraform-plugin-docs/internal/functionmd"
+	"github.com/hashicorp/terraform-plugin-docs/functionmd"
 )
 
 func TestRenderArguments(t *testing.T) {
