@@ -37,6 +37,45 @@ var ValidRegistryFileExtensions = []string{
 	FileExtensionMd,
 }
 
+var LegacyFrontMatterOptions = &check.FrontMatterOptions{
+	NoSidebarCurrent:   true,
+	RequireDescription: true,
+	RequireLayout:      true,
+	RequirePageTitle:   true,
+}
+
+var LegacyIndexFrontMatterOptions = &check.FrontMatterOptions{
+	NoSidebarCurrent:   true,
+	NoSubcategory:      true,
+	RequireDescription: true,
+	RequireLayout:      true,
+	RequirePageTitle:   true,
+}
+
+var LegacyGuideFrontMatterOptions = &check.FrontMatterOptions{
+	NoSidebarCurrent:   true,
+	RequireDescription: true,
+	RequireLayout:      true,
+	RequirePageTitle:   true,
+}
+
+var RegistryFrontMatterOptions = &check.FrontMatterOptions{
+	NoLayout:         true,
+	NoSidebarCurrent: true,
+}
+
+var RegistryIndexFrontMatterOptions = &check.FrontMatterOptions{
+	NoLayout:         true,
+	NoSidebarCurrent: true,
+	NoSubcategory:    true,
+}
+
+var RegistryGuideFrontMatterOptions = &check.FrontMatterOptions{
+	NoLayout:         true,
+	NoSidebarCurrent: true,
+	RequirePageTitle: true,
+}
+
 type validator struct {
 	providerName        string
 	providerDir         string
@@ -311,48 +350,11 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 }
 
 func dirExists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
+	if file, err := os.Stat(name); err != nil {
+		return false
+	} else if !file.IsDir() {
 		return false
 	}
 
 	return true
-}
-
-var LegacyFrontMatterOptions = &check.FrontMatterOptions{
-	NoSidebarCurrent:   true,
-	RequireDescription: true,
-	RequireLayout:      true,
-	RequirePageTitle:   true,
-}
-
-var LegacyIndexFrontMatterOptions = &check.FrontMatterOptions{
-	NoSidebarCurrent:   true,
-	NoSubcategory:      true,
-	RequireDescription: true,
-	RequireLayout:      true,
-	RequirePageTitle:   true,
-}
-
-var LegacyGuideFrontMatterOptions = &check.FrontMatterOptions{
-	NoSidebarCurrent:   true,
-	RequireDescription: true,
-	RequireLayout:      true,
-	RequirePageTitle:   true,
-}
-
-var RegistryFrontMatterOptions = &check.FrontMatterOptions{
-	NoLayout:         true,
-	NoSidebarCurrent: true,
-}
-
-var RegistryIndexFrontMatterOptions = &check.FrontMatterOptions{
-	NoLayout:         true,
-	NoSidebarCurrent: true,
-	NoSubcategory:    true,
-}
-
-var RegistryGuideFrontMatterOptions = &check.FrontMatterOptions{
-	NoLayout:         true,
-	NoSidebarCurrent: true,
-	RequirePageTitle: true,
 }
