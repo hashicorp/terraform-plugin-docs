@@ -11,22 +11,6 @@ import (
 	"github.com/hashicorp/cli"
 )
 
-func TestValidator_validate(t *testing.T) {
-	t.Parallel()
-
-	v := &validator{
-		providerDir:  filepath.Join("testdata", "valid-registry-directories"),
-		providerName: "terraform-provider-null",
-
-		logger: NewLogger(cli.NewMockUi()),
-	}
-
-	err := v.validateStaticDocs(filepath.Join(v.providerDir, "docs"))
-	if err != nil {
-		t.Fatalf("error retrieving schema: %q", err)
-	}
-}
-
 func TestValidateStaticDocs(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
