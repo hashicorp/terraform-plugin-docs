@@ -16,17 +16,20 @@ func TestFrontMatterCheck(t *testing.T) {
 		ExpectError bool
 	}{
 		{
-			Name:   "empty source",
-			Source: ``,
+			Name:        "empty source",
+			Source:      ``,
+			ExpectError: true,
 		},
 		{
 			Name: "valid YAML with default options",
 			Source: `
+---
 description: |-
  Example description
 layout: "example"
 page_title: Example Page Title
 subcategory: Example Subcategory
+---
 `,
 		},
 		{

@@ -4,9 +4,12 @@
 package check
 
 import (
+	"bytes"
 	"fmt"
 
-	"gopkg.in/yaml.v2"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/parser"
+	"go.abhg.dev/goldmark/frontmatter"
 )
 
 type FrontMatterCheck struct {
@@ -48,7 +51,23 @@ func NewFrontMatterCheck(opts *FrontMatterOptions) *FrontMatterCheck {
 func (check *FrontMatterCheck) Run(src []byte) error {
 	frontMatter := FrontMatterData{}
 
-	err := yaml.Unmarshal(src, &frontMatter)
+	md := goldmark.New(
+		goldmark.WithExtensions(&frontmatter.Extender{}),
+	)
+
+	ctx := parser.NewContext()
+	var buff bytes.Buffer
+
+	err := md.Convert(src, &buff, parser.WithContext(ctx))
+	if err != nil {
+		return err
+	}
+	d := frontmatter.Get(ctx)
+	if d == nil {
+		return fmt.Errorf("no frontmatter found")
+	}
+
+	err = d.Decode(&frontMatter)
 	if err != nil {
 		return fmt.Errorf("error parsing YAML frontmatter: %w", err)
 	}
