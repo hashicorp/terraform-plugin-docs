@@ -34,13 +34,9 @@ func TestFileSizeCheck(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			file, err := os.CreateTemp(os.TempDir(), "TestFileSizeCheck")
+			file, _ := os.CreateTemp(t.TempDir(), "TestFileSizeCheck")
 
-			if err != nil {
-				t.Fatalf("error creating temporary file: %s", err)
-			}
-
-			defer os.Remove(file.Name())
+			defer file.Close()
 
 			if err := file.Truncate(testCase.Size); err != nil {
 				t.Fatalf("error writing temporary file: %s", err)
