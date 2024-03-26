@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -18,11 +19,12 @@ import (
 )
 
 const (
-	FileExtensionHtmlMarkdown   = `.html.markdown`
-	FileExtensionHtmlMd         = `.html.md`
-	FileExtensionMarkdown       = `.markdown`
-	FileExtensionMd             = `.md`
-	DocumentationGlobPattern    = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources,functions},website/docs}/**/*`
+	FileExtensionHtmlMarkdown = `.html.markdown`
+	FileExtensionHtmlMd       = `.html.md`
+	FileExtensionMarkdown     = `.markdown`
+	FileExtensionMd           = `.md`
+
+	DocumentationGlobPattern    = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources,functions}/**/*,website/docs/**/*}`
 	DocumentationDirGlobPattern = `{docs/{,cdktf/}{data-sources,guides,resources,functions}{,/*},website/docs/**/*}`
 )
 
@@ -158,9 +160,13 @@ func (v *validator) validate(ctx context.Context) error {
 		return fmt.Errorf("error finding documentation files: %w", err)
 	}
 
+	log.Printf("[DEBUG] Found documentation files %v", files)
+
+	v.logger.infof("running mixed directories check")
 	err = check.MixedDirectoriesCheck(files)
 	result = errors.Join(result, err)
 
+	v.logger.infof("running number of files check")
 	err = check.NumberOfFilesCheck(files)
 	result = errors.Join(result, err)
 

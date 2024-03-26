@@ -12,6 +12,8 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
+var DocumentationGlobPattern = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources,functions}/**/*,website/docs/**/*}`
+
 func TestNumberOfFilesCheck(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {

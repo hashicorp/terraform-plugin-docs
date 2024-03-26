@@ -9,6 +9,8 @@ cmp stdout expected-output.txt
 -- expected-output.txt --
 exporting schema from JSON file
 getting provider schema
+running mixed directories check
+running number of files check
 detected legacy website directory, running checks
 running invalid directories check on website/docs/d
 running file checks on website/docs/d/example.html.md

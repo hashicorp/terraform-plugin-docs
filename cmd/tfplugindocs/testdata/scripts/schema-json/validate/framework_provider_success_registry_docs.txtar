@@ -9,6 +9,8 @@ cmpenv stdout expected-output.txt
 -- expected-output.txt --
 exporting schema from JSON file
 getting provider schema
+running mixed directories check
+running number of files check
 detected static docs directory, running checks
 running invalid directories check on docs/data-sources
 running file checks on docs/data-sources/example.md
@@ -16,6 +18,7 @@ running invalid directories check on docs/functions
 running file checks on docs/functions/example.md
 running invalid directories check on docs/guides
 running file checks on docs/guides/example.md
+running file checks on docs/index.md
 running invalid directories check on docs/resources
 running file checks on docs/resources/example.md
 running file mismatch check

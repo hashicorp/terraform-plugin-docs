@@ -24,8 +24,6 @@ const (
 	RegistryResourcesDirectory   = `resources`
 	RegistryFunctionsDirectory   = `functions`
 
-	DocumentationGlobPattern = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources,functions},website/docs}/**/*`
-
 	// Terraform Registry Storage Limits
 	// https://www.terraform.io/docs/registry/providers/docs.html#storage-limits
 	RegistryMaximumNumberOfFiles = 2000
@@ -95,12 +93,14 @@ func MixedDirectoriesCheck(docFiles []string) error {
 
 	for _, file := range docFiles {
 		directory := filepath.Dir(file)
+		log.Printf("[DEBUG] Found directory: %s", directory)
 
 		// Allow docs/ with other files
 		if IsValidRegistryDirectory(directory) && directory != RegistryIndexDirectory {
 			registryDirectoryFound = true
 
 			if legacyDirectoryFound {
+				log.Printf("[DEBUG] Found mixed directories")
 				return err
 			}
 		}
@@ -109,6 +109,7 @@ func MixedDirectoriesCheck(docFiles []string) error {
 			legacyDirectoryFound = true
 
 			if registryDirectoryFound {
+				log.Printf("[DEBUG] Found mixed directories")
 				return err
 			}
 		}

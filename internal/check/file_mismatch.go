@@ -93,6 +93,7 @@ func (check *FileMismatchCheck) ResourceFileMismatchCheck(files []os.DirEntry, r
 	var missingFiles []string
 
 	for _, file := range files {
+		log.Printf("[DEBUG] Found file %s", file.Name())
 		if fileHasResource(schemas, check.Options.ProviderShortName, file.Name()) {
 			continue
 		}
@@ -101,10 +102,12 @@ func (check *FileMismatchCheck) ResourceFileMismatchCheck(files []os.DirEntry, r
 			continue
 		}
 
+		log.Printf("[DEBUG] Found extraneous file %s", file.Name())
 		extraFiles = append(extraFiles, file.Name())
 	}
 
 	for _, resourceName := range resourceNames(schemas) {
+		log.Printf("[DEBUG] Found %s %s", resourceType, resourceName)
 		if resourceHasFile(files, check.Options.ProviderShortName, resourceName) {
 			continue
 		}
@@ -113,6 +116,7 @@ func (check *FileMismatchCheck) ResourceFileMismatchCheck(files []os.DirEntry, r
 			continue
 		}
 
+		log.Printf("[DEBUG] Missing file for %s %s", resourceType, resourceName)
 		missingFiles = append(missingFiles, resourceName)
 	}
 
