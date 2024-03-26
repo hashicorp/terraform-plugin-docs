@@ -9,19 +9,16 @@ import (
 
 func TestFrontMatterCheck(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name        string
+	testCases := map[string]struct {
 		Source      string
 		Options     *FrontMatterOptions
 		ExpectError bool
 	}{
-		{
-			Name:        "empty source",
+		"empty source": {
 			Source:      ``,
 			ExpectError: true,
 		},
-		{
-			Name: "valid YAML with default options",
+		"valid YAML with default options": {
 			Source: `
 ---
 description: |-
@@ -32,8 +29,7 @@ subcategory: Example Subcategory
 ---
 `,
 		},
-		{
-			Name: "valid YAML section and Markdown with default options",
+		"valid YAML section and Markdown with default options": {
 			Source: `
 ---
 description: |-
@@ -46,8 +42,7 @@ subcategory: Example Subcategory
 # Markdown here we go!
 `,
 		},
-		{
-			Name: "invalid YAML",
+		"invalid YAML": {
 			Source: `
 description: |-
  Example description
@@ -55,8 +50,7 @@ Extraneous newline
 `,
 			ExpectError: true,
 		},
-		{
-			Name: "no layout option",
+		"no layout option": {
 			Source: `
 description: |-
  Example description
@@ -69,8 +63,7 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "no page_title option",
+		"no page_title option": {
 			Source: `
 description: |-
  Example description
@@ -83,8 +76,7 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "no sidebar_current option",
+		"no sidebar_current option": {
 			Source: `
 description: |-
  Example description
@@ -98,8 +90,7 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "no subcategory option",
+		"no subcategory option": {
 			Source: `
 description: |-
  Example description
@@ -112,8 +103,7 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "require description option",
+		"require description option": {
 			Source: `
 layout: "example"
 page_title: Example Page Title
@@ -124,8 +114,7 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "require layout option",
+		"require layout option": {
 			Source: `
 description: |-
  Example description
@@ -137,8 +126,7 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "require page_title option",
+		"require page_title option": {
 			Source: `
 description: |-
  Example description
@@ -152,9 +140,10 @@ subcategory: Example Subcategory
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			got := NewFrontMatterCheck(testCase.Options).Run([]byte(testCase.Source))

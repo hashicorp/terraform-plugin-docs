@@ -11,30 +11,27 @@ import (
 
 func TestFileSizeCheck(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name        string
+	testCases := map[string]struct {
 		Size        int64
 		ExpectError bool
 	}{
-		{
-			Name: "under limit",
+		"under limit": {
 			Size: RegistryMaximumSizeOfFile - 1,
 		},
-		{
-			Name:        "on limit",
+		"on limit": {
 			Size:        RegistryMaximumSizeOfFile,
 			ExpectError: true,
 		},
-		{
-			Name:        "over limit",
+		"over limit": {
 			Size:        RegistryMaximumSizeOfFile + 1,
 			ExpectError: true,
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			file, err := os.CreateTemp(os.TempDir(), "TestFileSizeCheck")
@@ -64,20 +61,17 @@ func TestFileSizeCheck(t *testing.T) {
 
 func TestFullPath(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name        string
+	testCases := map[string]struct {
 		FileOptions *FileOptions
 		Path        string
 		Expect      string
 	}{
-		{
-			Name:        "without base path",
+		"without base path": {
 			FileOptions: &FileOptions{},
 			Path:        filepath.FromSlash("docs/resources/thing.md"),
 			Expect:      filepath.FromSlash("docs/resources/thing.md"),
 		},
-		{
-			Name: "with base path",
+		"with base path": {
 			FileOptions: &FileOptions{
 				BasePath: filepath.FromSlash("/full/path/to"),
 			},
@@ -86,9 +80,10 @@ func TestFullPath(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			got := testCase.FileOptions.FullPath(testCase.Path)

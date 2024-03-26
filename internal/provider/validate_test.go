@@ -13,31 +13,29 @@ import (
 
 func TestValidateStaticDocs(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name          string
+	testCases := map[string]struct {
 		BasePath      string
 		ExpectError   bool
 		ExpectedError string
 	}{
-		{
-			Name:     "valid registry directories",
+		"valid registry directories": {
 			BasePath: filepath.Join("testdata", "valid-registry-directories"),
 		},
-		{
-			Name:     "valid registry directories with cdktf docs",
+
+		"valid registry directories with cdktf docs": {
 			BasePath: filepath.Join("testdata", "valid-registry-directories-with-cdktf"),
 		},
-		{
-			Name:          "invalid registry directories",
+		"invalid registry directories": {
 			BasePath:      filepath.Join("testdata", "invalid-registry-directories"),
 			ExpectError:   true,
 			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("docs", "resources", "invalid"),
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			v := &validator{
@@ -66,31 +64,28 @@ func TestValidateStaticDocs(t *testing.T) {
 
 func TestValidateLegacyWebsite(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name          string
+	testCases := map[string]struct {
 		BasePath      string
 		ExpectError   bool
 		ExpectedError string
 	}{
-		{
-			Name:     "valid legacy directories",
+		"valid legacy directories": {
 			BasePath: filepath.Join("testdata", "valid-legacy-directories"),
 		},
-		{
-			Name:     "valid legacy directories with cdktf docs",
+		"valid legacy directories with cdktf docs": {
 			BasePath: filepath.Join("testdata", "valid-legacy-directories-with-cdktf"),
 		},
-		{
-			Name:          "invalid legacy directories",
+		"invalid legacy directories": {
 			BasePath:      filepath.Join("testdata", "invalid-legacy-directories"),
 			ExpectError:   true,
 			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "r", "invalid"),
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			v := &validator{
@@ -119,58 +114,48 @@ func TestValidateLegacyWebsite(t *testing.T) {
 
 func TestDocumentationDirGlobPattern(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name        string
+	testCases := map[string]struct {
 		ExpectMatch bool
 	}{
-		{
-			Name:        "docs/data-sources",
+		"docs/data-sources": {
 			ExpectMatch: true,
 		},
-		{
-			Name:        "docs/guides",
+		"docs/guides": {
 			ExpectMatch: true,
 		},
-		{
-			Name:        "docs/resources",
+		"docs/resources": {
 			ExpectMatch: true,
 		},
-		{
-			Name:        "website/docs/r",
+		"website/docs/r": {
 			ExpectMatch: true,
 		},
-		{
-			Name:        "website/docs/r/invalid",
+		"website/docs/r/invalid": {
 			ExpectMatch: true,
 		},
-		{
-			Name:        "website/docs/d",
+		"website/docs/d": {
 			ExpectMatch: true,
 		},
-		{
-			Name:        "website/docs/invalid",
+		"website/docs/invalid": {
 			ExpectMatch: true,
 		},
-		{
-			Name:        "docs/resources/invalid",
+		"docs/resources/invalid": {
 			ExpectMatch: true,
 		},
-		{
-			Name:        "docs/index.md",
+		"docs/index.md": {
 			ExpectMatch: false,
 		},
-		{
-			Name:        "docs/invalid",
+		"docs/invalid": {
 			ExpectMatch: false,
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			match, err := doublestar.Match(DocumentationDirGlobPattern, testCase.Name)
+			match, err := doublestar.Match(DocumentationDirGlobPattern, name)
 			if err != nil {
 				t.Fatalf("error matching pattern: %q", err)
 			}
@@ -180,5 +165,4 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 			}
 		})
 	}
-
 }

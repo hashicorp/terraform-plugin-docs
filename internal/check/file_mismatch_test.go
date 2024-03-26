@@ -14,14 +14,12 @@ import (
 
 func TestFileHasResource(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name      string
+	testCases := map[string]struct {
 		File      string
 		Resources map[string]*tfjson.Schema
 		Expect    bool
 	}{
-		{
-			Name: "found",
+		"found": {
 			File: "resource1.md",
 			Resources: map[string]*tfjson.Schema{
 				"test_resource1": {},
@@ -29,8 +27,7 @@ func TestFileHasResource(t *testing.T) {
 			},
 			Expect: true,
 		},
-		{
-			Name: "not found",
+		"not found": {
 			File: "resource1.md",
 			Resources: map[string]*tfjson.Schema{
 				"test_resource2": {},
@@ -40,9 +37,10 @@ func TestFileHasResource(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			got := fileHasResource(testCase.Resources, "test", testCase.File)
@@ -57,36 +55,32 @@ func TestFileHasResource(t *testing.T) {
 
 func TestFileResourceName(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name   string
+	testCases := map[string]struct {
 		File   string
 		Expect string
 	}{
-		{
-			Name:   "filename with single extension",
+		"filename with single extension": {
 			File:   "file.md",
 			Expect: "test_file",
 		},
-		{
-			Name:   "filename with multiple extensions",
+		"filename with multiple extensions": {
 			File:   "file.html.markdown",
 			Expect: "test_file",
 		},
-		{
-			Name:   "full path with single extensions",
+		"full path with single extension": {
 			File:   filepath.Join("docs", "resource", "thing.md"),
 			Expect: "test_thing",
 		},
-		{
-			Name:   "full path with multiple extensions",
+		"full path with multiple extensions": {
 			File:   filepath.Join("website", "docs", "r", "thing.html.markdown"),
 			Expect: "test_thing",
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			got := fileResourceName("test", testCase.File)
 			want := testCase.Expect
@@ -100,15 +94,13 @@ func TestFileResourceName(t *testing.T) {
 
 func TestFileMismatchCheck(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name          string
+	testCases := map[string]struct {
 		ResourceFiles fstest.MapFS
 		FunctionFiles fstest.MapFS
 		Options       *FileMismatchOptions
 		ExpectError   bool
 	}{
-		{
-			Name: "all found - resource",
+		"all found - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 				"resource2.md": {},
@@ -123,8 +115,7 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
-		{
-			Name: "all found - function",
+		"all found - function": {
 			FunctionFiles: fstest.MapFS{
 				"function1.md": {},
 				"function2.md": {},
@@ -139,8 +130,7 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
-		{
-			Name: "extra file - resource",
+		"extra file - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 				"resource2.md": {},
@@ -157,8 +147,7 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "extra file - function",
+		"extra file - function": {
 			FunctionFiles: fstest.MapFS{
 				"function1.md": {},
 				"function2.md": {},
@@ -175,8 +164,7 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "ignore extra file - resource",
+		"ignore extra file - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 				"resource2.md": {},
@@ -193,8 +181,7 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
-		{
-			Name: "ignore extra file - function",
+		"ignore extra file - function": {
 			FunctionFiles: fstest.MapFS{
 				"function1.md": {},
 				"function2.md": {},
@@ -212,8 +199,7 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
-		{
-			Name: "missing file - resource",
+		"missing file - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 			},
@@ -228,8 +214,7 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "missing file - function",
+		"missing file - function": {
 			FunctionFiles: fstest.MapFS{
 				"function1.md": {},
 			},
@@ -244,8 +229,7 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 			ExpectError: true,
 		},
-		{
-			Name: "ignore missing file - resource",
+		"ignore missing file - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 			},
@@ -260,8 +244,7 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
-		{
-			Name: "ignore missing file - function",
+		"ignore missing file - function": {
 			FunctionFiles: fstest.MapFS{
 				"function1.md": {},
 			},
@@ -276,8 +259,7 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
-		{
-			Name: "no files",
+		"no files": {
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
 				Schema: &tfjson.ProviderSchema{
@@ -292,8 +274,7 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
-		{
-			Name: "no schemas",
+		"no schemas": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
 			},
@@ -306,9 +287,10 @@ func TestFileMismatchCheck(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			resourceFiles, _ := testCase.ResourceFiles.ReadDir(".")
@@ -330,14 +312,12 @@ func TestFileMismatchCheck(t *testing.T) {
 
 func TestResourceHasFile(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name         string
+	testCases := map[string]struct {
 		FS           fstest.MapFS
 		ResourceName string
 		Expect       bool
 	}{
-		{
-			Name: "found",
+		"found": {
 			FS: fstest.MapFS{
 				"resource1.md": {},
 				"resource2.md": {},
@@ -345,8 +325,7 @@ func TestResourceHasFile(t *testing.T) {
 			ResourceName: "test_resource1",
 			Expect:       true,
 		},
-		{
-			Name: "not found",
+		"not found": {
 			FS: fstest.MapFS{
 				"resource1.md": {},
 				"resource2.md": {},
@@ -356,9 +335,10 @@ func TestResourceHasFile(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			files, _ := testCase.FS.ReadDir(".")
@@ -375,14 +355,12 @@ func TestResourceHasFile(t *testing.T) {
 
 func TestFunctionHasFile(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name         string
+	testCases := map[string]struct {
 		FS           fstest.MapFS
 		FunctionName string
 		Expect       bool
 	}{
-		{
-			Name: "found",
+		"found": {
 			FS: fstest.MapFS{
 				"function1.md": {},
 				"function2.md": {},
@@ -390,8 +368,7 @@ func TestFunctionHasFile(t *testing.T) {
 			FunctionName: "function1",
 			Expect:       true,
 		},
-		{
-			Name: "not found",
+		"not found": {
 			FS: fstest.MapFS{
 				"function1.md": {},
 				"function2.md": {},
@@ -401,9 +378,10 @@ func TestFunctionHasFile(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			files, _ := testCase.FS.ReadDir(".")
@@ -420,18 +398,15 @@ func TestFunctionHasFile(t *testing.T) {
 
 func TestResourceNames(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name      string
+	testCases := map[string]struct {
 		Resources map[string]*tfjson.Schema
 		Expect    []string
 	}{
-		{
-			Name:      "empty",
+		"empty": {
 			Resources: map[string]*tfjson.Schema{},
 			Expect:    []string{},
 		},
-		{
-			Name: "multiple",
+		"multiple": {
 			Resources: map[string]*tfjson.Schema{
 				"test_resource1": {},
 				"test_resource2": {},
@@ -443,9 +418,10 @@ func TestResourceNames(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			got := resourceNames(testCase.Resources)

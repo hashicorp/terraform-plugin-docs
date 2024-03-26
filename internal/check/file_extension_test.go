@@ -9,41 +9,36 @@ import (
 
 func TestTrimFileExtension(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name   string
+	testCases := map[string]struct {
 		Path   string
 		Expect string
 	}{
-		{
-			Name:   "empty path",
+		"empty path": {
 			Path:   "",
 			Expect: "",
 		},
-		{
-			Name:   "filename with single extension",
+		"filename with single extension": {
 			Path:   "file.md",
 			Expect: "file",
 		},
-		{
-			Name:   "filename with multiple extensions",
+		"filename with multiple extensions": {
 			Path:   "file.html.markdown",
 			Expect: "file",
 		},
-		{
-			Name:   "full path with single extensions",
+		"full path with single extension": {
 			Path:   "docs/resource/thing.md",
 			Expect: "thing",
 		},
-		{
-			Name:   "full path with multiple extensions",
+		"full path with multiple extensions": {
 			Path:   "website/docs/r/thing.html.markdown",
 			Expect: "thing",
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			got := TrimFileExtension(testCase.Path)
 			want := testCase.Expect

@@ -14,30 +14,27 @@ import (
 
 func TestNumberOfFilesCheck(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name        string
+	testCases := map[string]struct {
 		files       []string
 		ExpectError bool
 	}{
-		{
-			Name:  "under limit",
+		"under limit": {
 			files: testGenerateFiles(RegistryMaximumNumberOfFiles - 1),
 		},
-		{
-			Name:        "at limit",
+		"at limit": {
 			files:       testGenerateFiles(RegistryMaximumNumberOfFiles),
 			ExpectError: true,
 		},
-		{
-			Name:        "over limit",
+		"over limit": {
 			files:       testGenerateFiles(RegistryMaximumNumberOfFiles + 1),
 			ExpectError: true,
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			got := NumberOfFilesCheck(testCase.files)
 
@@ -54,25 +51,23 @@ func TestNumberOfFilesCheck(t *testing.T) {
 
 func TestMixedDirectoriesCheck(t *testing.T) {
 	t.Parallel()
-	testCases := []struct {
-		Name        string
+	testCases := map[string]struct {
 		BasePath    string
 		ExpectError bool
 	}{
-		{
-			Name:     "valid mixed directories",
+		"valid mixed directories": {
 			BasePath: filepath.Join("testdata", "valid-mixed-directories"),
 		},
-		{
-			Name:        "invalid mixed directories",
+		"invalid mixed directories": {
 			BasePath:    filepath.Join("testdata", "invalid-mixed-directories"),
 			ExpectError: true,
 		},
 	}
 
-	for _, testCase := range testCases {
+	for name, testCase := range testCases {
+		name := name
 		testCase := testCase
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			providerFs := os.DirFS(testCase.BasePath)
