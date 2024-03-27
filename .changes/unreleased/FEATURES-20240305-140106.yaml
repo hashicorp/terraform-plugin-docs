@@ -1,0 +1,6 @@
+kind: FEATURES
+body: 'validate: Added `NumberOfFilesCheck` which checks the number of provider
+  documentation files against the registry limit'
+time: 2024-03-05T14:01:06.742843-05:00
+custom:
+  Issue: "341"

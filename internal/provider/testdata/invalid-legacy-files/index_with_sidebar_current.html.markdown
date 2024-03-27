@@ -1,0 +1,11 @@
+---
+sidebar_current: "example"
+layout: "example"
+page_title: "Example Provider"
+description: |-
+  Example description.
+---
+
+# Example Provider
+
+Example contents.

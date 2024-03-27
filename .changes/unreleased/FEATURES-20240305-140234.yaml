@@ -1,0 +1,6 @@
+kind: FEATURES
+body: 'validate: Added `FileSizeCheck` which checks the provider documentation file 
+  size against the registry limit'
+time: 2024-03-05T14:02:34.112782-05:00
+custom:
+  Issue: "341"

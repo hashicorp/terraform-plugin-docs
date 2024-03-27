@@ -52,7 +52,7 @@ Available commands are:
                 the generate command is run by default
     generate    generates a plugin website from code, templates, and examples
     migrate     migrates website files from either the legacy rendered website directory (`website/docs/r`) or the docs rendered website directory (`docs/resources`) to the tfplugindocs supported structure (`templates/`).
-    validate    validates a plugin website for the current directory
+    validate    validates a plugin website
        
 ```
 
@@ -81,6 +81,11 @@ Usage: tfplugindocs generate [<args>]
 $ tfplugindocs validate --help
 
 Usage: tfplugindocs validate [<args>]
+
+    --provider-dir <ARG>       relative or absolute path to the root provider code directory; this will default to the current working directory if not set                                                              
+    --provider-name <ARG>      provider name, as used in Terraform configurations                                                                                                                                                
+    --providers-schema <ARG>   path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI    
+    --tf-version <ARG>         terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform  
 ```
 
 `migrate` command:
@@ -144,6 +149,22 @@ Otherwise, the provider developer can set an arbitrary description like this:
     }
     // ...
 ```
+
+#### Validate subcommand
+
+The `validate` subcommand can be used to validate the provider website documentation against the [Terraform Registry's provider documentation guidelines](https://developer.hashicorp.com/terraform/registry/providers/docs) and provider documentation best practices. The current checks in the `validate` command are:
+
+| Check                     | Description                                                                                                                                                                         |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `InvalidDirectoriesCheck` | Checks for valid subdirectory structure and throws an error if an invalid Terraform Provider documentation subdirectory is found.                                                   |
+| `MixedDirectoriesCheck`   | Throws an error if both legacy documentation (`/website/docs`) and registry documentation (`/docs`) are found.                                                                      |
+| `NumberOfFilesCheck`      | Throws an error if the number of files in a directory is larger than the registry limit.                                                                                            |
+| `FileSizeCheck`           | Throws an error if the documentation file is above the registry storage limit.                                                                                                      |
+| `FileExtensionCheck`      | Throws an error if the extension of the given file is not a valid registry documentation extension.                                                                                 |
+| `FrontMatterCheck`        | Checks the YAML frontmatter of documentation for missing required fields or invalid fields.                                                                                         |
+| `FileMismatchCheck`       | Throws an error if the names/number of resources/datasources/functions in the provider schema does not match the names/number of files in the corresponding documentation directory |
+
+All check errors are wrapped and returned as a single error message to stderr.
 
 #### Migrate subcommand
 

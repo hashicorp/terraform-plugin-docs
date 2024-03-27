@@ -1,0 +1,6 @@
+kind: FEATURES
+body: 'validate: Added `FileExtensionCheck` which checks for valid provider documentation
+  file extensions'
+time: 2024-03-05T14:03:46.816256-05:00
+custom:
+  Issue: "341"
