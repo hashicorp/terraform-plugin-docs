@@ -98,6 +98,7 @@ Usage: tfplugindocs migrate [<args>]
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
     --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
+    --provider-name <ARG>            provider name, as used in Terraform configurations; this will default to provider-dir basename if not set                                                                                                                                            
 ```
 
 ### How it Works
@@ -175,22 +176,23 @@ ingress issues.
 
 The `migrate` subcommand takes the following actions:
 1. Determines the rendered website directory based on the `--provider-dir` argument
-2. Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
-3. (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
-4. Change file suffixes for Markdown files to `.md.tmpl` to create website templates
-5. Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
-6. Replace extracted example code in website templates with `codefile`/`tffile` template functions referencing the example files.
-7. Copies non-template files to `--templates-dir` folder
-8. Removes the `website/` directory
+2. Determines the provider name based on the `--provider-name` argument
+3. Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
+4. (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
+5. Renames files in the `--templates-dir` folder to remove the provider shortname prefix from the file name
+6. Change file suffixes for Markdown files to `.md.tmpl` to create website templates
+7. Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
+8. Replace extracted example code in website templates with `codefile`/`tffile` template functions referencing the example files.
+9. Copies non-template files to `--templates-dir` folder
+10. Removes the `website/` directory
 
 ### Conventional Paths
 
 The generation of missing documentation is based on a number of assumptions / conventional paths.
 
-> **NOTE:** In the following conventional paths, `<data source name>` and `<resource name>` include the provider prefix as well, but the provider prefix is **NOT** included in`<function name>`.
-> For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`
-
 For templates:
+
+> **NOTE:** In the following conventional paths for templates, `<data source name>`, `<resource name>`, and `<function name>` do not include the provider prefix.
 
 | Path                                                  | Description                            |
 |-------------------------------------------------------|----------------------------------------|
@@ -207,6 +209,9 @@ Note: the `.tmpl` extension is necessary, for the file to be correctly handled a
 
 For examples:
 
+> **NOTE:** In the following conventional paths for examples, `<data source name>` and `<resource name>` include the provider prefix as well, but the provider prefix is **NOT** included in`<function name>`.
+> For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`
+
 | Path                                                      | Description                     |
 |-----------------------------------------------------------|---------------------------------|
 | `examples/`                                               | Root of examples                |
@@ -219,6 +224,9 @@ For examples:
 #### Migration
 
 The `migrate` subcommand assumes the following conventional paths for the rendered website directory:
+
+> **NOTE:** In the following conventional paths for templates, `<data source name>`, `<resource name>`, and `<function name>` do not include the provider prefix.
+> if the `--provider-name` argument is set, the provider prefix will be removed from the file names during migration.
 
 Legacy website directory structure:
 

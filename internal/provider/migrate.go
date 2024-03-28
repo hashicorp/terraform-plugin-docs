@@ -27,6 +27,8 @@ type migrator struct {
 	templatesDir string
 	examplesDir  string
 
+	providerName string
+
 	ui cli.Ui
 }
 
@@ -38,7 +40,7 @@ func (m *migrator) warnf(format string, a ...interface{}) {
 	m.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir string) error {
+func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir string, providerName string) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -69,6 +71,11 @@ func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir str
 		return fmt.Errorf("expected %q to be a directory", providerDir)
 	}
 
+	// Default providerName to provider directory name
+	if providerName == "" {
+		providerName = filepath.Base(providerDir)
+	}
+
 	// Determine website directory
 	websiteDir, err := determineWebsiteDir(providerDir)
 	if err != nil {
@@ -80,6 +87,7 @@ func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir str
 		templatesDir: templatesDir,
 		examplesDir:  examplesDir,
 		websiteDir:   websiteDir,
+		providerName: providerName,
 		ui:           ui,
 	}
 
@@ -172,14 +180,16 @@ func (m *migrator) MigrateTemplate(relDir string) fs.WalkDirFunc {
 		}
 
 		baseName, _, _ := strings.Cut(d.Name(), ".")
+		shortName := providerShortName(m.providerName)
+		fileName := strings.TrimPrefix(baseName, shortName+"_")
 
 		var exampleRelDir string
-		if baseName == "index" {
+		if fileName == "index" {
 			exampleRelDir = relDir
 		} else {
-			exampleRelDir = filepath.Join(relDir, baseName)
+			exampleRelDir = filepath.Join(relDir, fileName)
 		}
-		templateFilePath := filepath.Join(m.ProviderTemplatesDir(), relDir, baseName+".md.tmpl")
+		templateFilePath := filepath.Join(m.ProviderTemplatesDir(), relDir, fileName+".md.tmpl")
 
 		err = os.MkdirAll(filepath.Dir(templateFilePath), 0755)
 		if err != nil {

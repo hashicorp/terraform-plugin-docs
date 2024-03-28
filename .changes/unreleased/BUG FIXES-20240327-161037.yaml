@@ -1,0 +1,6 @@
+kind: BUG FIXES
+body: 'migrate: fixed a bug where documentation files with provider name prefixes were
+  migrated to templates directory as-is, causing `generate` to create duplicate templates'
+time: 2024-03-27T16:10:37.029568-04:00
+custom:
+  Issue: "349"
