@@ -71,6 +71,11 @@ func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir str
 		return fmt.Errorf("expected %q to be a directory", providerDir)
 	}
 
+	// Default providerName to provider directory name
+	if providerName == "" {
+		providerName = filepath.Base(providerDir)
+	}
+
 	// Determine website directory
 	websiteDir, err := determineWebsiteDir(providerDir)
 	if err != nil {

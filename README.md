@@ -98,7 +98,7 @@ Usage: tfplugindocs migrate [<args>]
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
     --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
-    --provider-name <ARG>            provider name, as used in Terraform configurations; only set this flag if the documentation file names are prefixed with the provider short name (e.g., `aws_instance.md` vs `instance.md`)                                                                                                                                                
+    --provider-name <ARG>            provider name, as used in Terraform configurations; this will default to provider-dir basename if not set                                                                                                                                            
 ```
 
 ### How it Works
@@ -176,14 +176,15 @@ ingress issues.
 
 The `migrate` subcommand takes the following actions:
 1. Determines the rendered website directory based on the `--provider-dir` argument
-2. Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
-3. (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
-4. (if the `--provider-name` argument is set) Renames files in the `--templates-dir` folder to remove the provider prefix from the file name
-5. Change file suffixes for Markdown files to `.md.tmpl` to create website templates
-6. Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
-7. Replace extracted example code in website templates with `codefile`/`tffile` template functions referencing the example files.
-8. Copies non-template files to `--templates-dir` folder
-9. Removes the `website/` directory
+2. Determines the provider name based on the `--provider-name` argument
+3. Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
+4. (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
+5. Renames files in the `--templates-dir` folder to remove the provider shortname prefix from the file name
+6. Change file suffixes for Markdown files to `.md.tmpl` to create website templates
+7. Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
+8. Replace extracted example code in website templates with `codefile`/`tffile` template functions referencing the example files.
+9. Copies non-template files to `--templates-dir` folder
+10. Removes the `website/` directory
 
 ### Conventional Paths
 
