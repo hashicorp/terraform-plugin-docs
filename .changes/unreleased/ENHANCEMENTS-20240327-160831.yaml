@@ -1,6 +1,6 @@
 kind: ENHANCEMENTS
-body: 'migrate: `Added `--provider-name` flag to specify provider name so that the
-  provider short name prefix can be removed from file names during migration'
+body: 'migrate: Added `--provider-name` flag to override the default provider name when any
+  file names that contain provider name prefixes are removed during migration'
 time: 2024-03-27T16:08:31.541882-04:00
 custom:
   Issue: "349"
