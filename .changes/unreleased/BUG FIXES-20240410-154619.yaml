@@ -1,0 +1,6 @@
+kind: BUG FIXES
+body: 'generate: fixed a bug where incorrect attribute titles were being generated
+  for certain nested schemas'
+time: 2024-04-10T15:46:19.65146-04:00
+custom:
+  Issue: "350"
