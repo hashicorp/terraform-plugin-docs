@@ -57,11 +57,12 @@ var (
 )
 
 type nestedType struct {
-	anchorID string
-	path     []string
-	block    *tfjson.SchemaBlock
-	object   *cty.Type
-	attrs    *tfjson.SchemaNestedAttributeType
+	anchorID  string
+	pathTitle string
+	path      []string
+	block     *tfjson.SchemaBlock
+	object    *cty.Type
+	attrs     *tfjson.SchemaNestedAttributeType
 
 	group groupFilter
 }
@@ -87,6 +88,7 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 	}
 
 	anchorID := "nestedatt--" + strings.Join(path, "--")
+	pathTitle := strings.Join(path, ".")
 	nestedTypes := []nestedType{}
 	switch {
 	case att.AttributeNestedType != nil:
@@ -96,9 +98,10 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 		}
 
 		nestedTypes = append(nestedTypes, nestedType{
-			anchorID: anchorID,
-			path:     path,
-			attrs:    att.AttributeNestedType,
+			anchorID:  anchorID,
+			pathTitle: pathTitle,
+			path:      path,
+			attrs:     att.AttributeNestedType,
 
 			group: group,
 		})
@@ -109,9 +112,10 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 		}
 
 		nestedTypes = append(nestedTypes, nestedType{
-			anchorID: anchorID,
-			path:     path,
-			object:   &att.AttributeType,
+			anchorID:  anchorID,
+			pathTitle: pathTitle,
+			path:      path,
+			object:    &att.AttributeType,
 
 			group: group,
 		})
@@ -123,9 +127,10 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 
 		nt := att.AttributeType.ElementType()
 		nestedTypes = append(nestedTypes, nestedType{
-			anchorID: anchorID,
-			path:     path,
-			object:   &nt,
+			anchorID:  anchorID,
+			pathTitle: pathTitle,
+			path:      path,
+			object:    &nt,
 
 			group: group,
 		})
@@ -153,10 +158,12 @@ func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) (
 	}
 
 	anchorID := "nestedblock--" + strings.Join(path, "--")
+	pathTitle := strings.Join(path, ".")
 	nt := nestedType{
-		anchorID: anchorID,
-		path:     path,
-		block:    block.Block,
+		anchorID:  anchorID,
+		pathTitle: pathTitle,
+		path:      path,
+		block:     block.Block,
 	}
 
 	_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
@@ -344,7 +351,7 @@ func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
 			return err
 		}
 
-		_, err = io.WriteString(w, "### Nested Schema for `"+strings.Join(nt.path, ".")+"`\n\n")
+		_, err = io.WriteString(w, "### Nested Schema for `"+nt.pathTitle+"`\n\n")
 		if err != nil {
 			return err
 		}
