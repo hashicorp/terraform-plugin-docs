@@ -1,0 +1,6 @@
+kind: BREAKING CHANGES
+body: 'schemamd: The `schemamd` package has moved to `internal/schemamd` and can no
+  longer be imported'
+time: 2024-04-10T16:14:45.685307-04:00
+custom:
+  Issue: "354"
