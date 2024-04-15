@@ -1,6 +1,0 @@
-kind: FEATURES
-body: 'validate: Added `FileMismatchCheck` which checks the names/number of provider
-  documentation files against the provider schema'
-time: 2024-03-05T14:06:22.168518-05:00
-custom:
-  Issue: "341"

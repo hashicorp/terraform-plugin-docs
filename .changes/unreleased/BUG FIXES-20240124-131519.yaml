@@ -1,6 +1,0 @@
-kind: BUG FIXES
-body: 'migrate: use relative paths (from provider directory) instead of absolute paths
-  for migrated code templates'
-time: 2024-01-24T13:15:19.830885-05:00
-custom:
-  Issue: "330"

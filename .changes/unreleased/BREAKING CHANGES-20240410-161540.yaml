@@ -1,6 +1,0 @@
-kind: BREAKING CHANGES
-body: 'functionmd: The `functionmd` package has moved to `internal/functionmd` and
-  can no longer be imported'
-time: 2024-04-10T16:15:40.388578-04:00
-custom:
-  Issue: "354"

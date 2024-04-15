@@ -1,6 +1,0 @@
-kind: FEATURES
-body: 'validate: Added `MixedDirectoriesCheck` which throws an error if both legacy
-  documentation and registry documentation are found'
-time: 2024-03-05T13:59:33.741601-05:00
-custom:
-  Issue: "341"
