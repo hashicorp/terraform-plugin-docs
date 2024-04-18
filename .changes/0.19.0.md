@@ -2,6 +2,7 @@
 
 BREAKING CHANGES:
 
+* generate: the `plainmarkdown` function now removes all markdown elements/formatting to render the output as plain text ([#332](https://github.com/hashicorp/terraform-plugin-docs/issues/332))
 * schemamd: The `schemamd` package has moved to `internal/schemamd` and can no longer be imported ([#354](https://github.com/hashicorp/terraform-plugin-docs/issues/354))
 * functionmd: The `functionmd` package has moved to `internal/functionmd` and can no longer be imported ([#354](https://github.com/hashicorp/terraform-plugin-docs/issues/354))
 
