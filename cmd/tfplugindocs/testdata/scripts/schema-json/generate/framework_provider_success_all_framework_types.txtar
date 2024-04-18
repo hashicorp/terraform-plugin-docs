@@ -218,7 +218,7 @@ scaffolding(stringInput string, boolInput bool, float64Input number, intInput nu
 1. `stringInput` (String) Value to echo testing
 1. `boolInput` (Boolean) Value to echo testing
 1. `float64Input` (Number) Float64 Value to echo
-1. `intInput` (Number) Int64 Value to echo
+1. `int64Input` (Number) Int64 Value to echo
 1. `listStringInput` (List of String) List of strings to echo
 1. `mapStringInput` (Map of String) Map of strings to echo
 1. `numberInput` (Number) Number to echo
@@ -581,7 +581,7 @@ scaffolding(stringInput string, boolInput bool, float64Input number, intInput nu
                             "type": "number"
                         },
                         {
-                            "name": "intInput",
+                            "name": "int64Input",
                             "description": "Int64 Value to echo",
                             "type": "number"
                         },
