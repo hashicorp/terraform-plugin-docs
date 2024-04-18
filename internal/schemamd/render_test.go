@@ -43,6 +43,11 @@ func TestRender(t *testing.T) {
 			"testdata/awscc_acmpca_certificate.schema.json",
 			"testdata/awscc_acmpca_certificate.md",
 		},
+		{
+			"framework_types",
+			"testdata/framework_types.schema.json",
+			"testdata/framework_types.md",
+		},
 	} {
 		c := c
 		t.Run(c.name, func(t *testing.T) {

@@ -408,6 +408,7 @@ func writeObjectAttribute(w io.Writer, path []string, att cty.Type, group groupF
 	}
 
 	anchorID := "nestedobjatt--" + strings.Join(path, "--")
+	pathTitle := strings.Join(path, ".")
 	nestedTypes := []nestedType{}
 	switch {
 	case att.IsObjectType():
@@ -417,9 +418,10 @@ func writeObjectAttribute(w io.Writer, path []string, att cty.Type, group groupF
 		}
 
 		nestedTypes = append(nestedTypes, nestedType{
-			anchorID: anchorID,
-			path:     path,
-			object:   &att,
+			anchorID:  anchorID,
+			pathTitle: pathTitle,
+			path:      path,
+			object:    &att,
 
 			group: group,
 		})
@@ -431,9 +433,10 @@ func writeObjectAttribute(w io.Writer, path []string, att cty.Type, group groupF
 
 		nt := att.ElementType()
 		nestedTypes = append(nestedTypes, nestedType{
-			anchorID: anchorID,
-			path:     path,
-			object:   &nt,
+			anchorID:  anchorID,
+			pathTitle: pathTitle,
+			path:      path,
+			object:    &nt,
 
 			group: group,
 		})
