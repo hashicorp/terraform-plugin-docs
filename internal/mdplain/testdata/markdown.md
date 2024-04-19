@@ -50,6 +50,7 @@ These are the elements outlined in John Gruber’s original design document. All
 
 [Relative Link](#Code)
 
+Plain URL: https://www.markdownguide.org
 
 ### Image
 

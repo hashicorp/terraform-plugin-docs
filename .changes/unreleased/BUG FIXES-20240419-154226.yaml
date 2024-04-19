@@ -1,0 +1,6 @@
+kind: BUG FIXES
+body: 'generate: fixed a bug where the `plainmarkdown` function did not output plain
+  URLs'
+time: 2024-04-19T15:42:26.250348-04:00
+custom:
+  Issue: "361"

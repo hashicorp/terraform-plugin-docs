@@ -23,6 +23,7 @@ Horizontal Rule
 Link
 Markdown Guide https://www.markdownguide.org
 Relative Link
+Plain URL: https://www.markdownguide.org
 Image
 
 Extended Syntax
