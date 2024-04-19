@@ -61,9 +61,12 @@ func (r *TextRender) Render(w io.Writer, source []byte, n ast.Node) error {
 				return ast.WalkSkipChildren, nil
 			}
 			return ast.WalkContinue, nil
-		case *ast.AutoLink, *extAST.Strikethrough:
+		case *extAST.Strikethrough:
 			out.Write(node.Text(source))
 			return ast.WalkContinue, nil
+		case *ast.AutoLink:
+			out.Write(node.URL(source))
+			return ast.WalkSkipChildren, nil
 		case *ast.CodeSpan:
 			out.Write(node.Text(source))
 			return ast.WalkSkipChildren, nil
