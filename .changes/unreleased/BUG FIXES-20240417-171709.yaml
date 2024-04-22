@@ -1,6 +1,0 @@
-kind: BUG FIXES
-body: 'generate: fixed a bug where attribute titles were not being generated for nested
-  object attributes'
-time: 2024-04-17T17:17:09.035512-04:00
-custom:
-  Issue: "357"
