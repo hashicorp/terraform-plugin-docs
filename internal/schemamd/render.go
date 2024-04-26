@@ -238,7 +238,7 @@ nameLoop:
 				//
 				// If a `.Description` is provided instead, the behaviour will be the
 				// same as for every other attribute.
-				if strings.ToLower(n) == "id" && childAtt.Description == "" {
+				if strings.ToLower(n) == "id" && len(parents) == 0 && childAtt.Description == "" {
 					if strings.Contains(gf.topLevelTitle, "Read-Only") {
 						childAtt.Description = "The ID of this resource."
 						groups[i] = append(groups[i], n)
