@@ -1,5 +1,0 @@
-kind: BUG FIXES
-body: 'generate: Prevented automatic `id` attribute behaviors under blocks'
-time: 2024-04-26T11:13:33.275469-04:00
-custom:
-  Issue: "365"

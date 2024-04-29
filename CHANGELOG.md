@@ -1,3 +1,10 @@
+## 0.19.2 (April 29, 2024)
+
+BUG FIXES:
+
+* migrate: Ensured idempotency of template files when command is ran multiple times ([#364](https://github.com/hashicorp/terraform-plugin-docs/issues/364))
+* generate: Prevented automatic `id` attribute behaviors under blocks ([#365](https://github.com/hashicorp/terraform-plugin-docs/issues/365))
+
 ## 0.19.1 (April 22, 2024)
 
 BUG FIXES:

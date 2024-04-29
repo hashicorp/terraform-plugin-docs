@@ -1,6 +1,0 @@
-kind: BUG FIXES
-body: 'migrate: Ensured idempotency of template files when command is ran multiple
-  times'
-time: 2024-04-26T09:50:42.75277-04:00
-custom:
-  Issue: "364"
