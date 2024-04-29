@@ -1,17 +1,20 @@
 ## Schema
 
-### Optional
+### Optional Attributes
 
 - `certificate_authority_arn` (String)
 - `certificate_body` (String)
 - `certificate_chain` (String)
 - `domain_name` (String)
-- `options` (Block List, Max: 1) (see [below for nested schema](#nestedblock--options))
 - `private_key` (String, Sensitive)
 - `subject_alternative_names` (Set of String)
 - `tags` (Map of String)
 - `tags_all` (Map of String)
 - `validation_method` (String)
+
+### Blocks
+
+- `options` (Block List, Max: 1) (see [below for nested schema](#nestedblock--options))
 
 ### Read-Only
 
@@ -24,7 +27,7 @@
 <a id="nestedblock--options"></a>
 ### Nested Schema for `options`
 
-Optional:
+Optional Attributes:
 
 - `certificate_transparency_logging_preference` (String)
 

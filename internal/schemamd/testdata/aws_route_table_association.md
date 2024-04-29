@@ -1,10 +1,10 @@
 ## Schema
 
-### Required
+### Required Attributes
 
 - `route_table_id` (String)
 
-### Optional
+### Optional Attributes
 
 - `gateway_id` (String)
 - `subnet_id` (String)
