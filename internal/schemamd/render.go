@@ -183,8 +183,9 @@ var (
 	// * Optional
 	// * Read-Only
 	groupFilters = []groupFilter{
-		{"### Required", "Required:", childAttributeIsRequired, childBlockIsRequired},
-		{"### Optional", "Optional:", childAttributeIsOptional, childBlockIsOptional},
+		{"### Required Attributes", "Required Attributes:", childAttributeIsRequired, omitChild[*tfjson.SchemaBlockType]},
+		{"### Optional Attributes", "Optional Attributes:", childAttributeIsOptional, omitChild[*tfjson.SchemaBlockType]},
+		{"### Blocks", "Blocks:", omitChild[*tfjson.SchemaAttribute], childBlockIsWritable},
 		{"### Read-Only", "Read-Only:", childAttributeIsReadOnly, childBlockIsReadOnly},
 	}
 )
