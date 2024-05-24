@@ -66,7 +66,7 @@ Usage: tfplugindocs generate [<args>]
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
     --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources                                                             (default: "false")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory  
-    --provider-name <ARG>            provider name, as used in Terraform configurations                                                                               
+    --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)                                                                            
     --providers-schema <ARG>         path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI                                                                               
     --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)                                                              
     --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
@@ -83,7 +83,7 @@ $ tfplugindocs validate --help
 Usage: tfplugindocs validate [<args>]
 
     --provider-dir <ARG>       relative or absolute path to the root provider code directory; this will default to the current working directory if not set                                                              
-    --provider-name <ARG>      provider name, as used in Terraform configurations                                                                                                                                                
+    --provider-name <ARG>      provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix) 
     --providers-schema <ARG>   path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI    
     --tf-version <ARG>         terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform  
 ```
@@ -98,7 +98,7 @@ Usage: tfplugindocs migrate [<args>]
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
     --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
-    --provider-name <ARG>            provider name, as used in Terraform configurations; this will default to provider-dir basename if not set                                                                                                                                            
+    --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)     
 ```
 
 ### How it Works
