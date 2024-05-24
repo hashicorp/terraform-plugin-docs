@@ -72,7 +72,7 @@ func (cmd *generateCmd) Help() string {
 
 func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
-	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations")
+	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)")
 	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory when running the command outside the root provider code directory")
 	fs.StringVar(&cmd.flagProvidersSchema, "providers-schema", "", "path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI")
 	fs.StringVar(&cmd.flagRenderedProviderName, "rendered-provider-name", "", "provider name, as generated in documentation (ex. page titles, ...)")
