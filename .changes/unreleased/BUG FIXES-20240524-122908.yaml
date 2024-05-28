@@ -1,5 +1,0 @@
-kind: BUG FIXES
-body: 'validate: Fixed issue with provider name not defaulting to directory'
-time: 2024-05-24T12:29:08.506286-04:00
-custom:
-  Issue: "376"

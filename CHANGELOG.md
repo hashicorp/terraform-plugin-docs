@@ -1,3 +1,9 @@
+## 0.19.3 (May 28, 2024)
+
+BUG FIXES:
+
+* validate: Fixed issue with provider name not defaulting to directory ([#376](https://github.com/hashicorp/terraform-plugin-docs/issues/376))
+
 ## 0.19.2 (April 29, 2024)
 
 BUG FIXES:
