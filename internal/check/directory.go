@@ -118,42 +118,6 @@ func MixedDirectoriesCheck(docFiles []string) error {
 	return nil
 }
 
-// NumberOfFilesCheck verifies that documentation is below the Terraform Registry storage limit.
-// This check presumes that all provided directories are valid, e.g. that directory checking
-// for invalid or mixed directory structures was previously completed.
-func NumberOfFilesCheck(docFiles []string) error {
-	var numberOfFiles int
-
-	directoryCounts := make(map[string]int)
-	for _, file := range docFiles {
-		directory := filepath.Dir(file)
-
-		// Ignore CDKTF files. The file limit is per-language and presumably there is one CDKTF file per source HCL file.
-		if IsValidCdktfDirectory(directory) {
-			continue
-		}
-
-		if directory == RegistryIndexDirectory || directory == filepath.FromSlash(LegacyIndexDirectory) {
-			continue
-		}
-
-		directoryCounts[directory]++
-	}
-
-	for directory, count := range directoryCounts {
-
-		log.Printf("[TRACE] Found %d documentation files in directory: %s", count, directory)
-		numberOfFiles = numberOfFiles + count
-	}
-
-	log.Printf("[DEBUG] Found %d documentation files with limit of %d", numberOfFiles, RegistryMaximumNumberOfFiles)
-	if numberOfFiles >= RegistryMaximumNumberOfFiles {
-		return fmt.Errorf("exceeded maximum (%d) number of documentation files for Terraform Registry: %d", RegistryMaximumNumberOfFiles, numberOfFiles)
-	}
-
-	return nil
-}
-
 func IsValidLegacyDirectory(directory string) bool {
 	for _, validLegacyDirectory := range ValidLegacyDirectories {
 		if directory == filepath.FromSlash(validLegacyDirectory) {

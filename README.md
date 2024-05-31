@@ -159,7 +159,6 @@ The `validate` subcommand can be used to validate the provider website documenta
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `InvalidDirectoriesCheck` | Checks for valid subdirectory structure and throws an error if an invalid Terraform Provider documentation subdirectory is found.                                                   |
 | `MixedDirectoriesCheck`   | Throws an error if both legacy documentation (`/website/docs`) and registry documentation (`/docs`) are found.                                                                      |
-| `NumberOfFilesCheck`      | Throws an error if the number of files in a directory is larger than the registry limit.                                                                                            |
 | `FileSizeCheck`           | Throws an error if the documentation file is above the registry storage limit.                                                                                                      |
 | `FileExtensionCheck`      | Throws an error if the extension of the given file is not a valid registry documentation extension.                                                                                 |
 | `FrontMatterCheck`        | Checks the YAML frontmatter of documentation for missing required fields or invalid fields.                                                                                         |

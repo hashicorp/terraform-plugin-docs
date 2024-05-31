@@ -170,10 +170,6 @@ func (v *validator) validate(ctx context.Context) error {
 	err = check.MixedDirectoriesCheck(files)
 	result = errors.Join(result, err)
 
-	v.logger.infof("running number of files check")
-	err = check.NumberOfFilesCheck(files)
-	result = errors.Join(result, err)
-
 	if dirExists(filepath.Join(v.providerDir, "docs")) {
 		v.logger.infof("detected static docs directory, running checks")
 		err = v.validateStaticDocs(filepath.Join(v.providerDir, "docs"))
