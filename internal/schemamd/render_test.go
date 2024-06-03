@@ -48,6 +48,12 @@ func TestRender(t *testing.T) {
 			"testdata/framework_types.schema.json",
 			"testdata/framework_types.md",
 		},
+		{
+			// Reference: https://github.com/hashicorp/terraform-plugin-docs/issues/380
+			"deep_nested_attributes",
+			"testdata/deep_nested_attributes.schema.json",
+			"testdata/deep_nested_attributes.md",
+		},
 	} {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
