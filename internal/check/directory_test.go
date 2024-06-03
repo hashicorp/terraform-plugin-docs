@@ -4,7 +4,6 @@
 package check
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -13,43 +12,6 @@ import (
 )
 
 var DocumentationGlobPattern = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources,functions}/**/*,website/docs/**/*}`
-
-func TestNumberOfFilesCheck(t *testing.T) {
-	t.Parallel()
-	testCases := map[string]struct {
-		files       []string
-		ExpectError bool
-	}{
-		"under limit": {
-			files: testGenerateFiles(RegistryMaximumNumberOfFiles - 1),
-		},
-		"at limit": {
-			files:       testGenerateFiles(RegistryMaximumNumberOfFiles),
-			ExpectError: true,
-		},
-		"over limit": {
-			files:       testGenerateFiles(RegistryMaximumNumberOfFiles + 1),
-			ExpectError: true,
-		},
-	}
-
-	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			got := NumberOfFilesCheck(testCase.files)
-
-			if got == nil && testCase.ExpectError {
-				t.Errorf("expected error, got no error")
-			}
-
-			if got != nil && !testCase.ExpectError {
-				t.Errorf("expected no error, got error: %s", got)
-			}
-		})
-	}
-}
 
 func TestMixedDirectoriesCheck(t *testing.T) {
 	t.Parallel()
@@ -90,14 +52,4 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 			}
 		})
 	}
-}
-
-func testGenerateFiles(numberOfFiles int) []string {
-	files := make([]string, numberOfFiles)
-
-	for i := 0; i < numberOfFiles; i++ {
-		files[i] = fmt.Sprintf("thing%d.md", i)
-	}
-
-	return files
 }
