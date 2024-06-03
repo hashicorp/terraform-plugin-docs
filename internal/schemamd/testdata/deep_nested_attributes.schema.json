@@ -1,0 +1,78 @@
+{
+    "version": 0,
+    "block": {
+        "attributes": {
+            "id": {
+                "type": "string",
+                "description": "Example identifier",
+                "description_kind": "markdown",
+                "computed": true
+            },
+            "level_one": {
+                "nested_type": {
+                    "attributes": {
+                        "level_two": {
+                            "nested_type": {
+                                "attributes": {
+                                    "level_three": {
+                                        "nested_type": {
+                                            "attributes": {
+                                                "level_four_primary": {
+                                                    "nested_type": {
+                                                        "attributes": {
+                                                            "level_five": {
+                                                                "nested_type": {
+                                                                    "attributes": {
+                                                                        "level_five_string": {
+                                                                            "type": "string",
+                                                                            "description": "Parent should be level_one.level_two.level_three.level_four_primary.level_five.",
+                                                                            "description_kind": "plain",
+                                                                            "optional": true
+                                                                        }
+                                                                    },
+                                                                    "nesting_mode": "single"
+                                                                },
+                                                                "description": "Parent should be level_one.level_two.level_three.level_four_primary.",
+                                                                "description_kind": "plain",
+                                                                "optional": true
+                                                            },
+                                                            "level_four_primary_string": {
+                                                                "type": "string",
+                                                                "description": "Parent should be level_one.level_two.level_three.level_four_primary.",
+                                                                "description_kind": "plain",
+                                                                "optional": true
+                                                            }
+                                                        },
+                                                        "nesting_mode": "single"
+                                                    },
+                                                    "description_kind": "plain",
+                                                    "optional": true
+                                                },
+                                                "level_four_secondary": {
+                                                    "type": "string",
+                                                    "description_kind": "plain",
+                                                    "optional": true
+                                                }
+                                            },
+                                            "nesting_mode": "single"
+                                        },
+                                        "description_kind": "plain",
+                                        "optional": true
+                                    }
+                                },
+                                "nesting_mode": "single"
+                            },
+                            "description_kind": "plain",
+                            "optional": true
+                        }
+                    },
+                    "nesting_mode": "single"
+                },
+                "description_kind": "plain",
+                "required": true
+            }
+        },
+        "description": "Example resource",
+        "description_kind": "markdown"
+    }
+}
