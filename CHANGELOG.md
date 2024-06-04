@@ -1,3 +1,13 @@
+## 0.19.4 (June 04, 2024)
+
+NOTES:
+
+* validate: The number of files check has been removed to match the latest Terraform Registry ingress logic ([#381](https://github.com/hashicorp/terraform-plugin-docs/issues/381))
+
+BUG FIXES:
+
+* generate: Prevented incorrect attribute paths with nested attributes that contain multiple attributes ([#380](https://github.com/hashicorp/terraform-plugin-docs/issues/380))
+
 ## 0.19.3 (May 28, 2024)
 
 BUG FIXES:

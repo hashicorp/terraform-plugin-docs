@@ -1,5 +1,0 @@
-kind: NOTES
-body: 'validate: The number of files check has been removed to match the latest Terraform Registry ingress logic'
-time: 2024-05-31T09:35:39.965379-07:00
-custom:
-    Issue: "381"

@@ -1,5 +1,0 @@
-kind: BUG FIXES
-body: 'generate: Prevented incorrect attribute paths with nested attributes that contain multiple attributes'
-time: 2024-06-03T09:29:11.314279-07:00
-custom:
-    Issue: "380"
