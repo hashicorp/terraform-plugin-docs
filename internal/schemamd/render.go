@@ -87,7 +87,7 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 		return nil, fmt.Errorf("TODO: tuples are not yet supported")
 	}
 
-	anchorID := "nestedatt--" + strings.Join(path, "--")
+	anchorID := "nested-schema-for-" + strings.Join(path, "")
 	pathTitle := strings.Join(path, ".")
 	nestedTypes := []nestedType{}
 	switch {
@@ -346,12 +346,7 @@ nameLoop:
 
 func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
 	for _, nt := range nestedTypes {
-		_, err := io.WriteString(w, "<a id=\""+nt.anchorID+"\"></a>\n")
-		if err != nil {
-			return err
-		}
-
-		_, err = io.WriteString(w, "### Nested Schema for `"+nt.pathTitle+"`\n\n")
+		_, err := io.WriteString(w, "### Nested Schema for `"+nt.pathTitle+"`\n\n")
 		if err != nil {
 			return err
 		}
