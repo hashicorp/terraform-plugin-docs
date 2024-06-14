@@ -21,6 +21,12 @@ import (
 )
 
 func providerShortName(n string) string {
+	// If the provider name is a fully qualified source name, we trim the repo and the org
+	// So that we're left with only the provider's shortname.
+	if strings.Contains(n, "/") {
+		parts := strings.Split(n, "/")
+		n = parts[len(parts)-1]
+	}
 	return strings.TrimPrefix(n, "terraform-provider-")
 }
 

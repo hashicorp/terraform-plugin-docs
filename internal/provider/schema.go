@@ -110,6 +110,12 @@ provider %[1]q {
 		return ps, nil
 	}
 
+	// If we're generating docs for a provider not in the official TF registry, the schema provider key is the
+	// source name (e.g. "terraform.releases.teleport.dev/gravitational/teleport")
+	if ps, ok := schemas.Schemas[providerName]; ok {
+		return ps, nil
+	}
+
 	return nil, fmt.Errorf("unable to find schema in JSON for provider %q", shortName)
 }
 
@@ -129,6 +135,12 @@ func TerraformProviderSchemaFromFile(providerName, providersSchemaPath string, l
 	}
 
 	if ps, ok := schemas.Schemas["registry.terraform.io/hashicorp/"+shortName]; ok {
+		return ps, nil
+	}
+
+	// If we're generating docs for a provider not in the official TF registry, the schema provider key is the
+	// source name (e.g. "terraform.releases.teleport.dev/gravitational/teleport")
+	if ps, ok := schemas.Schemas[providerName]; ok {
 		return ps, nil
 	}
 
