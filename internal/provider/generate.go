@@ -605,7 +605,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		}
 
 		tmpl := docTemplate(tmplData)
-		err = tmpl.Render(g.providerDir, out)
+		err = tmpl.Render(g.providerDir, g.providerName, providerSchema, out)
 		if err != nil {
 			return fmt.Errorf("unable to render template %q: %w", rel, err)
 		}

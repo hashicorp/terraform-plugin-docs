@@ -111,13 +111,31 @@ func renderStringTemplate(providerDir, name, text string, data interface{}) (str
 	return buf.String(), nil
 }
 
-func (t docTemplate) Render(providerDir string, out io.Writer) error {
+func (t docTemplate) Render(providerDir, providerName string, schema *tfjson.ProviderSchema, out io.Writer) error {
 	s := string(t)
 	if s == "" {
 		return nil
 	}
 
-	return renderTemplate(providerDir, "docTemplate", s, out, nil)
+	data := struct {
+		ResourceFiles   map[string]string
+		DataSourceFiles map[string]string
+		FunctionFiles   map[string]string
+	}{
+		DataSourceFiles: getFileMaps(schema.DataSourceSchemas, providerName),
+		ResourceFiles:   getFileMaps(schema.ResourceSchemas, providerName),
+		FunctionFiles:   getFileMaps(schema.Functions, providerName),
+	}
+
+	return renderTemplate(providerDir, "docTemplate", s, out, data)
+}
+
+func getFileMaps[T any](m map[string]T, providerName string) map[string]string {
+	items := make(map[string]string, len(m))
+	for item, _ := range m {
+		items[item] = resourceShortName(item, providerName)
+	}
+	return items
 }
 
 func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, schema *tfjson.Schema) (string, error) {
