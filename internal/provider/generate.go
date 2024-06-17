@@ -242,24 +242,28 @@ func (g *generator) Generate(ctx context.Context) error {
 // ProviderDocsDir returns the absolute path to the joined provider and
 // given website documentation directory, which defaults to "docs".
 func (g *generator) ProviderDocsDir() string {
-	// detect if destination path is absolute, if so use it as-is
-	if filepath.IsAbs(g.renderedWebsiteDir) {
-		return g.renderedWebsiteDir
-	}
-	// Else the destination path is relative to the provider dir
-	return filepath.Join(g.providerDir, g.renderedWebsiteDir)
+	return resolveDirPath(g.renderedWebsiteDir, g.providerDir)
 }
 
 // ProviderExamplesDir returns the absolute path to the joined provider and
 // given examples directory, which defaults to "examples".
 func (g *generator) ProviderExamplesDir() string {
-	return filepath.Join(g.providerDir, g.examplesDir)
+	return resolveDirPath(g.examplesDir, g.providerDir)
 }
 
 // ProviderTemplatesDir returns the absolute path to the joined provider and
 // given templates directory, which defaults to "templates".
 func (g *generator) ProviderTemplatesDir() string {
-	return filepath.Join(g.providerDir, g.templatesDir)
+	return resolveDirPath(g.templatesDir, g.providerDir)
+}
+
+func resolveDirPath(dir, providerDir string) string {
+	// detect if destination directory is absolute, if so use it as-is
+	if filepath.IsAbs(dir) {
+		return dir
+	}
+	// Else the directory is relative to the provider dir
+	return filepath.Join(providerDir, dir)
 }
 
 // TempTemplatesDir returns the absolute path to the joined temporary and
