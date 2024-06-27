@@ -14,6 +14,16 @@ import (
 	"github.com/zclconf/go-cty/cty"
 )
 
+// Config contains settings one can set to configure how the schema markdown is rendered.
+type Config struct {
+	// HiddenAttributes is the list of fields that must not be rendered.
+	HiddenAttributes []string
+}
+
+func (cfg *Config) attributeIsHidden(name string, path []string) bool {
+	return slices.Contains(cfg.HiddenAttributes, strings.ToLower(strings.Join(append(path, name), ".")))
+}
+
 // Render writes a Markdown formatted Schema definition to the specified writer.
 // A Schema contains a Version and the root Block, for example:
 //
@@ -22,13 +32,13 @@ import (
 //	  },
 //		 "version": 0
 //	},
-func Render(schema *tfjson.Schema, w io.Writer) error {
+func Render(schema *tfjson.Schema, w io.Writer, cfg Config) error {
 	_, err := io.WriteString(w, "## Schema\n\n")
 	if err != nil {
 		return err
 	}
 
-	err = writeRootBlock(w, schema.Block)
+	err = writeRootBlock(w, schema.Block, &cfg)
 	if err != nil {
 		return fmt.Errorf("unable to render schema: %w", err)
 	}
@@ -180,8 +190,8 @@ func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) (
 	return []nestedType{nt}, nil
 }
 
-func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
-	return writeBlockChildren(w, nil, block, true)
+func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock, cfg *Config) error {
+	return writeBlockChildren(w, nil, block, true, cfg)
 }
 
 // A Block contains:
@@ -211,7 +221,7 @@ func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
 //		 },
 //		 "description_kind": "plain"
 //	},
-func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock, root bool) error {
+func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock, root bool, cfg *Config) error {
 	names := []string{}
 	for n := range block.Attributes {
 		names = append(names, n)
@@ -225,7 +235,7 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 	// Group Attributes/Blocks by characteristics.
 nameLoop:
 	for _, n := range names {
-		if slices.Contains(hiddenFields, strings.ToLower(strings.Join(append(parents, n), "."))) {
+		if cfg.attributeIsHidden(n, parents) {
 			continue nameLoop
 		}
 		if childBlock, ok := block.NestedBlocks[n]; ok {
@@ -340,7 +350,7 @@ nameLoop:
 		}
 	}
 
-	err := writeNestedTypes(w, nestedTypes)
+	err := writeNestedTypes(w, nestedTypes, cfg)
 	if err != nil {
 		return err
 	}
@@ -348,7 +358,7 @@ nameLoop:
 	return nil
 }
 
-func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
+func writeNestedTypes(w io.Writer, nestedTypes []nestedType, cfg *Config) error {
 	for _, nt := range nestedTypes {
 		_, err := io.WriteString(w, "### Nested Schema for `"+nt.pathTitle+"`\n\n")
 		if err != nil {
@@ -357,17 +367,17 @@ func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
 
 		switch {
 		case nt.block != nil:
-			err = writeBlockChildren(w, nt.path, nt.block, false)
+			err = writeBlockChildren(w, nt.path, nt.block, false, cfg)
 			if err != nil {
 				return err
 			}
 		case nt.object != nil:
-			err = writeObjectChildren(w, nt.path, *nt.object, nt.group)
+			err = writeObjectChildren(w, nt.path, *nt.object, nt.group, cfg)
 			if err != nil {
 				return err
 			}
 		case nt.attrs != nil:
-			err = writeNestedAttributeChildren(w, nt.path, nt.attrs, nt.group)
+			err = writeNestedAttributeChildren(w, nt.path, nt.attrs, nt.group, cfg)
 			if err != nil {
 				return err
 			}
@@ -449,7 +459,7 @@ func writeObjectAttribute(w io.Writer, path []string, att cty.Type, group groupF
 	return nestedTypes, nil
 }
 
-func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group groupFilter) error {
+func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group groupFilter, cfg *Config) error {
 	_, err := io.WriteString(w, group.nestedTitle+"\n\n")
 	if err != nil {
 		return err
@@ -482,7 +492,7 @@ func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group group
 		return err
 	}
 
-	err = writeNestedTypes(w, nestedTypes)
+	err = writeNestedTypes(w, nestedTypes, cfg)
 	if err != nil {
 		return err
 	}
@@ -490,7 +500,7 @@ func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group group
 	return nil
 }
 
-func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttributes *tfjson.SchemaNestedAttributeType, group groupFilter) error {
+func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttributes *tfjson.SchemaNestedAttributeType, group groupFilter, cfg *Config) error {
 	sortedNames := []string{}
 	for n := range nestedAttributes.Attributes {
 		sortedNames = append(sortedNames, n)
@@ -499,7 +509,7 @@ func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttribute
 
 	groups := map[int][]string{}
 	for _, name := range sortedNames {
-		if slices.Contains(hiddenFields, strings.ToLower(strings.Join(append(parents, name), "."))) {
+		if cfg.attributeIsHidden(name, parents) {
 			continue
 		}
 
@@ -544,7 +554,7 @@ func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttribute
 		}
 	}
 
-	err := writeNestedTypes(w, nestedTypes)
+	err := writeNestedTypes(w, nestedTypes, cfg)
 	if err != nil {
 		return err
 	}

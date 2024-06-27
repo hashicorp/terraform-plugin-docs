@@ -40,6 +40,14 @@ type (
 	docTemplate string
 )
 
+type templateConfig struct {
+	providerName         string
+	renderedProviderName string
+	providerDir          string
+
+	hiddenAttributes []string
+}
+
 func newTemplate(providerDir, name, text string) (*template.Template, error) {
 	tmpl := template.New(name)
 	titleCaser := cases.Title(language.Und)
@@ -111,7 +119,7 @@ func renderStringTemplate(providerDir, name, text string, data interface{}) (str
 	return buf.String(), nil
 }
 
-func (t docTemplate) Render(providerDir, providerName string, schema *tfjson.ProviderSchema, out io.Writer) error {
+func (t docTemplate) Render(cfg templateConfig, schema *tfjson.ProviderSchema, out io.Writer) error {
 	s := string(t)
 	if s == "" {
 		return nil
@@ -122,12 +130,12 @@ func (t docTemplate) Render(providerDir, providerName string, schema *tfjson.Pro
 		DataSourceFiles map[string]string
 		FunctionFiles   map[string]string
 	}{
-		DataSourceFiles: getFileMaps(schema.DataSourceSchemas, providerName),
-		ResourceFiles:   getFileMaps(schema.ResourceSchemas, providerName),
-		FunctionFiles:   getFileMaps(schema.Functions, providerName),
+		DataSourceFiles: getFileMaps(schema.DataSourceSchemas, cfg.providerName),
+		ResourceFiles:   getFileMaps(schema.ResourceSchemas, cfg.providerName),
+		FunctionFiles:   getFileMaps(schema.Functions, cfg.providerName),
 	}
 
-	return renderTemplate(providerDir, "docTemplate", s, out, data)
+	return renderTemplate(cfg.providerDir, "docTemplate", s, out, data)
 }
 
 func getFileMaps[T any](m map[string]T, providerName string) map[string]string {
@@ -138,9 +146,10 @@ func getFileMaps[T any](m map[string]T, providerName string) map[string]string {
 	return items
 }
 
-func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, schema *tfjson.Schema) (string, error) {
+func (t providerTemplate) Render(cfg templateConfig, exampleFile string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
-	err := schemamd.Render(schema, schemaBuffer)
+	mdConfig := schemamd.Config{HiddenAttributes: cfg.hiddenAttributes}
+	err := schemamd.Render(schema, schemaBuffer, mdConfig)
 	if err != nil {
 		return "", fmt.Errorf("unable to render schema: %w", err)
 	}
@@ -150,7 +159,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 		return "", nil
 	}
 
-	return renderStringTemplate(providerDir, "providerTemplate", s, struct {
+	return renderStringTemplate(cfg.providerDir, "providerTemplate", s, struct {
 		Description string
 
 		HasExample  bool
@@ -167,18 +176,19 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 		HasExample:  exampleFile != "" && fileExists(exampleFile),
 		ExampleFile: exampleFile,
 
-		ProviderName:      providerName,
-		ProviderShortName: providerShortName(providerName),
+		ProviderName:      cfg.providerName,
+		ProviderShortName: providerShortName(cfg.providerName),
 
 		SchemaMarkdown: schemaComment + "\n" + schemaBuffer.String(),
 
-		RenderedProviderName: renderedProviderName,
+		RenderedProviderName: cfg.renderedProviderName,
 	})
 }
 
-func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
+func (t resourceTemplate) Render(cfg templateConfig, name, typeName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
-	err := schemamd.Render(schema, schemaBuffer)
+	mdConfig := schemamd.Config{HiddenAttributes: cfg.hiddenAttributes}
+	err := schemamd.Render(schema, schemaBuffer, mdConfig)
 	if err != nil {
 		return "", fmt.Errorf("unable to render schema: %w", err)
 	}
@@ -188,7 +198,7 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		return "", nil
 	}
 
-	return renderStringTemplate(providerDir, "resourceTemplate", s, struct {
+	return renderStringTemplate(cfg.providerDir, "resourceTemplate", s, struct {
 		Type        string
 		Name        string
 		Description string
@@ -216,16 +226,16 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		HasImport:  importFile != "" && fileExists(importFile),
 		ImportFile: importFile,
 
-		ProviderName:      providerName,
-		ProviderShortName: providerShortName(providerName),
+		ProviderName:      cfg.providerName,
+		ProviderShortName: providerShortName(cfg.providerName),
 
 		SchemaMarkdown: schemaComment + "\n" + schemaBuffer.String(),
 
-		RenderedProviderName: renderedProviderName,
+		RenderedProviderName: cfg.renderedProviderName,
 	})
 }
 
-func (t functionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, signature *tfjson.FunctionSignature) (string, error) {
+func (t functionTemplate) Render(cfg templateConfig, name, typeName, exampleFile string, signature *tfjson.FunctionSignature) (string, error) {
 	funcSig, err := functionmd.RenderSignature(name, signature)
 	if err != nil {
 		return "", fmt.Errorf("unable to render function signature: %w", err)
@@ -246,7 +256,7 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 		return "", nil
 	}
 
-	return renderStringTemplate(providerDir, "resourceTemplate", s, struct {
+	return renderStringTemplate(cfg.providerDir, "resourceTemplate", s, struct {
 		Type        string
 		Name        string
 		Description string
@@ -274,8 +284,8 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 		HasExample:  exampleFile != "" && fileExists(exampleFile),
 		ExampleFile: exampleFile,
 
-		ProviderName:      providerName,
-		ProviderShortName: providerShortName(providerName),
+		ProviderName:      cfg.providerName,
+		ProviderShortName: providerShortName(cfg.providerName),
 
 		FunctionSignatureMarkdown: signatureComment + "\n" + funcSig,
 		FunctionArgumentsMarkdown: argumentComment + "\n" + funcArgs,
@@ -283,7 +293,7 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 		HasVariadic:                      signature.VariadicParameter != nil,
 		FunctionVariadicArgumentMarkdown: variadicComment + "\n" + funcVarArg,
 
-		RenderedProviderName: renderedProviderName,
+		RenderedProviderName: cfg.renderedProviderName,
 	})
 }
 
