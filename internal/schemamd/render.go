@@ -6,6 +6,7 @@ package schemamd
 import (
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strings"
 
@@ -224,6 +225,9 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 	// Group Attributes/Blocks by characteristics.
 nameLoop:
 	for _, n := range names {
+		if slices.Contains(hiddenFields, strings.ToLower(strings.Join(append(parents, n), "."))) {
+			continue nameLoop
+		}
 		if childBlock, ok := block.NestedBlocks[n]; ok {
 			for i, gf := range groupFilters {
 				if gf.filterBlock(childBlock) {
@@ -495,8 +499,11 @@ func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttribute
 
 	groups := map[int][]string{}
 	for _, name := range sortedNames {
-		att := nestedAttributes.Attributes[name]
+		if slices.Contains(hiddenFields, strings.ToLower(strings.Join(append(parents, name), "."))) {
+			continue
+		}
 
+		att := nestedAttributes.Attributes[name]
 		for i, gf := range groupFilters {
 			if gf.filterAttribute(att) {
 				groups[i] = append(groups[i], name)
