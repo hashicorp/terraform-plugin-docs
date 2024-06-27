@@ -15,6 +15,7 @@ type generateCmd struct {
 	commonCmd
 
 	flagIgnoreDeprecated bool
+	flagHiddenAttributes string
 
 	flagProviderName         string
 	flagRenderedProviderName string
@@ -82,6 +83,7 @@ func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs.StringVar(&cmd.flagWebsiteSourceDir, "website-source-dir", "templates", "templates directory based on provider-dir")
 	fs.StringVar(&cmd.tfVersion, "tf-version", "", "terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform")
 	fs.BoolVar(&cmd.flagIgnoreDeprecated, "ignore-deprecated", false, "don't generate documentation for deprecated resources and data-sources")
+	fs.StringVar(&cmd.flagHiddenAttributes, "hidden-attributes", "", "don't display those attributes in the rendered documentation. For example: id,metadata.namespace")
 	return fs
 }
 
@@ -109,6 +111,7 @@ func (cmd *generateCmd) runInternal() error {
 		cmd.flagWebsiteSourceDir,
 		cmd.tfVersion,
 		cmd.flagIgnoreDeprecated,
+		cmd.flagHiddenAttributes,
 	)
 	if err != nil {
 		return fmt.Errorf("unable to generate website: %w", err)

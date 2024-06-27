@@ -93,6 +93,8 @@ type generator struct {
 	templatesDir         string
 	websiteTmpDir        string
 
+	hiddenAttributes []string
+
 	ui cli.Ui
 }
 
@@ -104,7 +106,7 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool, hiddenAttributes string) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -147,6 +149,7 @@ func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, rendere
 		examplesDir:          examplesDir,
 		templatesDir:         templatesDir,
 		websiteTmpDir:        websiteTmpDir,
+		hiddenAttributes:     strings.Split(hiddenAttributes, ","),
 
 		ui: ui,
 	}
@@ -458,6 +461,13 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		return fmt.Errorf("unable to read rendered website directory %q: %w", g.ProviderDocsDir(), err)
 	}
 
+	cfg := templateConfig{
+		providerName:         g.providerName,
+		renderedProviderName: g.renderedProviderName,
+		providerDir:          g.providerDir,
+		hiddenAttributes:     g.hiddenAttributes,
+	}
+
 	for _, file := range dirEntry {
 
 		// Remove subdirectories managed by tfplugindocs
@@ -541,7 +551,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Data Source", exampleFilePath, "", resSchema)
+				render, err := tmpl.Render(cfg, resName, "Data Source", exampleFilePath, "", resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 				}
@@ -559,7 +569,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Resource", exampleFilePath, importFilePath, resSchema)
+				render, err := tmpl.Render(cfg, resName, "Resource", exampleFilePath, importFilePath, resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
@@ -576,7 +586,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "functions", funcName, "function.tf")
 
 				tmpl := functionTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, funcName, g.providerName, g.renderedProviderName, "function", exampleFilePath, signature)
+				render, err := tmpl.Render(cfg, funcName, "function", exampleFilePath, signature)
 				if err != nil {
 					return fmt.Errorf("unable to render function template %q: %w", rel, err)
 				}
@@ -592,7 +602,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 			if relFile == "index.md.tmpl" {
 				tmpl := providerTemplate(tmplData)
 				exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "provider", "provider.tf")
-				render, err := tmpl.Render(g.providerDir, g.providerName, g.renderedProviderName, exampleFilePath, providerSchema.ConfigSchema)
+				render, err := tmpl.Render(cfg, exampleFilePath, providerSchema.ConfigSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render provider template %q: %w", rel, err)
 				}
@@ -605,7 +615,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		}
 
 		tmpl := docTemplate(tmplData)
-		err = tmpl.Render(g.providerDir, g.providerName, providerSchema, out)
+		err = tmpl.Render(cfg, providerSchema, out)
 		if err != nil {
 			return fmt.Errorf("unable to render template %q: %w", rel, err)
 		}
