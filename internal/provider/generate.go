@@ -242,19 +242,28 @@ func (g *generator) Generate(ctx context.Context) error {
 // ProviderDocsDir returns the absolute path to the joined provider and
 // given website documentation directory, which defaults to "docs".
 func (g *generator) ProviderDocsDir() string {
-	return filepath.Join(g.providerDir, g.renderedWebsiteDir)
+	return resolveDirPath(g.renderedWebsiteDir, g.providerDir)
 }
 
 // ProviderExamplesDir returns the absolute path to the joined provider and
 // given examples directory, which defaults to "examples".
 func (g *generator) ProviderExamplesDir() string {
-	return filepath.Join(g.providerDir, g.examplesDir)
+	return resolveDirPath(g.examplesDir, g.providerDir)
 }
 
 // ProviderTemplatesDir returns the absolute path to the joined provider and
 // given templates directory, which defaults to "templates".
 func (g *generator) ProviderTemplatesDir() string {
-	return filepath.Join(g.providerDir, g.templatesDir)
+	return resolveDirPath(g.templatesDir, g.providerDir)
+}
+
+func resolveDirPath(dir, providerDir string) string {
+	// detect if destination directory is absolute, if so use it as-is
+	if filepath.IsAbs(dir) {
+		return dir
+	}
+	// Else the directory is relative to the provider dir
+	return filepath.Join(providerDir, dir)
 }
 
 // TempTemplatesDir returns the absolute path to the joined temporary and
@@ -596,7 +605,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		}
 
 		tmpl := docTemplate(tmplData)
-		err = tmpl.Render(g.providerDir, out)
+		err = tmpl.Render(g.providerDir, g.providerName, providerSchema, out)
 		if err != nil {
 			return fmt.Errorf("unable to render template %q: %w", rel, err)
 		}
@@ -697,6 +706,12 @@ provider %[1]q {
 		return ps, nil
 	}
 
+	// If we're generating docs for a provider not in the official TF registry, the schema provider key is the
+	// source name (e.g. "terraform.releases.teleport.dev/gravitational/teleport")
+	if ps, ok := schemas.Schemas[g.providerName]; ok {
+		return ps, nil
+	}
+
 	return nil, fmt.Errorf("unable to find schema in JSON for provider %q", shortName)
 }
 
@@ -716,6 +731,12 @@ func (g *generator) terraformProviderSchemaFromFile() (*tfjson.ProviderSchema, e
 	}
 
 	if ps, ok := schemas.Schemas["registry.terraform.io/hashicorp/"+shortName]; ok {
+		return ps, nil
+	}
+
+	// If we're generating docs for a provider not in the official TF registry, the schema provider key is the
+	// source name (e.g. "terraform.releases.teleport.dev/gravitational/teleport")
+	if ps, ok := schemas.Schemas[g.providerName]; ok {
 		return ps, nil
 	}
 
