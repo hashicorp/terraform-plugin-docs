@@ -187,7 +187,13 @@ func (m *migrator) MigrateTemplate(relDir string) fs.WalkDirFunc {
 		if fileName == "index" {
 			exampleRelDir = relDir
 		} else {
-			exampleRelDir = filepath.Join(relDir, fileName)
+			if relDir == "functions" {
+				// Conventional paths for function examples don't include the provider prefix
+				exampleRelDir = filepath.Join(relDir, fileName)
+			} else {
+				// Conventional paths for data source and resource examples do include the provider prefix
+				exampleRelDir = filepath.Join(relDir, baseName)
+			}
 		}
 		templateFilePath := filepath.Join(m.ProviderTemplatesDir(), relDir, fileName+".md.tmpl")
 

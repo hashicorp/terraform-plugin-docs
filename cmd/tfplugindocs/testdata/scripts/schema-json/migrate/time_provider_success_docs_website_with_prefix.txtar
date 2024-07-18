@@ -21,23 +21,23 @@ cmpenv examples/example_1.tf examples/example_1.tf
 
 cmpenv examples/functions/rfc3339_parse/example_1.tf exp-examples/functions/rfc3339_parse/example_1.tf
 
-cmpenv examples/resources/offset/example_1.tf exp-examples/resources/offset/example_1.tf
-cmpenv examples/resources/offset/example_2.tf exp-examples/resources/offset/example_2.tf
-cmpenv examples/resources/offset/import_1.sh exp-examples/resources/offset/import_1.sh
+cmpenv examples/resources/time_offset/example_1.tf exp-examples/resources/time_offset/example_1.tf
+cmpenv examples/resources/time_offset/example_2.tf exp-examples/resources/time_offset/example_2.tf
+cmpenv examples/resources/time_offset/import_1.sh exp-examples/resources/time_offset/import_1.sh
 
-cmpenv examples/resources/rotating/example_1.tf exp-examples/resources/rotating/example_1.tf
-cmpenv examples/resources/rotating/import_1.sh exp-examples/resources/rotating/import_1.sh
-cmpenv examples/resources/rotating/import_2.sh exp-examples/resources/rotating/import_2.sh
+cmpenv examples/resources/time_rotating/example_1.tf exp-examples/resources/time_rotating/example_1.tf
+cmpenv examples/resources/time_rotating/import_1.sh exp-examples/resources/time_rotating/import_1.sh
+cmpenv examples/resources/time_rotating/import_2.sh exp-examples/resources/time_rotating/import_2.sh
 
-cmpenv examples/resources/sleep/example_1.tf exp-examples/resources/sleep/example_1.tf
-cmpenv examples/resources/sleep/example_2.tf exp-examples/resources/sleep/example_2.tf
-cmpenv examples/resources/sleep/example_3.tf exp-examples/resources/sleep/example_3.tf
-cmpenv examples/resources/sleep/import_1.sh exp-examples/resources/sleep/import_1.sh
-cmpenv examples/resources/sleep/import_2.sh exp-examples/resources/sleep/import_2.sh
+cmpenv examples/resources/time_sleep/example_1.tf exp-examples/resources/time_sleep/example_1.tf
+cmpenv examples/resources/time_sleep/example_2.tf exp-examples/resources/time_sleep/example_2.tf
+cmpenv examples/resources/time_sleep/example_3.tf exp-examples/resources/time_sleep/example_3.tf
+cmpenv examples/resources/time_sleep/import_1.sh exp-examples/resources/time_sleep/import_1.sh
+cmpenv examples/resources/time_sleep/import_2.sh exp-examples/resources/time_sleep/import_2.sh
 
-cmpenv examples/resources/static/example_1.tf examples/resources/static/example_1.tf
-cmpenv examples/resources/static/example_2.tf examples/resources/static/example_2.tf
-cmpenv examples/resources/static/import_1.sh examples/resources/static/import_1.sh
+cmpenv examples/resources/time_static/example_1.tf examples/resources/time_static/example_1.tf
+cmpenv examples/resources/time_static/example_2.tf examples/resources/time_static/example_2.tf
+cmpenv examples/resources/time_static/import_1.sh examples/resources/time_static/import_1.sh
 
 -- expected-output.txt --
 migrating website from "$WORK/docs" to "$WORK/templates"
@@ -58,32 +58,32 @@ migrating resources directory: resources
 migrating file "time_offset.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/resources/offset.md.tmpl"
 extracting code examples from "time_offset.html.markdown"
-creating example file "$WORK/examples/resources/offset/example_1.tf"
-creating example file "$WORK/examples/resources/offset/example_2.tf"
-creating import file "$WORK/examples/resources/offset/import_1.sh"
+creating example file "$WORK/examples/resources/time_offset/example_1.tf"
+creating example file "$WORK/examples/resources/time_offset/example_2.tf"
+creating import file "$WORK/examples/resources/time_offset/import_1.sh"
 finished creating template "$WORK/templates/resources/offset.md.tmpl"
 migrating file "time_rotating.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/resources/rotating.md.tmpl"
 extracting code examples from "time_rotating.html.markdown"
-creating example file "$WORK/examples/resources/rotating/example_1.tf"
-creating import file "$WORK/examples/resources/rotating/import_1.sh"
-creating import file "$WORK/examples/resources/rotating/import_2.sh"
+creating example file "$WORK/examples/resources/time_rotating/example_1.tf"
+creating import file "$WORK/examples/resources/time_rotating/import_1.sh"
+creating import file "$WORK/examples/resources/time_rotating/import_2.sh"
 finished creating template "$WORK/templates/resources/rotating.md.tmpl"
 migrating file "time_sleep.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/resources/sleep.md.tmpl"
 extracting code examples from "time_sleep.html.markdown"
-creating example file "$WORK/examples/resources/sleep/example_1.tf"
-creating example file "$WORK/examples/resources/sleep/example_2.tf"
-creating example file "$WORK/examples/resources/sleep/example_3.tf"
-creating import file "$WORK/examples/resources/sleep/import_1.sh"
-creating import file "$WORK/examples/resources/sleep/import_2.sh"
+creating example file "$WORK/examples/resources/time_sleep/example_1.tf"
+creating example file "$WORK/examples/resources/time_sleep/example_2.tf"
+creating example file "$WORK/examples/resources/time_sleep/example_3.tf"
+creating import file "$WORK/examples/resources/time_sleep/import_1.sh"
+creating import file "$WORK/examples/resources/time_sleep/import_2.sh"
 finished creating template "$WORK/templates/resources/sleep.md.tmpl"
 migrating file "time_static.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/resources/static.md.tmpl"
 extracting code examples from "time_static.html.markdown"
-creating example file "$WORK/examples/resources/static/example_1.tf"
-creating example file "$WORK/examples/resources/static/example_2.tf"
-creating import file "$WORK/examples/resources/static/import_1.sh"
+creating example file "$WORK/examples/resources/time_static/example_1.tf"
+creating example file "$WORK/examples/resources/time_static/example_2.tf"
+creating import file "$WORK/examples/resources/time_static/import_1.sh"
 finished creating template "$WORK/templates/resources/static.md.tmpl"
 -- docs/index.html.markdown --
 ---
@@ -538,7 +538,7 @@ resource "aws_instance" "server" {
 output "test" {
  value = provider::time::rfc3339_parse("2023-07-25T23:43:16-00:00")
 }
--- exp-examples/resources/offset/example_1.tf --
+-- exp-examples/resources/time_offset/example_1.tf --
 resource "time_offset" "example" {
   offset_days = 7
 }
@@ -546,7 +546,7 @@ resource "time_offset" "example" {
 output "one_week_from_now" {
   value = time_offset.example.rfc3339
 }
--- exp-examples/resources/offset/example_2.tf --
+-- exp-examples/resources/time_offset/example_2.tf --
 resource "time_offset" "ami_update" {
   triggers = {
     # Save the time each switch of an AMI id
@@ -567,17 +567,17 @@ resource "aws_instance" "server" {
 
   # ... (other aws_instance arguments) ...
 }
--- exp-examples/resources/offset/import_1.sh --
+-- exp-examples/resources/time_offset/import_1.sh --
 $ terraform import time_offset.example 2020-02-12T06:36:13Z,0,0,7,0,0,0
--- exp-examples/resources/rotating/example_1.tf --
+-- exp-examples/resources/time_rotating/example_1.tf --
 resource "time_rotating" "example" {
   rotation_days = 30
 }
--- exp-examples/resources/rotating/import_1.sh --
+-- exp-examples/resources/time_rotating/import_1.sh --
 $ terraform import time_rotation.example 2020-02-12T06:36:13Z,0,0,30,0,0
--- exp-examples/resources/rotating/import_2.sh --
+-- exp-examples/resources/time_rotating/import_2.sh --
 $ terraform import time_rotation.example 2020-02-12T06:36:13Z,2020-02-13T06:36:13Z
--- exp-examples/resources/sleep/example_1.tf --
+-- exp-examples/resources/time_sleep/example_1.tf --
 # This resource will destroy (potentially immediately) after null_resource.next
 resource "null_resource" "previous" {}
 
@@ -591,7 +591,7 @@ resource "time_sleep" "wait_30_seconds" {
 resource "null_resource" "next" {
   depends_on = [time_sleep.wait_30_seconds]
 }
--- exp-examples/resources/sleep/example_2.tf --
+-- exp-examples/resources/time_sleep/example_2.tf --
 # This resource will destroy (at least) 30 seconds after null_resource.next
 resource "null_resource" "previous" {}
 
@@ -605,7 +605,7 @@ resource "time_sleep" "wait_30_seconds" {
 resource "null_resource" "next" {
   depends_on = [time_sleep.wait_30_seconds]
 }
--- exp-examples/resources/sleep/example_3.tf --
+-- exp-examples/resources/time_sleep/example_3.tf --
 resource "aws_ram_resource_association" "example" {
   resource_arn       = aws_subnet.example.arn
   resource_share_arn = aws_ram_resource_share.example.arn
@@ -630,17 +630,17 @@ resource "aws_db_subnet_group" "example" {
   # proper dependency and that both will change together.
   subnet_ids = [time_sleep.ram_resource_propagation.triggers["subnet_id"]]
 }
--- exp-examples/resources/sleep/import_1.sh --
+-- exp-examples/resources/time_sleep/import_1.sh --
 $ terraform import time_sleep.example 30s,
--- exp-examples/resources/sleep/import_2.sh --
+-- exp-examples/resources/time_sleep/import_2.sh --
 $ terraform import time_sleep.example ,30s
--- exp-examples/resources/static/example_1.tf --
+-- exp-examples/resources/time_static/example_1.tf --
 resource "time_static" "example" {}
 
 output "current_time" {
   value = time_static.example.rfc3339
 }
--- exp-examples/resources/static/example_2.tf --
+-- exp-examples/resources/time_static/example_2.tf --
 resource "time_static" "ami_update" {
   triggers = {
     # Save the time each switch of an AMI id
@@ -659,7 +659,7 @@ resource "aws_instance" "server" {
 
   # ... (other aws_instance arguments) ...
 }
--- exp-examples/resources/static/import_1.sh --
+-- exp-examples/resources/time_static/import_1.sh --
 $ terraform import time_static.example 2020-02-12T06:36:13Z
 -- exp-templates/index.md.tmpl --
 ---
@@ -745,11 +745,11 @@ Manages an offset time resource, which keeps an UTC timestamp stored in the Terr
 
 ### Basic Usage
 
-{{tffile "examples/resources/offset/example_1.tf"}}
+{{tffile "examples/resources/time_offset/example_1.tf"}}
 
 ### Triggers Usage
 
-{{tffile "examples/resources/offset/example_2.tf"}}
+{{tffile "examples/resources/time_offset/example_2.tf"}}
 
 ## Argument Reference
 
@@ -784,7 +784,7 @@ In addition to all arguments above, the following attributes are exported:
 
 This resource can be imported using the base UTC RFC3339 timestamp and offset years, months, days, hours, minutes, and seconds, separated by commas (`,`), e.g.
 
-{{codefile "shell" "examples/resources/offset/import_1.sh"}}
+{{codefile "shell" "examples/resources/time_offset/import_1.sh"}}
 
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/rotating.md.tmpl --
@@ -808,7 +808,7 @@ Manages a rotating time resource, which keeps a rotating UTC timestamp stored in
 
 This example configuration will rotate (destroy/create) the resource every 30 days.
 
-{{tffile "examples/resources/rotating/example_1.tf"}}
+{{tffile "examples/resources/time_rotating/example_1.tf"}}
 
 ## Argument Reference
 
@@ -842,11 +842,11 @@ In addition to all arguments above, the following attributes are exported:
 
 This resource can be imported using the base UTC RFC3339 value and rotation years, months, days, hours, and minutes, separated by commas (`,`), e.g. for 30 days
 
-{{codefile "shell" "examples/resources/rotating/import_1.sh"}}
+{{codefile "shell" "examples/resources/time_rotating/import_1.sh"}}
 
 Otherwise, to import with the rotation RFC3339 value, the base UTC RFC3339 value and rotation UTC RFC3339 value, separated by commas (`,`), e.g.
 
-{{codefile "shell" "examples/resources/rotating/import_2.sh"}}
+{{codefile "shell" "examples/resources/time_rotating/import_2.sh"}}
 
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/sleep.md.tmpl --
@@ -870,15 +870,15 @@ Manages a resource that delays creation and/or destruction, typically for furthe
 
 ### Delay Create Usage
 
-{{tffile "examples/resources/sleep/example_1.tf"}}
+{{tffile "examples/resources/time_sleep/example_1.tf"}}
 
 ### Delay Destroy Usage
 
-{{tffile "examples/resources/sleep/example_2.tf"}}
+{{tffile "examples/resources/time_sleep/example_2.tf"}}
 
 ### Triggers Usage
 
-{{tffile "examples/resources/sleep/example_3.tf"}}
+{{tffile "examples/resources/time_sleep/example_3.tf"}}
 
 ## Argument Reference
 
@@ -900,11 +900,11 @@ This resource can be imported with the `create_duration` and `destroy_duration`,
 
 e.g. For 30 seconds create duration with no destroy duration:
 
-{{codefile "shell" "examples/resources/sleep/import_1.sh"}}
+{{codefile "shell" "examples/resources/time_sleep/import_1.sh"}}
 
 e.g. For 30 seconds destroy duration with no create duration:
 
-{{codefile "shell" "examples/resources/sleep/import_2.sh"}}
+{{codefile "shell" "examples/resources/time_sleep/import_2.sh"}}
 
 The `triggers` argument cannot be imported.
 -- exp-templates/resources/static.md.tmpl --
@@ -928,11 +928,11 @@ Manages a static time resource, which keeps a locally sourced UTC timestamp stor
 
 ### Basic Usage
 
-{{tffile "examples/resources/static/example_1.tf"}}
+{{tffile "examples/resources/time_static/example_1.tf"}}
 
 ### Triggers Usage
 
-{{tffile "examples/resources/static/example_2.tf"}}
+{{tffile "examples/resources/time_static/example_2.tf"}}
 
 ## Argument Reference
 
@@ -959,6 +959,6 @@ In addition to all arguments above, the following attributes are exported:
 
 This resource can be imported using the UTC RFC3339 value, e.g.
 
-{{codefile "shell" "examples/resources/static/import_1.sh"}}
+{{codefile "shell" "examples/resources/time_static/import_1.sh"}}
 
 The `triggers` argument cannot be imported.

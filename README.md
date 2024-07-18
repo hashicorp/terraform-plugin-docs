@@ -191,8 +191,6 @@ The generation of missing documentation is based on a number of assumptions / co
 
 For templates:
 
-> **NOTE:** In the following conventional paths for templates, `<data source name>`, `<resource name>`, and `<function name>` do not include the provider prefix.
-
 | Path                                                  | Description                            |
 |-------------------------------------------------------|----------------------------------------|
 | `templates/`                                          | Root of templated docs                 |
@@ -208,24 +206,21 @@ Note: the `.tmpl` extension is necessary, for the file to be correctly handled a
 
 For examples:
 
-> **NOTE:** In the following conventional paths for examples, `<data source name>` and `<resource name>` include the provider prefix as well, but the provider prefix is **NOT** included in`<function name>`.
-> For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`
+> **NOTE:** In the following conventional paths for examples, data sources and resources include the provider prefix, but the provider prefix is **NOT** included for function examples.
+> For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`.
 
 | Path                                                      | Description                     |
 |-----------------------------------------------------------|---------------------------------|
 | `examples/`                                               | Root of examples                |
 | `examples/provider/provider.tf`                           | Provider example config         |
-| `examples/data-sources/<data source name>/data-source.tf` | Data source example config      |
+| `examples/data-sources/<provider prefix>_<data source name>/data-source.tf` | Data source example config      |
 | `examples/functions/<function name>/function.tf`          | Function example config         |
-| `examples/resources/<resource name>/resource.tf`          | Resource example config         |
-| `examples/resources/<resource name>/import.sh`            | Resource example import command |
+| `examples/resources/<provider prefix>_<resource name>/resource.tf`          | Resource example config         |
+| `examples/resources/<provider prefix>_<resource name>/import.sh`            | Resource example import command |
 
 #### Migration
 
 The `migrate` subcommand assumes the following conventional paths for the rendered website directory:
-
-> **NOTE:** In the following conventional paths for templates, `<data source name>`, `<resource name>`, and `<function name>` do not include the provider prefix.
-> if the `--provider-name` argument is set, the provider prefix will be removed from the file names during migration.
 
 Legacy website directory structure:
 
