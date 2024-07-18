@@ -1,0 +1,6 @@
+kind: BUG FIXES
+body: 'migrate: Fixed example folder naming for resources and data sources to include
+  the provider prefix'
+time: 2024-07-18T16:42:21.85361-04:00
+custom:
+  Issue: "391"
