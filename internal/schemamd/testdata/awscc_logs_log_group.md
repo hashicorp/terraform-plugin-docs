@@ -1,6 +1,6 @@
 ## Schema
 
-### Optional Attributes
+### Optional
 
 - `kms_key_id` (String) The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
 - `log_group_name` (String) The name of the log group. If you don't specify a name, AWS CloudFormation generates a unique ID for the log group.

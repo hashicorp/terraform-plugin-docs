@@ -1,13 +1,13 @@
 ## Schema
 
-### Required Attributes
+### Required
 
 - `certificate_authority_arn` (String)
 - `certificate_signing_request` (String) The certificate signing request (CSR) for the Certificate.
 - `signing_algorithm` (String) The name of the algorithm that will be used to sign the Certificate.
 - `validity` (Attributes) Validity for a certificate. (see [below for nested schema](#nestedatt--validity))
 
-### Optional Attributes
+### Optional
 
 - `api_passthrough` (Attributes) Structure that specifies fields to be overridden in a certificate at the time of issuance. These requires an API Passthrough template be used or they will be ignored. (see [below for nested schema](#nestedatt--api_passthrough))
 - `template_arn` (String)
@@ -22,7 +22,7 @@
 <a id="nestedatt--validity"></a>
 ### Nested Schema for `validity`
 
-Required Attributes:
+Required:
 
 - `type` (String)
 - `value` (Number)
@@ -31,7 +31,7 @@ Required Attributes:
 <a id="nestedatt--api_passthrough"></a>
 ### Nested Schema for `api_passthrough`
 
-Optional Attributes:
+Optional:
 
 - `extensions` (Attributes) Structure that contains X.500 extensions for a Certificate. (see [below for nested schema](#nestedatt--api_passthrough--extensions))
 - `subject` (Attributes) Structure that contains X.500 distinguished name information. (see [below for nested schema](#nestedatt--api_passthrough--subject))
@@ -39,7 +39,7 @@ Optional Attributes:
 <a id="nestedatt--api_passthrough--extensions"></a>
 ### Nested Schema for `api_passthrough.extensions`
 
-Optional Attributes:
+Optional:
 
 - `certificate_policies` (Attributes List) (see [below for nested schema](#nestedatt--api_passthrough--extensions--certificate_policies))
 - `extended_key_usage` (Attributes List) (see [below for nested schema](#nestedatt--api_passthrough--extensions--extended_key_usage))
@@ -49,18 +49,18 @@ Optional Attributes:
 <a id="nestedatt--api_passthrough--extensions--certificate_policies"></a>
 ### Nested Schema for `api_passthrough.extensions.certificate_policies`
 
-Required Attributes:
+Required:
 
 - `cert_policy_id` (String) String that contains X.509 ObjectIdentifier information.
 
-Optional Attributes:
+Optional:
 
 - `policy_qualifiers` (Attributes List) (see [below for nested schema](#nestedatt--api_passthrough--extensions--certificate_policies--policy_qualifiers))
 
 <a id="nestedatt--api_passthrough--extensions--certificate_policies--policy_qualifiers"></a>
 ### Nested Schema for `api_passthrough.extensions.certificate_policies.policy_qualifiers`
 
-Required Attributes:
+Required:
 
 - `policy_qualifier_id` (String)
 - `qualifier` (Attributes) Structure that contains a X.509 policy qualifier. (see [below for nested schema](#nestedatt--api_passthrough--extensions--certificate_policies--policy_qualifiers--qualifier))
@@ -68,7 +68,7 @@ Required Attributes:
 <a id="nestedatt--api_passthrough--extensions--certificate_policies--policy_qualifiers--qualifier"></a>
 ### Nested Schema for `api_passthrough.extensions.certificate_policies.policy_qualifiers.qualifier`
 
-Required Attributes:
+Required:
 
 - `cps_uri` (String)
 
@@ -78,7 +78,7 @@ Required Attributes:
 <a id="nestedatt--api_passthrough--extensions--extended_key_usage"></a>
 ### Nested Schema for `api_passthrough.extensions.extended_key_usage`
 
-Optional Attributes:
+Optional:
 
 - `extended_key_usage_object_identifier` (String) String that contains X.509 ObjectIdentifier information.
 - `extended_key_usage_type` (String)
@@ -87,7 +87,7 @@ Optional Attributes:
 <a id="nestedatt--api_passthrough--extensions--key_usage"></a>
 ### Nested Schema for `api_passthrough.extensions.key_usage`
 
-Optional Attributes:
+Optional:
 
 - `crl_sign` (Boolean)
 - `data_encipherment` (Boolean)
@@ -103,7 +103,7 @@ Optional Attributes:
 <a id="nestedatt--api_passthrough--extensions--subject_alternative_names"></a>
 ### Nested Schema for `api_passthrough.extensions.subject_alternative_names`
 
-Optional Attributes:
+Optional:
 
 - `directory_name` (Attributes) Structure that contains X.500 distinguished name information. (see [below for nested schema](#nestedatt--api_passthrough--extensions--subject_alternative_names--directory_name))
 - `dns_name` (String) String that contains X.509 DnsName information.
@@ -117,7 +117,7 @@ Optional Attributes:
 <a id="nestedatt--api_passthrough--extensions--subject_alternative_names--directory_name"></a>
 ### Nested Schema for `api_passthrough.extensions.subject_alternative_names.directory_name`
 
-Optional Attributes:
+Optional:
 
 - `common_name` (String)
 - `country` (String)
@@ -138,7 +138,7 @@ Optional Attributes:
 <a id="nestedatt--api_passthrough--extensions--subject_alternative_names--edi_party_name"></a>
 ### Nested Schema for `api_passthrough.extensions.subject_alternative_names.edi_party_name`
 
-Required Attributes:
+Required:
 
 - `name_assigner` (String)
 - `party_name` (String)
@@ -147,7 +147,7 @@ Required Attributes:
 <a id="nestedatt--api_passthrough--extensions--subject_alternative_names--other_name"></a>
 ### Nested Schema for `api_passthrough.extensions.subject_alternative_names.other_name`
 
-Required Attributes:
+Required:
 
 - `type_id` (String) String that contains X.509 ObjectIdentifier information.
 - `value` (String)
@@ -158,7 +158,7 @@ Required Attributes:
 <a id="nestedatt--api_passthrough--subject"></a>
 ### Nested Schema for `api_passthrough.subject`
 
-Optional Attributes:
+Optional:
 
 - `common_name` (String)
 - `country` (String)
@@ -180,7 +180,7 @@ Optional Attributes:
 <a id="nestedatt--validity_not_before"></a>
 ### Nested Schema for `validity_not_before`
 
-Required Attributes:
+Required:
 
 - `type` (String)
 - `value` (Number)
