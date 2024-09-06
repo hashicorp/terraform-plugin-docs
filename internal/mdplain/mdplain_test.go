@@ -32,7 +32,7 @@ func TestPlainMarkdown(t *testing.T) {
 		return
 	}
 	if !cmp.Equal(expected, actual) {
-		t.Errorf(cmp.Diff(expected, actual))
+		t.Error(cmp.Diff(expected, actual))
 	}
 
 }
