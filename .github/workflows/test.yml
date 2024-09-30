@@ -35,3 +35,4 @@ jobs:
         run: go vet ./...
       - name: Run acceptance tests
         run: make testacc
+
