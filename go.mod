@@ -4,7 +4,7 @@ go 1.22.7
 
 require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
-	github.com/bmatcuk/doublestar/v4 v4.6.1
+	github.com/bmatcuk/doublestar/v4 v4.7.1
 	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/cli v1.1.6
 	github.com/hashicorp/go-version v1.7.0
