@@ -28,6 +28,8 @@ type FileMismatchOptions struct {
 
 	FunctionEntries []os.DirEntry
 
+	EphemeralResourceEntries []os.DirEntry
+
 	Schema *tfjson.ProviderSchema
 }
 
@@ -71,6 +73,11 @@ func (check *FileMismatchCheck) Run() error {
 
 	if check.Options.FunctionEntries != nil {
 		err := check.FunctionFileMismatchCheck(check.Options.FunctionEntries, check.Options.Schema.Functions)
+		result = errors.Join(result, err)
+	}
+
+	if check.Options.EphemeralResourceEntries != nil {
+		err := check.ResourceFileMismatchCheck(check.Options.EphemeralResourceEntries, "ephemeral_resource", check.Options.Schema.EphemeralResourceSchemas)
 		result = errors.Join(result, err)
 	}
 
@@ -156,7 +163,7 @@ func (check *FileMismatchCheck) FunctionFileMismatchCheck(files []os.DirEntry, f
 			continue
 		}
 
-		if check.IgnoreFileMismatch(file.Name()) {
+		if check.IgnoreFunctionFileMismatch(file.Name()) {
 			continue
 		}
 
@@ -194,6 +201,16 @@ func (check *FileMismatchCheck) FunctionFileMismatchCheck(files []os.DirEntry, f
 func (check *FileMismatchCheck) IgnoreFileMismatch(file string) bool {
 	for _, ignoreResourceName := range check.Options.IgnoreFileMismatch {
 		if ignoreResourceName == fileResourceName(check.Options.ProviderShortName, file) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (check *FileMismatchCheck) IgnoreFunctionFileMismatch(file string) bool {
+	for _, ignoreFunctionName := range check.Options.IgnoreFileMismatch {
+		if ignoreFunctionName == TrimFileExtension(file) {
 			return true
 		}
 	}

@@ -95,10 +95,11 @@ func TestFileResourceName(t *testing.T) {
 func TestFileMismatchCheck(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
-		ResourceFiles fstest.MapFS
-		FunctionFiles fstest.MapFS
-		Options       *FileMismatchOptions
-		ExpectError   bool
+		ResourceFiles          fstest.MapFS
+		FunctionFiles          fstest.MapFS
+		EphemeralResourceFiles fstest.MapFS
+		Options                *FileMismatchOptions
+		ExpectError            bool
 	}{
 		"all found - resource": {
 			ResourceFiles: fstest.MapFS{
@@ -126,6 +127,21 @@ func TestFileMismatchCheck(t *testing.T) {
 					Functions: map[string]*tfjson.FunctionSignature{
 						"function1": {},
 						"function2": {},
+					},
+				},
+			},
+		},
+		"all found - ephemeral resource": {
+			EphemeralResourceFiles: fstest.MapFS{
+				"ephemeral_resource1.md": {},
+				"ephemeral_resource2.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					EphemeralResourceSchemas: map[string]*tfjson.Schema{
+						"test_ephemeral_resource1": {},
+						"test_ephemeral_resource2": {},
 					},
 				},
 			},
@@ -164,6 +180,23 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 			ExpectError: true,
 		},
+		"extra file - ephemeral resource": {
+			EphemeralResourceFiles: fstest.MapFS{
+				"ephemeral_resource1.md": {},
+				"ephemeral_resource2.md": {},
+				"ephemeral_resource3.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					EphemeralResourceSchemas: map[string]*tfjson.Schema{
+						"test_ephemeral_resource1": {},
+						"test_ephemeral_resource2": {},
+					},
+				},
+			},
+			ExpectError: true,
+		},
 		"ignore extra file - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
@@ -194,7 +227,23 @@ func TestFileMismatchCheck(t *testing.T) {
 					Functions: map[string]*tfjson.FunctionSignature{
 						"function1": {},
 						"function2": {},
-						"function3": {},
+					},
+				},
+			},
+		},
+		"ignore extra file - ephemeral resource": {
+			EphemeralResourceFiles: fstest.MapFS{
+				"ephemeral_resource1.md": {},
+				"ephemeral_resource2.md": {},
+				"ephemeral_resource3.md": {},
+			},
+			Options: &FileMismatchOptions{
+				IgnoreFileMismatch: []string{"test_ephemeral_resource3"},
+				ProviderShortName:  "test",
+				Schema: &tfjson.ProviderSchema{
+					EphemeralResourceSchemas: map[string]*tfjson.Schema{
+						"test_ephemeral_resource1": {},
+						"test_ephemeral_resource2": {},
 					},
 				},
 			},
@@ -224,6 +273,22 @@ func TestFileMismatchCheck(t *testing.T) {
 					Functions: map[string]*tfjson.FunctionSignature{
 						"function1": {},
 						"function2": {},
+					},
+				},
+			},
+			ExpectError: true,
+		},
+		"missing file - ephemeral resource": {
+			EphemeralResourceFiles: fstest.MapFS{
+				"ephemeral_resource1.md": {},
+			},
+			Options: &FileMismatchOptions{
+				IgnoreFileMismatch: []string{"test_ephemeral_resource3"},
+				ProviderShortName:  "test",
+				Schema: &tfjson.ProviderSchema{
+					EphemeralResourceSchemas: map[string]*tfjson.Schema{
+						"test_ephemeral_resource1": {},
+						"test_ephemeral_resource2": {},
 					},
 				},
 			},
@@ -259,6 +324,21 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
+		"ignore missing file - ephemeral resource": {
+			EphemeralResourceFiles: fstest.MapFS{
+				"ephemeral_resource1.md": {},
+			},
+			Options: &FileMismatchOptions{
+				IgnoreFileMissing: []string{"test_ephemeral_resource2"},
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					EphemeralResourceSchemas: map[string]*tfjson.Schema{
+						"test_ephemeral_resource1": {},
+						"test_ephemeral_resource2": {},
+					},
+				},
+			},
+		},
 		"no files": {
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
@@ -271,6 +351,10 @@ func TestFileMismatchCheck(t *testing.T) {
 						"function1": {},
 						"function2": {},
 					},
+					EphemeralResourceSchemas: map[string]*tfjson.Schema{
+						"test_ephemeral_resource1": {},
+						"test_ephemeral_resource2": {},
+					},
 				},
 			},
 		},
@@ -280,6 +364,9 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 			FunctionFiles: fstest.MapFS{
 				"function1.md": {},
+			},
+			EphemeralResourceFiles: fstest.MapFS{
+				"ephemeral_resource1.md": {},
 			},
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
@@ -295,8 +382,10 @@ func TestFileMismatchCheck(t *testing.T) {
 
 			resourceFiles, _ := testCase.ResourceFiles.ReadDir(".")
 			functionFiles, _ := testCase.FunctionFiles.ReadDir(".")
+			ephemeralResourceFiles, _ := testCase.EphemeralResourceFiles.ReadDir(".")
 			testCase.Options.ResourceEntries = resourceFiles
 			testCase.Options.FunctionEntries = functionFiles
+			testCase.Options.EphemeralResourceEntries = ephemeralResourceFiles
 			got := NewFileMismatchCheck(testCase.Options).Run()
 
 			if got == nil && testCase.ExpectError {
