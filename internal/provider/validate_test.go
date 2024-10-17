@@ -4,6 +4,7 @@
 package provider
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -38,14 +39,15 @@ func TestValidateStaticDocs(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
+			providerFs := os.DirFS(testCase.BasePath)
 			v := &validator{
+				providerFS:   providerFs,
 				providerDir:  testCase.BasePath,
 				providerName: "terraform-provider-test",
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
-
-			got := v.validateStaticDocs(filepath.Join(v.providerDir, "docs"))
+			got := v.validateStaticDocs("docs")
 
 			if got == nil && testCase.ExpectError {
 				t.Errorf("expected error, got no error")
@@ -88,14 +90,16 @@ func TestValidateLegacyWebsite(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
+			providerFs := os.DirFS(testCase.BasePath)
 			v := &validator{
+				providerFS:   providerFs,
 				providerDir:  testCase.BasePath,
 				providerName: "terraform-provider-test",
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
 
-			got := v.validateLegacyWebsite(filepath.Join(v.providerDir, "website"))
+			got := v.validateLegacyWebsite("website/docs")
 
 			if got == nil && testCase.ExpectError {
 				t.Errorf("expected error, got no error")

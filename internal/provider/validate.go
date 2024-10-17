@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -81,6 +82,7 @@ var RegistryGuideFrontMatterOptions = &check.FrontMatterOptions{
 type validator struct {
 	providerName        string
 	providerDir         string
+	providerFS          fs.FS
 	providersSchemaPath string
 
 	tfVersion      string
@@ -120,9 +122,12 @@ func Validate(ui cli.Ui, providerDir, providerName, providersSchemaPath, tfversi
 		return fmt.Errorf("expected %q to be a directory", providerDir)
 	}
 
+	providerFs := os.DirFS(providerDir)
+
 	v := &validator{
 		providerName:        providerName,
 		providerDir:         providerDir,
+		providerFS:          providerFs,
 		providersSchemaPath: providersSchemaPath,
 		tfVersion:           tfversion,
 
@@ -157,9 +162,7 @@ func (v *validator) validate(ctx context.Context) error {
 		}
 	}
 
-	providerFs := os.DirFS(v.providerDir)
-
-	files, globErr := doublestar.Glob(providerFs, DocumentationGlobPattern)
+	files, globErr := doublestar.Glob(v.providerFS, DocumentationGlobPattern)
 	if globErr != nil {
 		return fmt.Errorf("error finding documentation files: %w", err)
 	}
@@ -170,15 +173,15 @@ func (v *validator) validate(ctx context.Context) error {
 	err = check.MixedDirectoriesCheck(files)
 	result = errors.Join(result, err)
 
-	if dirExists(filepath.Join(v.providerDir, "docs")) {
+	if dirExists(v.providerFS, "docs") {
 		v.logger.infof("detected static docs directory, running checks")
-		err = v.validateStaticDocs(filepath.Join(v.providerDir, "docs"))
+		err = v.validateStaticDocs("docs")
 		result = errors.Join(result, err)
 
 	}
-	if dirExists(filepath.Join(v.providerDir, filepath.Join("website", "docs"))) {
+	if dirExists(v.providerFS, "website/docs") {
 		v.logger.infof("detected legacy website directory, running checks")
-		err = v.validateLegacyWebsite(filepath.Join(v.providerDir, "website/docs"))
+		err = v.validateLegacyWebsite("website/docs")
 		result = errors.Join(result, err)
 	}
 
@@ -190,23 +193,19 @@ func (v *validator) validateStaticDocs(dir string) error {
 	var result error
 
 	options := &check.ProviderFileOptions{
+		FileOptions:     &check.FileOptions{BasePath: v.providerDir},
 		FrontMatter:     RegistryFrontMatterOptions,
 		ValidExtensions: ValidRegistryFileExtensions,
 	}
 
 	var files []string
 
-	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+	err := fs.WalkDir(v.providerFS, dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return fmt.Errorf("error walking directory %q: %w", dir, err)
 		}
-
-		rel, err := filepath.Rel(v.providerDir, path)
-		if err != nil {
-			return err
-		}
 		if d.IsDir() {
-			match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationDirGlobPattern), rel)
+			match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationDirGlobPattern), path)
 			if err != nil {
 				return err
 			}
@@ -214,11 +213,11 @@ func (v *validator) validateStaticDocs(dir string) error {
 				return nil // skip valid non-documentation directories
 			}
 
-			v.logger.infof("running invalid directories check on %s", rel)
-			result = errors.Join(result, check.InvalidDirectoriesCheck(rel))
+			v.logger.infof("running invalid directories check on %s", path)
+			result = errors.Join(result, check.InvalidDirectoriesCheck(path))
 			return nil
 		}
-		match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationGlobPattern), rel)
+		match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationGlobPattern), path)
 		if err != nil {
 			return err
 		}
@@ -229,12 +228,12 @@ func (v *validator) validateStaticDocs(dir string) error {
 		// Configure FrontMatterOptions based on file type
 		if d.Name() == "index.md" {
 			options.FrontMatter = RegistryIndexFrontMatterOptions
-		} else if _, relErr := filepath.Rel(rel, "guides"); relErr != nil {
+		} else if _, relErr := filepath.Rel(path, "guides"); relErr != nil {
 			options.FrontMatter = RegistryGuideFrontMatterOptions
 		} else {
 			options.FrontMatter = RegistryFrontMatterOptions
 		}
-		v.logger.infof("running file checks on %s", rel)
+		v.logger.infof("running file checks on %s", path)
 		result = errors.Join(result, check.NewProviderFileCheck(options).Run(path))
 
 		files = append(files, path)
@@ -249,15 +248,15 @@ func (v *validator) validateStaticDocs(dir string) error {
 		Schema:            v.providerSchema,
 	}
 
-	if dirExists(filepath.Join(dir, "data-sources")) {
+	if dirExists(v.providerFS, filepath.Join(dir, "data-sources")) {
 		dataSourceFiles, _ := os.ReadDir(filepath.Join(dir, "data-sources"))
 		mismatchOpt.DatasourceEntries = dataSourceFiles
 	}
-	if dirExists(filepath.Join(dir, "resources")) {
+	if dirExists(v.providerFS, filepath.Join(dir, "resources")) {
 		resourceFiles, _ := os.ReadDir(filepath.Join(dir, "resources"))
 		mismatchOpt.ResourceEntries = resourceFiles
 	}
-	if dirExists(filepath.Join(dir, "functions")) {
+	if dirExists(v.providerFS, filepath.Join(dir, "functions")) {
 		functionFiles, _ := os.ReadDir(filepath.Join(dir, "functions"))
 		mismatchOpt.FunctionEntries = functionFiles
 	}
@@ -275,22 +274,18 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 	var result error
 
 	options := &check.ProviderFileOptions{
+		FileOptions:     &check.FileOptions{BasePath: v.providerDir},
 		FrontMatter:     LegacyFrontMatterOptions,
 		ValidExtensions: ValidLegacyFileExtensions,
 	}
 
 	var files []string
-	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+	err := fs.WalkDir(v.providerFS, dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return fmt.Errorf("error walking directory %q: %w", dir, err)
 		}
-
-		rel, err := filepath.Rel(v.providerDir, path)
-		if err != nil {
-			return err
-		}
 		if d.IsDir() {
-			match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationDirGlobPattern), rel)
+			match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationDirGlobPattern), path)
 			if err != nil {
 				return err
 			}
@@ -298,12 +293,12 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 				return nil // skip valid non-documentation directories
 			}
 
-			v.logger.infof("running invalid directories check on %s", rel)
-			result = errors.Join(result, check.InvalidDirectoriesCheck(rel))
+			v.logger.infof("running invalid directories check on %s", path)
+			result = errors.Join(result, check.InvalidDirectoriesCheck(path))
 			return nil
 		}
 
-		match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationGlobPattern), rel)
+		match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationGlobPattern), path)
 		if err != nil {
 			return err
 		}
@@ -314,12 +309,12 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 		// Configure FrontMatterOptions based on file type
 		if d.Name() == "index.md" {
 			options.FrontMatter = LegacyIndexFrontMatterOptions
-		} else if _, relErr := filepath.Rel(rel, "guides"); relErr != nil {
+		} else if _, relErr := filepath.Rel(path, "guides"); relErr != nil {
 			options.FrontMatter = LegacyGuideFrontMatterOptions
 		} else {
 			options.FrontMatter = LegacyFrontMatterOptions
 		}
-		v.logger.infof("running file checks on %s", rel)
+		v.logger.infof("running file checks on %s", path)
 		result = errors.Join(result, check.NewProviderFileCheck(options).Run(path))
 
 		files = append(files, path)
@@ -334,16 +329,16 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 		Schema:            v.providerSchema,
 	}
 
-	if dirExists(filepath.Join(dir, "d")) {
-		dataSourceFiles, _ := os.ReadDir(filepath.Join(dir, "d"))
+	if dirExists(v.providerFS, filepath.Join(dir, "d")) {
+		dataSourceFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "d"))
 		mismatchOpt.DatasourceEntries = dataSourceFiles
 	}
-	if dirExists(filepath.Join(dir, "r")) {
-		resourceFiles, _ := os.ReadDir(filepath.Join(dir, "r"))
+	if dirExists(v.providerFS, filepath.Join(dir, "r")) {
+		resourceFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "r"))
 		mismatchOpt.ResourceEntries = resourceFiles
 	}
-	if dirExists(filepath.Join(dir, "functions")) {
-		functionFiles, _ := os.ReadDir(filepath.Join(dir, "functions"))
+	if dirExists(v.providerFS, filepath.Join(dir, "functions")) {
+		functionFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "functions"))
 		mismatchOpt.FunctionEntries = functionFiles
 	}
 
@@ -355,8 +350,8 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 	return result
 }
 
-func dirExists(name string) bool {
-	if file, err := os.Stat(name); err != nil {
+func dirExists(fileSys fs.FS, name string) bool {
+	if file, err := fs.Stat(fileSys, name); err != nil {
 		return false
 	} else if !file.IsDir() {
 		return false
