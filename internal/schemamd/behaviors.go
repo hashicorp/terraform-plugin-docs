@@ -77,3 +77,11 @@ func childBlockIsReadOnly(block *tfjson.SchemaBlockType) bool {
 
 	return true
 }
+
+func childBlockIsWritable(block *tfjson.SchemaBlockType) bool {
+	return !childBlockIsReadOnly(block)
+}
+
+func omitChild[T *tfjson.SchemaAttribute | *tfjson.SchemaBlockType](_ T) bool {
+	return false
+}
