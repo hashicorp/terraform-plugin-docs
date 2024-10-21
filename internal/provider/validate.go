@@ -25,7 +25,7 @@ const (
 	FileExtensionMarkdown     = `.markdown`
 	FileExtensionMd           = `.md`
 
-	DocumentationGlobPattern    = `{docs/index.md,docs/{,cdktf/}{data-sources,guides,resources,functions}/**/*,website/docs/**/*}`
+	DocumentationGlobPattern    = `{docs/index.*,docs/{,cdktf/}{data-sources,guides,resources,functions}/**/*,website/docs/**/*}`
 	DocumentationDirGlobPattern = `{docs/{,cdktf/}{data-sources,guides,resources,functions}{,/*},website/docs/**/*}`
 )
 
@@ -50,13 +50,6 @@ var LegacyFrontMatterOptions = &check.FrontMatterOptions{
 var LegacyIndexFrontMatterOptions = &check.FrontMatterOptions{
 	NoSidebarCurrent:   true,
 	NoSubcategory:      true,
-	RequireDescription: true,
-	RequireLayout:      true,
-	RequirePageTitle:   true,
-}
-
-var LegacyGuideFrontMatterOptions = &check.FrontMatterOptions{
-	NoSidebarCurrent:   true,
 	RequireDescription: true,
 	RequireLayout:      true,
 	RequirePageTitle:   true,
@@ -226,15 +219,15 @@ func (v *validator) validateStaticDocs(dir string) error {
 		}
 
 		// Configure FrontMatterOptions based on file type
-		if d.Name() == "index.md" {
+		if removeAllExt(d.Name()) == "index" {
 			options.FrontMatter = RegistryIndexFrontMatterOptions
-		} else if _, relErr := filepath.Rel(path, "guides"); relErr != nil {
+		} else if _, relErr := filepath.Rel(filepath.Join(dir, "guides"), path); relErr == nil {
 			options.FrontMatter = RegistryGuideFrontMatterOptions
 		} else {
 			options.FrontMatter = RegistryFrontMatterOptions
 		}
 		v.logger.infof("running file checks on %s", path)
-		result = errors.Join(result, check.NewProviderFileCheck(options).Run(path))
+		result = errors.Join(result, check.NewProviderFileCheck(v.providerFS, options).Run(path))
 
 		files = append(files, path)
 		return nil
@@ -249,15 +242,15 @@ func (v *validator) validateStaticDocs(dir string) error {
 	}
 
 	if dirExists(v.providerFS, filepath.Join(dir, "data-sources")) {
-		dataSourceFiles, _ := os.ReadDir(filepath.Join(dir, "data-sources"))
+		dataSourceFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "data-sources"))
 		mismatchOpt.DatasourceEntries = dataSourceFiles
 	}
 	if dirExists(v.providerFS, filepath.Join(dir, "resources")) {
-		resourceFiles, _ := os.ReadDir(filepath.Join(dir, "resources"))
+		resourceFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "resources"))
 		mismatchOpt.ResourceEntries = resourceFiles
 	}
 	if dirExists(v.providerFS, filepath.Join(dir, "functions")) {
-		functionFiles, _ := os.ReadDir(filepath.Join(dir, "functions"))
+		functionFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "functions"))
 		mismatchOpt.FunctionEntries = functionFiles
 	}
 
@@ -307,15 +300,13 @@ func (v *validator) validateLegacyWebsite(dir string) error {
 		}
 
 		// Configure FrontMatterOptions based on file type
-		if d.Name() == "index.md" {
+		if removeAllExt(d.Name()) == "index" {
 			options.FrontMatter = LegacyIndexFrontMatterOptions
-		} else if _, relErr := filepath.Rel(path, "guides"); relErr != nil {
-			options.FrontMatter = LegacyGuideFrontMatterOptions
 		} else {
 			options.FrontMatter = LegacyFrontMatterOptions
 		}
 		v.logger.infof("running file checks on %s", path)
-		result = errors.Join(result, check.NewProviderFileCheck(options).Run(path))
+		result = errors.Join(result, check.NewProviderFileCheck(v.providerFS, options).Run(path))
 
 		files = append(files, path)
 		return nil

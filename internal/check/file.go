@@ -5,8 +5,8 @@ package check
 
 import (
 	"fmt"
+	"io/fs"
 	"log"
-	"os"
 	"path/filepath"
 )
 
@@ -23,14 +23,14 @@ func (opts *FileOptions) FullPath(path string) string {
 }
 
 // FileSizeCheck verifies that documentation file is below the Terraform Registry storage limit.
-func FileSizeCheck(fullpath string) error {
-	fi, err := os.Stat(fullpath)
+func FileSizeCheck(providerFs fs.FS, path string) error {
+	fi, err := fs.Stat(providerFs, path)
 
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[DEBUG] File %s size: %d (limit: %d)", fullpath, fi.Size(), RegistryMaximumSizeOfFile)
+	log.Printf("[DEBUG] File %s size: %d (limit: %d)", path, fi.Size(), RegistryMaximumSizeOfFile)
 	if fi.Size() >= int64(RegistryMaximumSizeOfFile) {
 		return fmt.Errorf("exceeded maximum (%d) size of documentation file for Terraform Registry: %d", RegistryMaximumSizeOfFile, fi.Size())
 	}
