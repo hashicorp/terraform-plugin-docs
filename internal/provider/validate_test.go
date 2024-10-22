@@ -184,7 +184,7 @@ func TestValidateStaticDocs_DirectoryChecks(t *testing.T) {
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
-			got := v.validateStaticDocs("docs")
+			got := v.validateStaticDocs()
 
 			if got == nil && testCase.ExpectedError != "" {
 				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
@@ -378,7 +378,7 @@ func TestValidateStaticDocs_FileChecks(t *testing.T) {
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
-			got := v.validateStaticDocs("docs")
+			got := v.validateStaticDocs()
 
 			if got == nil && testCase.ExpectedError != "" {
 				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
@@ -503,7 +503,7 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
-			got := v.validateStaticDocs("docs")
+			got := v.validateStaticDocs()
 
 			if got == nil && testCase.ExpectedError != "" {
 				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
@@ -606,7 +606,7 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
-			got := v.validateLegacyWebsite("website/docs")
+			got := v.validateLegacyWebsite()
 
 			if got == nil && testCase.ExpectedError != "" {
 				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
@@ -808,7 +808,7 @@ func TestValidateLegacyWebsite_FileChecks(t *testing.T) {
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
-			got := v.validateLegacyWebsite("website/docs")
+			got := v.validateLegacyWebsite()
 
 			if got == nil && testCase.ExpectedError != "" {
 				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
@@ -933,7 +933,7 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
-			got := v.validateLegacyWebsite("website/docs")
+			got := v.validateLegacyWebsite()
 
 			if got == nil && testCase.ExpectedError != "" {
 				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)

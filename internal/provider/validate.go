@@ -168,21 +168,21 @@ func (v *validator) validate(ctx context.Context) error {
 
 	if dirExists(v.providerFS, "docs") {
 		v.logger.infof("detected static docs directory, running checks")
-		err = v.validateStaticDocs("docs")
+		err = v.validateStaticDocs()
 		result = errors.Join(result, err)
 
 	}
 	if dirExists(v.providerFS, "website/docs") {
 		v.logger.infof("detected legacy website directory, running checks")
-		err = v.validateLegacyWebsite("website/docs")
+		err = v.validateLegacyWebsite()
 		result = errors.Join(result, err)
 	}
 
 	return result
 }
 
-func (v *validator) validateStaticDocs(dir string) error {
-
+func (v *validator) validateStaticDocs() error {
+	dir := "docs"
 	var result error
 
 	options := &check.ProviderFileOptions{
@@ -262,8 +262,8 @@ func (v *validator) validateStaticDocs(dir string) error {
 	return result
 }
 
-func (v *validator) validateLegacyWebsite(dir string) error {
-
+func (v *validator) validateLegacyWebsite() error {
+	dir := "website/docs"
 	var result error
 
 	options := &check.ProviderFileOptions{
