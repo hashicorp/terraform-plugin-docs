@@ -12,19 +12,17 @@ import (
 const (
 	CdktfIndexDirectory = `cdktf`
 
-	LegacyIndexDirectory              = `website/docs`
-	LegacyDataSourcesDirectory        = `d`
-	LegacyGuidesDirectory             = `guides`
-	LegacyResourcesDirectory          = `r`
-	LegacyFunctionsDirectory          = `functions`
-	LegacyEphemeralResourcesDirectory = `ephemeral-resources`
+	LegacyIndexDirectory       = `website/docs`
+	LegacyDataSourcesDirectory = `d`
+	LegacyGuidesDirectory      = `guides`
+	LegacyResourcesDirectory   = `r`
+	LegacyFunctionsDirectory   = `functions`
 
-	RegistryIndexDirectory              = `docs`
-	RegistryDataSourcesDirectory        = `data-sources`
-	RegistryGuidesDirectory             = `guides`
-	RegistryResourcesDirectory          = `resources`
-	RegistryFunctionsDirectory          = `functions`
-	RegistryEphemeralResourcesDirectory = `ephemeral-resources`
+	RegistryIndexDirectory       = `docs`
+	RegistryDataSourcesDirectory = `data-sources`
+	RegistryGuidesDirectory      = `guides`
+	RegistryResourcesDirectory   = `resources`
+	RegistryFunctionsDirectory   = `functions`
 
 	// Terraform Registry Storage Limits
 	// https://www.terraform.io/docs/registry/providers/docs.html#storage-limits
@@ -39,7 +37,6 @@ var ValidLegacyDirectories = []string{
 	LegacyIndexDirectory + "/" + LegacyGuidesDirectory,
 	LegacyIndexDirectory + "/" + LegacyResourcesDirectory,
 	LegacyIndexDirectory + "/" + LegacyFunctionsDirectory,
-	LegacyIndexDirectory + "/" + LegacyEphemeralResourcesDirectory,
 }
 
 var ValidRegistryDirectories = []string{
@@ -48,7 +45,6 @@ var ValidRegistryDirectories = []string{
 	RegistryIndexDirectory + "/" + RegistryGuidesDirectory,
 	RegistryIndexDirectory + "/" + RegistryResourcesDirectory,
 	RegistryIndexDirectory + "/" + RegistryFunctionsDirectory,
-	RegistryIndexDirectory + "/" + RegistryEphemeralResourcesDirectory,
 }
 
 var ValidCdktfLanguages = []string{
@@ -64,7 +60,6 @@ var ValidLegacySubdirectories = []string{
 	LegacyDataSourcesDirectory,
 	LegacyGuidesDirectory,
 	LegacyResourcesDirectory,
-	LegacyEphemeralResourcesDirectory,
 }
 
 var ValidRegistrySubdirectories = []string{
@@ -72,7 +67,6 @@ var ValidRegistrySubdirectories = []string{
 	RegistryDataSourcesDirectory,
 	RegistryGuidesDirectory,
 	RegistryResourcesDirectory,
-	RegistryEphemeralResourcesDirectory,
 }
 
 func InvalidDirectoriesCheck(dirPath string) error {

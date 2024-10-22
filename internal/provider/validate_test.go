@@ -6,7 +6,6 @@ package provider
 import (
 	"path/filepath"
 	"testing"
-	"testing/fstest"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/hashicorp/cli"
@@ -27,12 +26,9 @@ func TestValidateStaticDocs(t *testing.T) {
 			BasePath: filepath.Join("testdata", "valid-registry-directories-with-cdktf"),
 		},
 		"invalid registry directories": {
-			BasePath:    filepath.Join("testdata", "invalid-registry-directories"),
-			ExpectError: true,
-			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("docs", "data-sources", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "ephemeral-resources", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "functions", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "resources", "invalid"),
+			BasePath:      filepath.Join("testdata", "invalid-registry-directories"),
+			ExpectError:   true,
+			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("docs", "resources", "invalid"),
 		},
 	}
 
@@ -66,106 +62,7 @@ func TestValidateStaticDocs(t *testing.T) {
 	}
 }
 
-//func TestResourceHasFile(t *testing.T) {
-//	t.Parallel()
-//	testCases := map[string]struct {
-//		FS           fstest.MapFS
-//		ResourceName string
-//		Expect       bool
-//	}{
-//		"found": {
-//			FS: fstest.MapFS{
-//				"resource1.md": {},
-//				"resource2.md": {},
-//			},
-//			ResourceName: "test_resource1",
-//			Expect:       true,
-//		},
-//		"not found": {
-//			FS: fstest.MapFS{
-//				"resource1.md": {},
-//				"resource2.md": {},
-//			},
-//			ResourceName: "test_resource3",
-//			Expect:       false,
-//		},
-//	}
-//
-//	for name, testCase := range testCases {
-//		name := name
-//		testCase := testCase
-//		t.Run(name, func(t *testing.T) {
-//			t.Parallel()
-//
-//			files, _ := testCase.FS.ReadDir(".")
-//
-//			got := resourceHasFile(files, "test", testCase.ResourceName)
-//			want := testCase.Expect
-//
-//			if got != want {
-//				t.Errorf("expected %t, got %t", want, got)
-//			}
-//		})
-//	}
-//}
-
-func TestValidateStaticDocs_dirfs(t *testing.T) {
-	t.Parallel()
-	testCases := map[string]struct {
-		FS            fstest.MapFS
-		ExpectError   bool
-		ExpectedError string
-	}{
-		"valid registry directories": {
-			FS: fstest.MapFS{
-				"data-sources/resource1.md": {},
-			},
-		},
-
-		//"valid registry directories with cdktf docs": {
-		//	BasePath: filepath.Join("testdata", "valid-registry-directories-with-cdktf"),
-		//},
-		//"invalid registry directories": {
-		//	BasePath:    filepath.Join("testdata", "invalid-registry-directories"),
-		//	ExpectError: true,
-		//	ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("docs", "data-sources", "invalid") +
-		//		"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "ephemeral-resources", "invalid") +
-		//		"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "functions", "invalid") +
-		//		"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "resources", "invalid"),
-		//},
-	}
-
-	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			v := &validator{
-				providerDir:  testCase.FS.Open(),
-				providerName: "terraform-provider-test",
-
-				logger: NewLogger(cli.NewMockUi()),
-			}
-
-			got := v.validateStaticDocs(filepath.Join(v.providerDir, "docs"))
-
-			if got == nil && testCase.ExpectError {
-				t.Errorf("expected error, got no error")
-			}
-
-			if got != nil && !testCase.ExpectError {
-				t.Errorf("expected no error, got error: %s", got)
-			}
-
-			if got != nil && got.Error() != testCase.ExpectedError {
-				t.Errorf("expected error: %s, got error: %s", testCase.ExpectedError, got)
-			}
-		})
-	}
-}
-
-func TestValidateLegacyWebsite_InvalidDirectories(t *testing.T) {
+func TestValidateLegacyWebsite(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
 		BasePath      string
@@ -179,81 +76,9 @@ func TestValidateLegacyWebsite_InvalidDirectories(t *testing.T) {
 			BasePath: filepath.Join("testdata", "valid-legacy-directories-with-cdktf"),
 		},
 		"invalid legacy directories": {
-			BasePath:    filepath.Join("testdata", "invalid-legacy-directories"),
-			ExpectError: true,
-			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "d", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "ephemeral-resources", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "functions", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "r", "invalid"),
-		},
-		"invalid legacy files": {
-			BasePath:    filepath.Join("testdata", "invalid-legacy-files"),
-			ExpectError: true,
-			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "d", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "ephemeral-resources", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "functions", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "r", "invalid"),
-		},
-	}
-
-	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			v := &validator{
-				providerDir:  testCase.BasePath,
-				providerName: "terraform-provider-test",
-
-				logger: NewLogger(cli.NewMockUi()),
-			}
-
-			got := v.validateLegacyWebsite(filepath.Join(v.providerDir, "website"))
-
-			if got == nil && testCase.ExpectError {
-				t.Errorf("expected error, got no error")
-			}
-
-			if got != nil && !testCase.ExpectError {
-				t.Errorf("expected no error, got error: %s", got)
-			}
-
-			if got != nil && got.Error() != testCase.ExpectedError {
-				t.Errorf("expected error: %s, got error: %s", testCase.ExpectedError, got)
-			}
-		})
-	}
-}
-
-func TestValidateLegacyWebsite_FileChecks(t *testing.T) {
-	t.Parallel()
-	testCases := map[string]struct {
-		BasePath      string
-		ExpectError   bool
-		ExpectedError string
-	}{
-		"valid legacy directories": {
-			BasePath: filepath.Join("testdata", "valid-legacy-directories"),
-		},
-		"valid legacy directories with cdktf docs": {
-			BasePath: filepath.Join("testdata", "valid-legacy-directories-with-cdktf"),
-		},
-		"invalid legacy directories": {
-			BasePath:    filepath.Join("testdata", "invalid-legacy-directories"),
-			ExpectError: true,
-			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "d", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "ephemeral-resources", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "functions", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "r", "invalid"),
-		},
-		"invalid legacy files": {
-			BasePath:    filepath.Join("testdata", "invalid-legacy-files"),
-			ExpectError: true,
-			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "d", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "ephemeral-resources", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "functions", "invalid") +
-				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "r", "invalid"),
+			BasePath:      filepath.Join("testdata", "invalid-legacy-directories"),
+			ExpectError:   true,
+			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "r", "invalid"),
 		},
 	}
 
@@ -301,12 +126,6 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 		"docs/resources": {
 			ExpectMatch: true,
 		},
-		"docs/functions": {
-			ExpectMatch: true,
-		},
-		"docs/ephemeral-resources": {
-			ExpectMatch: true,
-		},
 		"website/docs/r": {
 			ExpectMatch: true,
 		},
@@ -317,18 +136,6 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 			ExpectMatch: true,
 		},
 		"website/docs/invalid": {
-			ExpectMatch: true,
-		},
-		"website/docs/functions": {
-			ExpectMatch: true,
-		},
-		"website/docs/functions/invalid": {
-			ExpectMatch: true,
-		},
-		"website/docs/ephemeral-resources": {
-			ExpectMatch: true,
-		},
-		"website/docs/ephemeral-resources/invalid": {
 			ExpectMatch: true,
 		},
 		"docs/resources/invalid": {
