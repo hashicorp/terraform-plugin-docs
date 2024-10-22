@@ -381,7 +381,7 @@ func (m *migrator) ProviderExamplesDir() string {
 
 func determineWebsiteDir(providerDir string) (string, error) {
 	// Check for legacy website directory
-	providerWebsiteDirFileInfo, err := os.Stat(filepath.Join(providerDir, "website", "docs"))
+	providerWebsiteDirFileInfo, err := os.Stat(filepath.Join(providerDir, "website/docs"))
 
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -390,7 +390,7 @@ func determineWebsiteDir(providerDir string) (string, error) {
 			return "", fmt.Errorf("error getting information for provider website directory %q: %w", providerDir, err)
 		}
 	} else if providerWebsiteDirFileInfo.IsDir() {
-		return filepath.Join("website", "docs"), nil
+		return "website/docs", nil
 	}
 
 	// Check for docs directory

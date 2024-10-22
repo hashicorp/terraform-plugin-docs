@@ -172,7 +172,7 @@ func (v *validator) validate(ctx context.Context) error {
 		result = errors.Join(result, err)
 
 	}
-	if dirExists(v.providerFS, filepath.Join("website", "docs")) {
+	if dirExists(v.providerFS, "website/docs") {
 		v.logger.infof("detected legacy website directory, running checks")
 		err = v.validateLegacyWebsite()
 		result = errors.Join(result, err)
@@ -263,7 +263,7 @@ func (v *validator) validateStaticDocs() error {
 }
 
 func (v *validator) validateLegacyWebsite() error {
-	dir := filepath.Join("website", "docs")
+	dir := "website/docs"
 	var result error
 
 	options := &check.ProviderFileOptions{
