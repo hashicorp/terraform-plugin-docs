@@ -198,7 +198,7 @@ func (v *validator) validateStaticDocs() error {
 			return fmt.Errorf("error walking directory %q: %w", dir, err)
 		}
 		if d.IsDir() {
-			match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationDirGlobPattern), path)
+			match, err := doublestar.PathMatch(DocumentationDirGlobPattern, path)
 			if err != nil {
 				return err
 			}
@@ -210,7 +210,7 @@ func (v *validator) validateStaticDocs() error {
 			result = errors.Join(result, check.InvalidDirectoriesCheck(path))
 			return nil
 		}
-		match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationGlobPattern), path)
+		match, err := doublestar.PathMatch(DocumentationGlobPattern, path)
 		if err != nil {
 			return err
 		}
@@ -221,7 +221,7 @@ func (v *validator) validateStaticDocs() error {
 		// Configure FrontMatterOptions based on file type
 		if removeAllExt(d.Name()) == "index" {
 			options.FrontMatter = RegistryIndexFrontMatterOptions
-		} else if _, relErr := filepath.Rel(filepath.Join(dir, "guides"), path); relErr == nil {
+		} else if _, relErr := filepath.Rel(dir+"/guides", path); relErr == nil {
 			options.FrontMatter = RegistryGuideFrontMatterOptions
 		} else {
 			options.FrontMatter = RegistryFrontMatterOptions
@@ -241,16 +241,16 @@ func (v *validator) validateStaticDocs() error {
 		Schema:            v.providerSchema,
 	}
 
-	if dirExists(v.providerFS, filepath.Join(dir, "data-sources")) {
-		dataSourceFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "data-sources"))
+	if dirExists(v.providerFS, dir+"/data-sources") {
+		dataSourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/data-sources")
 		mismatchOpt.DatasourceEntries = dataSourceFiles
 	}
-	if dirExists(v.providerFS, filepath.Join(dir, "resources")) {
-		resourceFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "resources"))
+	if dirExists(v.providerFS, dir+"/resources") {
+		resourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/resources")
 		mismatchOpt.ResourceEntries = resourceFiles
 	}
-	if dirExists(v.providerFS, filepath.Join(dir, "functions")) {
-		functionFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "functions"))
+	if dirExists(v.providerFS, dir+"/functions") {
+		functionFiles, _ := fs.ReadDir(v.providerFS, dir+"/functions")
 		mismatchOpt.FunctionEntries = functionFiles
 	}
 
@@ -278,7 +278,7 @@ func (v *validator) validateLegacyWebsite() error {
 			return fmt.Errorf("error walking directory %q: %w", dir, err)
 		}
 		if d.IsDir() {
-			match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationDirGlobPattern), path)
+			match, err := doublestar.PathMatch(DocumentationDirGlobPattern, path)
 			if err != nil {
 				return err
 			}
@@ -291,7 +291,7 @@ func (v *validator) validateLegacyWebsite() error {
 			return nil
 		}
 
-		match, err := doublestar.PathMatch(filepath.FromSlash(DocumentationGlobPattern), path)
+		match, err := doublestar.PathMatch(DocumentationGlobPattern, path)
 		if err != nil {
 			return err
 		}
@@ -320,16 +320,16 @@ func (v *validator) validateLegacyWebsite() error {
 		Schema:            v.providerSchema,
 	}
 
-	if dirExists(v.providerFS, filepath.Join(dir, "d")) {
-		dataSourceFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "d"))
+	if dirExists(v.providerFS, dir+"/d") {
+		dataSourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/d")
 		mismatchOpt.DatasourceEntries = dataSourceFiles
 	}
-	if dirExists(v.providerFS, filepath.Join(dir, "r")) {
-		resourceFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "r"))
+	if dirExists(v.providerFS, dir+"/r") {
+		resourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/r")
 		mismatchOpt.ResourceEntries = resourceFiles
 	}
-	if dirExists(v.providerFS, filepath.Join(dir, "functions")) {
-		functionFiles, _ := fs.ReadDir(v.providerFS, filepath.Join(dir, "functions"))
+	if dirExists(v.providerFS, dir+"/functions") {
+		functionFiles, _ := fs.ReadDir(v.providerFS, dir+"/functions")
 		mismatchOpt.FunctionEntries = functionFiles
 	}
 
