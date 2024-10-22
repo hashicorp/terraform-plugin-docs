@@ -1,0 +1,5 @@
+kind: BUG FIXES
+body: 'validate: File extension check now specifies the correct valid extensions in the error message.'
+time: 2024-10-22T16:40:13.832638-04:00
+custom:
+    Issue: "413"

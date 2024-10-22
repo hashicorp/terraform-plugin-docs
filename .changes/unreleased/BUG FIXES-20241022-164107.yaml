@@ -1,0 +1,5 @@
+kind: BUG FIXES
+body: 'validate: Front matter check now runs with the correct options on legacy index files.'
+time: 2024-10-22T16:41:07.726856-04:00
+custom:
+    Issue: "413"

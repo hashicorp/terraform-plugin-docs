@@ -30,7 +30,7 @@ var ValidRegistryFileExtensions = []string{
 // FileExtensionCheck checks if the file extension of the given path is valid.
 func FileExtensionCheck(path string, validExtensions []string) error {
 	if !FilePathEndsWithExtensionFrom(path, validExtensions) {
-		return fmt.Errorf("file does not end with a valid extension, valid extensions: %v", ValidLegacyFileExtensions)
+		return fmt.Errorf("file does not end with a valid extension, valid extensions: %v", validExtensions)
 	}
 
 	return nil
