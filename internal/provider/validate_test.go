@@ -13,6 +13,7 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/cli"
+	tfjson "github.com/hashicorp/terraform-json"
 	"gopkg.in/yaml.v3"
 )
 
@@ -390,6 +391,131 @@ func TestValidateStaticDocs_FileChecks(t *testing.T) {
 	}
 }
 
+func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
+	t.Parallel()
+	testCases := map[string]struct {
+		ProviderFS     fs.FS
+		ProviderSchema *tfjson.ProviderSchema
+		ExpectedError  string
+	}{
+		"valid - no mismatch": {
+			ProviderSchema: &tfjson.ProviderSchema{
+				DataSourceSchemas: map[string]*tfjson.Schema{
+					"test_pet": {},
+				},
+				ResourceSchemas: map[string]*tfjson.Schema{
+					"test_id": {},
+				},
+				Functions: map[string]*tfjson.FunctionSignature{
+					"parse_id": {},
+				},
+			},
+			ProviderFS: fstest.MapFS{
+				"docs/data-sources/pet.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/functions/parse_id.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/resources/id.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+			},
+		},
+		"invalid - missing files": {
+			ProviderSchema: &tfjson.ProviderSchema{
+				DataSourceSchemas: map[string]*tfjson.Schema{
+					"test_pet":  {},
+					"test_pet2": {},
+				},
+				ResourceSchemas: map[string]*tfjson.Schema{
+					"test_id":  {},
+					"test_id2": {},
+				},
+				Functions: map[string]*tfjson.FunctionSignature{
+					"parse_id":  {},
+					"parse_id2": {},
+				},
+			},
+			ProviderFS: fstest.MapFS{
+				"docs/data-sources/pet.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/functions/parse_id.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/resources/id.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+			},
+			ExpectedError: "missing documentation file for resource: test_id2\n" +
+				"missing documentation file for datasource: test_pet2\n" +
+				"missing documentation file for function: parse_id2",
+		},
+		"invalid - extra files": {
+			ProviderSchema: &tfjson.ProviderSchema{
+				DataSourceSchemas: map[string]*tfjson.Schema{
+					"test_pet": {},
+				},
+				ResourceSchemas: map[string]*tfjson.Schema{
+					"test_id": {},
+				},
+				Functions: map[string]*tfjson.FunctionSignature{
+					"parse_id": {},
+				},
+			},
+			ProviderFS: fstest.MapFS{
+				"docs/data-sources/pet.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/data-sources/pet2.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/functions/parse_id.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/functions/parse_id2.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/resources/id.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/resources/id2.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+			},
+			ExpectedError: "matching resource for documentation file (id2.md) not found, file is extraneous or incorrectly named\n" +
+				"matching datasource for documentation file (pet2.md) not found, file is extraneous or incorrectly named\n" +
+				"matching function for documentation file (parse_id2.md) not found, file is extraneous or incorrectly named",
+		},
+	}
+
+	for name, testCase := range testCases {
+		name := name
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			v := &validator{
+				providerSchema: testCase.ProviderSchema,
+				providerFS:     testCase.ProviderFS,
+				providerName:   "terraform-provider-test",
+
+				logger: NewLogger(cli.NewMockUi()),
+			}
+			got := v.validateStaticDocs("docs")
+
+			if got == nil && testCase.ExpectedError != "" {
+				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
+			}
+
+			if got != nil && got.Error() != testCase.ExpectedError {
+				t.Errorf("Unexpected response (+wanted, -got): %s", cmp.Diff(testCase.ExpectedError, got.Error()))
+			}
+		})
+	}
+}
+
 func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
@@ -679,6 +805,131 @@ func TestValidateLegacyWebsite_FileChecks(t *testing.T) {
 			v := &validator{
 				providerFS:   testCase.ProviderFS,
 				providerName: "terraform-provider-test",
+
+				logger: NewLogger(cli.NewMockUi()),
+			}
+			got := v.validateLegacyWebsite("website/docs")
+
+			if got == nil && testCase.ExpectedError != "" {
+				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
+			}
+
+			if got != nil && got.Error() != testCase.ExpectedError {
+				t.Errorf("Unexpected response (+wanted, -got): %s", cmp.Diff(testCase.ExpectedError, got.Error()))
+			}
+		})
+	}
+}
+
+func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
+	t.Parallel()
+	testCases := map[string]struct {
+		ProviderFS     fs.FS
+		ProviderSchema *tfjson.ProviderSchema
+		ExpectedError  string
+	}{
+		"valid - no mismatch": {
+			ProviderSchema: &tfjson.ProviderSchema{
+				DataSourceSchemas: map[string]*tfjson.Schema{
+					"test_pet": {},
+				},
+				ResourceSchemas: map[string]*tfjson.Schema{
+					"test_id": {},
+				},
+				Functions: map[string]*tfjson.FunctionSignature{
+					"parse_id": {},
+				},
+			},
+			ProviderFS: fstest.MapFS{
+				"website/docs/d/pet.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/functions/parse_id.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/r/id.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+			},
+		},
+		"invalid - missing files": {
+			ProviderSchema: &tfjson.ProviderSchema{
+				DataSourceSchemas: map[string]*tfjson.Schema{
+					"test_pet":  {},
+					"test_pet2": {},
+				},
+				ResourceSchemas: map[string]*tfjson.Schema{
+					"test_id":  {},
+					"test_id2": {},
+				},
+				Functions: map[string]*tfjson.FunctionSignature{
+					"parse_id":  {},
+					"parse_id2": {},
+				},
+			},
+			ProviderFS: fstest.MapFS{
+				"website/docs/d/pet.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/functions/parse_id.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/r/id.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+			},
+			ExpectedError: "missing documentation file for resource: test_id2\n" +
+				"missing documentation file for datasource: test_pet2\n" +
+				"missing documentation file for function: parse_id2",
+		},
+		"invalid - extra files": {
+			ProviderSchema: &tfjson.ProviderSchema{
+				DataSourceSchemas: map[string]*tfjson.Schema{
+					"test_pet": {},
+				},
+				ResourceSchemas: map[string]*tfjson.Schema{
+					"test_id": {},
+				},
+				Functions: map[string]*tfjson.FunctionSignature{
+					"parse_id": {},
+				},
+			},
+			ProviderFS: fstest.MapFS{
+				"website/docs/d/pet.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/d/pet2.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/functions/parse_id.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/functions/parse_id2.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/r/id.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/r/id2.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+			},
+			ExpectedError: "matching resource for documentation file (id2.html.markdown) not found, file is extraneous or incorrectly named\n" +
+				"matching datasource for documentation file (pet2.html.markdown) not found, file is extraneous or incorrectly named\n" +
+				"matching function for documentation file (parse_id2.html.markdown) not found, file is extraneous or incorrectly named",
+		},
+	}
+
+	for name, testCase := range testCases {
+		name := name
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			v := &validator{
+				providerSchema: testCase.ProviderSchema,
+				providerFS:     testCase.ProviderFS,
+				providerName:   "terraform-provider-test",
 
 				logger: NewLogger(cli.NewMockUi()),
 			}
