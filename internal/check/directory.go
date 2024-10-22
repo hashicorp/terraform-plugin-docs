@@ -6,7 +6,7 @@ package check
 import (
 	"fmt"
 	"log"
-	"path/filepath"
+	"path"
 )
 
 const (
@@ -92,7 +92,7 @@ func MixedDirectoriesCheck(docFiles []string) error {
 	err := fmt.Errorf("mixed Terraform Provider documentation directory layouts found, must use only legacy or registry layout")
 
 	for _, file := range docFiles {
-		directory := filepath.Dir(file)
+		directory := path.Dir(file)
 		log.Printf("[DEBUG] Found directory: %s", directory)
 
 		// Allow docs/ with other files
