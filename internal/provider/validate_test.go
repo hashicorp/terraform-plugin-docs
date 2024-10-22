@@ -185,8 +185,12 @@ func TestValidateStaticDocs_DirectoryChecks(t *testing.T) {
 			}
 			got := v.validateStaticDocs("docs")
 
+			if got == nil && testCase.ExpectedError != "" {
+				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
+			}
+
 			if got != nil && got.Error() != testCase.ExpectedError {
-				t.Errorf("expected error: %s, got error: %s", testCase.ExpectedError, got)
+				t.Errorf("Unexpected response (+wanted, -got): %s", cmp.Diff(testCase.ExpectedError, got.Error()))
 			}
 		})
 	}
@@ -379,8 +383,8 @@ func TestValidateStaticDocs_FileChecks(t *testing.T) {
 				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
 			}
 
-			if diff := cmp.Diff(got.Error(), testCase.ExpectedError); diff != "" {
-				t.Errorf("Unexpected response (+wanted, -got): %s", diff)
+			if got != nil && got.Error() != testCase.ExpectedError {
+				t.Errorf("Unexpected response (+wanted, -got): %s", cmp.Diff(testCase.ExpectedError, got.Error()))
 			}
 		})
 	}
@@ -390,7 +394,6 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
 		ProviderFS    fs.FS
-		ExpectError   bool
 		ExpectedError string
 	}{
 		"valid legacy directories": {
@@ -458,7 +461,6 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 					Data: encodeYAML(t, &ValidLegacyIndexFrontMatter),
 				},
 			},
-			ExpectError: true,
 			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "d", "invalid") +
 				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "functions", "invalid") +
 				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "guides", "invalid") +
@@ -480,16 +482,12 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 			}
 			got := v.validateLegacyWebsite("website/docs")
 
-			if got == nil && testCase.ExpectError {
-				t.Errorf("expected error, got no error")
-			}
-
-			if got != nil && !testCase.ExpectError {
-				t.Errorf("expected no error, got error: %s", got)
+			if got == nil && testCase.ExpectedError != "" {
+				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
 			}
 
 			if got != nil && got.Error() != testCase.ExpectedError {
-				t.Errorf("expected error: %s, got error: %s", testCase.ExpectedError, got)
+				t.Errorf("Unexpected response (+wanted, -got): %s", cmp.Diff(testCase.ExpectedError, got.Error()))
 			}
 		})
 	}
@@ -690,8 +688,8 @@ func TestValidateLegacyWebsite_FileChecks(t *testing.T) {
 				t.Fatalf("expected error: %s, but got no error", testCase.ExpectedError)
 			}
 
-			if diff := cmp.Diff(got.Error(), testCase.ExpectedError); diff != "" {
-				t.Errorf("Unexpected response (+wanted, -got): %s", diff)
+			if got != nil && got.Error() != testCase.ExpectedError {
+				t.Errorf("Unexpected response (+wanted, -got): %s", cmp.Diff(testCase.ExpectedError, got.Error()))
 			}
 		})
 	}
