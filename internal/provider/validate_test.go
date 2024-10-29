@@ -81,6 +81,9 @@ func TestValidateStaticDocs_DirectoryChecks(t *testing.T) {
 				"docs/data-sources/thing.md": {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
+				"docs/ephemeral-resources/thing.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
 				"docs/functions/thing.md": {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
@@ -104,6 +107,9 @@ func TestValidateStaticDocs_DirectoryChecks(t *testing.T) {
 		"valid registry directories with cdktf docs": {
 			ProviderFS: fstest.MapFS{
 				"docs/cdktf/typescript/data-sources/thing.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/cdktf/typescript/ephemeral-resources/thing.md": {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
 				"docs/cdktf/typescirpt/guides/thing.md": {
@@ -146,6 +152,9 @@ func TestValidateStaticDocs_DirectoryChecks(t *testing.T) {
 				"docs/data-sources/invalid/thing.md": {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
+				"docs/ephemeral-resources/invalid/thing.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
 				"docs/guides/invalid/thing.md": {
 					Data: encodeYAML(t, &ValidRegistryGuideFrontMatter),
 				},
@@ -166,6 +175,7 @@ func TestValidateStaticDocs_DirectoryChecks(t *testing.T) {
 				},
 			},
 			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("docs", "data-sources", "invalid") +
+				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "ephemeral-resources", "invalid") +
 				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "functions", "invalid") +
 				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "guides", "invalid") +
 				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("docs", "resources", "invalid"),
@@ -234,6 +244,38 @@ func TestValidateStaticDocs_FileChecks(t *testing.T) {
 				filepath.Join("docs", "data-sources", "invalid_frontmatter.md") + ": error checking file frontmatter: error parsing YAML frontmatter: yaml: line 4: could not find expected ':'\n" +
 				filepath.Join("docs", "data-sources", "with_layout.md") + ": error checking file frontmatter: YAML frontmatter should not contain layout\n" +
 				filepath.Join("docs", "data-sources", "with_sidebar_current.md") + ": error checking file frontmatter: YAML frontmatter should not contain sidebar_current",
+		},
+		"invalid ephemeral resource files": {
+			ProviderFS: fstest.MapFS{
+				"docs/ephemeral-resources/invalid_extension.txt": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/ephemeral-resources/invalid_frontmatter.md": &InvalidYAMLFrontMatter,
+				"docs/ephemeral-resources/with_layout.md": {
+					Data: encodeYAML(t,
+						&FrontMatterData{
+							Layout:      &exampleLayout,
+							Subcategory: &exampleSubcategory,
+							PageTitle:   &examplePageTitle,
+							Description: &exampleDescription,
+						},
+					),
+				},
+				"docs/ephemeral-resources/with_sidebar_current.md": {
+					Data: encodeYAML(t,
+						&FrontMatterData{
+							SidebarCurrent: &exampleSidebarCurrent,
+							Subcategory:    &exampleSubcategory,
+							PageTitle:      &examplePageTitle,
+							Description:    &exampleDescription,
+						},
+					),
+				},
+			},
+			ExpectedError: filepath.Join("docs", "ephemeral-resources", "invalid_extension.txt") + ": error checking file extension: file does not end with a valid extension, valid extensions: [.md]\n" +
+				filepath.Join("docs", "ephemeral-resources", "invalid_frontmatter.md") + ": error checking file frontmatter: error parsing YAML frontmatter: yaml: line 4: could not find expected ':'\n" +
+				filepath.Join("docs", "ephemeral-resources", "with_layout.md") + ": error checking file frontmatter: YAML frontmatter should not contain layout\n" +
+				filepath.Join("docs", "ephemeral-resources", "with_sidebar_current.md") + ": error checking file frontmatter: YAML frontmatter should not contain sidebar_current",
 		},
 		"invalid resource files": {
 			ProviderFS: fstest.MapFS{
@@ -403,6 +445,9 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 				DataSourceSchemas: map[string]*tfjson.Schema{
 					"test_pet": {},
 				},
+				EphemeralResourceSchemas: map[string]*tfjson.Schema{
+					"test_ephemeral_id": {},
+				},
 				ResourceSchemas: map[string]*tfjson.Schema{
 					"test_id": {},
 				},
@@ -412,6 +457,9 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 			},
 			ProviderFS: fstest.MapFS{
 				"docs/data-sources/pet.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/ephemeral-resources/ephemeral_id.md": {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
 				"docs/functions/parse_id.md": {
@@ -428,6 +476,10 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 					"test_pet":  {},
 					"test_pet2": {},
 				},
+				EphemeralResourceSchemas: map[string]*tfjson.Schema{
+					"test_ephemeral_id":  {},
+					"test_ephemeral_id2": {},
+				},
 				ResourceSchemas: map[string]*tfjson.Schema{
 					"test_id":  {},
 					"test_id2": {},
@@ -441,6 +493,9 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 				"docs/data-sources/pet.md": {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
+				"docs/ephemeral-resources/ephemeral_id.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
 				"docs/functions/parse_id.md": {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
@@ -450,12 +505,16 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 			},
 			ExpectedError: "missing documentation file for resource: test_id2\n" +
 				"missing documentation file for datasource: test_pet2\n" +
-				"missing documentation file for function: parse_id2",
+				"missing documentation file for function: parse_id2\n" +
+				"missing documentation file for ephemeral resource: test_ephemeral_id2",
 		},
 		"invalid - extra files": {
 			ProviderSchema: &tfjson.ProviderSchema{
 				DataSourceSchemas: map[string]*tfjson.Schema{
 					"test_pet": {},
+				},
+				EphemeralResourceSchemas: map[string]*tfjson.Schema{
+					"test_ephemeral_id": {},
 				},
 				ResourceSchemas: map[string]*tfjson.Schema{
 					"test_id": {},
@@ -469,6 +528,12 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
 				"docs/data-sources/pet2.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/ephemeral-resources/ephemeral_id.md": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"docs/ephemeral-resources/ephemeral_id2.md": {
 					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
 				},
 				"docs/functions/parse_id.md": {
@@ -486,7 +551,8 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 			},
 			ExpectedError: "matching resource for documentation file (id2.md) not found, file is extraneous or incorrectly named\n" +
 				"matching datasource for documentation file (pet2.md) not found, file is extraneous or incorrectly named\n" +
-				"matching function for documentation file (parse_id2.md) not found, file is extraneous or incorrectly named",
+				"matching function for documentation file (parse_id2.md) not found, file is extraneous or incorrectly named\n" +
+				"matching ephemeral resource for documentation file (ephemeral_id2.md) not found, file is extraneous or incorrectly named",
 		},
 	}
 
@@ -527,6 +593,9 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 				"website/docs/d/thing.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
+				"website/docs/ephemeral-resources/thing.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
 				"website/docs/functions/thing.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
@@ -544,6 +613,9 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 		"valid legacy directories with cdktf docs": {
 			ProviderFS: fstest.MapFS{
 				"website/docs/cdktf/typescript/d/thing.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/cdktf/typescript/ephemeral-resources/thing.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
 				"website/docs/cdktf/typescript/guides/thing.html.markdown": {
@@ -574,6 +646,9 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 				"website/docs/d/invalid/thing.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
+				"website/docs/ephemeral-resources/invalid/thing.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
 				"website/docs/functions/invalid/thing.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
@@ -588,6 +663,7 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 				},
 			},
 			ExpectedError: "invalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "d", "invalid") +
+				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "ephemeral-resources", "invalid") +
 				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "functions", "invalid") +
 				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "guides", "invalid") +
 				"\ninvalid Terraform Provider documentation directory found: " + filepath.Join("website", "docs", "r", "invalid"),
@@ -656,6 +732,38 @@ func TestValidateLegacyWebsite_FileChecks(t *testing.T) {
 				filepath.Join("website", "docs", "d", "invalid_frontmatter.html.markdown") + ": error checking file frontmatter: error parsing YAML frontmatter: yaml: line 4: could not find expected ':'\n" +
 				filepath.Join("website", "docs", "d", "with_sidebar_current.html.markdown") + ": error checking file frontmatter: YAML frontmatter should not contain sidebar_current\n" +
 				filepath.Join("website", "docs", "d", "without_layout.html.markdown") + ": error checking file frontmatter: YAML frontmatter missing required layout",
+		},
+		"invalid ephemeral resource files": {
+			ProviderFS: fstest.MapFS{
+				"website/docs/ephemeral-resources/invalid_extension.txt": {
+					Data: encodeYAML(t, &ValidRegistryResourceFrontMatter),
+				},
+				"website/docs/ephemeral-resources/invalid_frontmatter.html.markdown": &InvalidYAMLFrontMatter,
+				"website/docs/ephemeral-resources/without_layout.html.markdown": {
+					Data: encodeYAML(t,
+						&FrontMatterData{
+							Subcategory: &exampleSubcategory,
+							PageTitle:   &examplePageTitle,
+							Description: &exampleDescription,
+						},
+					),
+				},
+				"website/docs/ephemeral-resources/with_sidebar_current.html.markdown": {
+					Data: encodeYAML(t,
+						&FrontMatterData{
+							SidebarCurrent: &exampleSidebarCurrent,
+							Subcategory:    &exampleSubcategory,
+							Layout:         &exampleLayout,
+							PageTitle:      &examplePageTitle,
+							Description:    &exampleDescription,
+						},
+					),
+				},
+			},
+			ExpectedError: filepath.Join("website", "docs", "ephemeral-resources", "invalid_extension.txt") + ": error checking file extension: file does not end with a valid extension, valid extensions: [.html.markdown .html.md .markdown .md]\n" +
+				filepath.Join("website", "docs", "ephemeral-resources", "invalid_frontmatter.html.markdown") + ": error checking file frontmatter: error parsing YAML frontmatter: yaml: line 4: could not find expected ':'\n" +
+				filepath.Join("website", "docs", "ephemeral-resources", "with_sidebar_current.html.markdown") + ": error checking file frontmatter: YAML frontmatter should not contain sidebar_current\n" +
+				filepath.Join("website", "docs", "ephemeral-resources", "without_layout.html.markdown") + ": error checking file frontmatter: YAML frontmatter missing required layout",
 		},
 		"invalid resource files": {
 			ProviderFS: fstest.MapFS{
@@ -833,6 +941,9 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 				DataSourceSchemas: map[string]*tfjson.Schema{
 					"test_pet": {},
 				},
+				EphemeralResourceSchemas: map[string]*tfjson.Schema{
+					"test_ephemeral_id": {},
+				},
 				ResourceSchemas: map[string]*tfjson.Schema{
 					"test_id": {},
 				},
@@ -842,6 +953,9 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 			},
 			ProviderFS: fstest.MapFS{
 				"website/docs/d/pet.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/ephemeral-resources/ephemeral_id.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
 				"website/docs/functions/parse_id.html.markdown": {
@@ -858,6 +972,10 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 					"test_pet":  {},
 					"test_pet2": {},
 				},
+				EphemeralResourceSchemas: map[string]*tfjson.Schema{
+					"test_ephemeral_id":  {},
+					"test_ephemeral_id2": {},
+				},
 				ResourceSchemas: map[string]*tfjson.Schema{
 					"test_id":  {},
 					"test_id2": {},
@@ -871,6 +989,9 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 				"website/docs/d/pet.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
+				"website/docs/ephemeral-resources/ephemeral_id.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
 				"website/docs/functions/parse_id.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
@@ -880,12 +1001,16 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 			},
 			ExpectedError: "missing documentation file for resource: test_id2\n" +
 				"missing documentation file for datasource: test_pet2\n" +
-				"missing documentation file for function: parse_id2",
+				"missing documentation file for function: parse_id2\n" +
+				"missing documentation file for ephemeral resource: test_ephemeral_id2",
 		},
 		"invalid - extra files": {
 			ProviderSchema: &tfjson.ProviderSchema{
 				DataSourceSchemas: map[string]*tfjson.Schema{
 					"test_pet": {},
+				},
+				EphemeralResourceSchemas: map[string]*tfjson.Schema{
+					"test_ephemeral_id": {},
 				},
 				ResourceSchemas: map[string]*tfjson.Schema{
 					"test_id": {},
@@ -899,6 +1024,12 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
 				"website/docs/d/pet2.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/ephemeral-resources/ephemeral_id.html.markdown": {
+					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
+				},
+				"website/docs/ephemeral-resources/ephemeral_id2.html.markdown": {
 					Data: encodeYAML(t, &ValidLegacyResourceFrontMatter),
 				},
 				"website/docs/functions/parse_id.html.markdown": {
@@ -916,7 +1047,8 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 			},
 			ExpectedError: "matching resource for documentation file (id2.html.markdown) not found, file is extraneous or incorrectly named\n" +
 				"matching datasource for documentation file (pet2.html.markdown) not found, file is extraneous or incorrectly named\n" +
-				"matching function for documentation file (parse_id2.html.markdown) not found, file is extraneous or incorrectly named",
+				"matching function for documentation file (parse_id2.html.markdown) not found, file is extraneous or incorrectly named\n" +
+				"matching ephemeral resource for documentation file (ephemeral_id2.html.markdown) not found, file is extraneous or incorrectly named",
 		},
 	}
 

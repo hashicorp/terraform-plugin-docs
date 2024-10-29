@@ -28,6 +28,8 @@ type FileMismatchOptions struct {
 
 	FunctionEntries []os.DirEntry
 
+	EphemeralResourceEntries []os.DirEntry
+
 	Schema *tfjson.ProviderSchema
 }
 
@@ -71,6 +73,11 @@ func (check *FileMismatchCheck) Run() error {
 
 	if check.Options.FunctionEntries != nil {
 		err := check.FunctionFileMismatchCheck(check.Options.FunctionEntries, check.Options.Schema.Functions)
+		result = errors.Join(result, err)
+	}
+
+	if check.Options.EphemeralResourceEntries != nil {
+		err := check.ResourceFileMismatchCheck(check.Options.EphemeralResourceEntries, "ephemeral resource", check.Options.Schema.EphemeralResourceSchemas)
 		result = errors.Join(result, err)
 	}
 

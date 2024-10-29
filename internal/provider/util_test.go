@@ -106,11 +106,19 @@ func Test_extractSchemaFromFile(t *testing.T) {
 	if providerSchema.DataSourceSchemas["null_data_source"] == nil {
 		t.Fatalf("null_data_source not found")
 	}
+	if providerSchema.Functions["null"] == nil {
+		t.Fatalf("null function not found")
+	}
+	if providerSchema.EphemeralResourceSchemas["null_ephemeral_resource"] == nil {
+		t.Fatalf("null_ephemeral_resource not found")
+	}
 	if providerSchema.ResourceSchemas["null_resource"].Block.Attributes["id"] == nil {
 		t.Fatalf("null_resoruce id attribute not found")
 	}
 	if providerSchema.DataSourceSchemas["null_data_source"].Block.Attributes["id"] == nil {
 		t.Fatalf("null_data_source id attribute not found")
 	}
-
+	if providerSchema.EphemeralResourceSchemas["null_ephemeral_resource"].Block.Attributes["id"] == nil {
+		t.Fatalf("null_ephemeral_resoruce id attribute not found")
+	}
 }
