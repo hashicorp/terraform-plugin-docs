@@ -198,7 +198,7 @@ func (v *validator) validateStaticDocs() error {
 			return fmt.Errorf("error walking directory %q: %w", dir, err)
 		}
 		if d.IsDir() {
-			match, err := doublestar.PathMatch(DocumentationDirGlobPattern, path)
+			match, err := doublestar.Match(DocumentationDirGlobPattern, path)
 			if err != nil {
 				return err
 			}
@@ -210,7 +210,7 @@ func (v *validator) validateStaticDocs() error {
 			result = errors.Join(result, check.InvalidDirectoriesCheck(path))
 			return nil
 		}
-		match, err := doublestar.PathMatch(DocumentationGlobPattern, path)
+		match, err := doublestar.Match(DocumentationGlobPattern, path)
 		if err != nil {
 			return err
 		}
@@ -278,7 +278,7 @@ func (v *validator) validateLegacyWebsite() error {
 			return fmt.Errorf("error walking directory %q: %w", dir, err)
 		}
 		if d.IsDir() {
-			match, err := doublestar.PathMatch(DocumentationDirGlobPattern, path)
+			match, err := doublestar.Match(DocumentationDirGlobPattern, path)
 			if err != nil {
 				return err
 			}
@@ -291,7 +291,7 @@ func (v *validator) validateLegacyWebsite() error {
 			return nil
 		}
 
-		match, err := doublestar.PathMatch(DocumentationGlobPattern, path)
+		match, err := doublestar.Match(DocumentationGlobPattern, path)
 		if err != nil {
 			return err
 		}
