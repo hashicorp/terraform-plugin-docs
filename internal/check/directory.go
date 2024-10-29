@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"path"
+	"path/filepath"
 )
 
 const (
@@ -82,7 +83,7 @@ func InvalidDirectoriesCheck(dirPath string) error {
 		return nil
 	}
 
-	return fmt.Errorf("invalid Terraform Provider documentation directory found: %s", dirPath)
+	return fmt.Errorf("invalid Terraform Provider documentation directory found: %s", filepath.FromSlash(dirPath))
 
 }
 
