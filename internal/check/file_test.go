@@ -4,26 +4,40 @@
 package check
 
 import (
-	"os"
+	"io/fs"
 	"path/filepath"
 	"testing"
+	"testing/fstest"
 )
 
 func TestFileSizeCheck(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
+		FileSystem  fs.FS
 		Size        int64
 		ExpectError bool
 	}{
 		"under limit": {
-			Size: RegistryMaximumSizeOfFile - 1,
+			FileSystem: fstest.MapFS{
+				"file.md": {
+					Data: make([]byte, RegistryMaximumSizeOfFile-1),
+				},
+			},
 		},
 		"on limit": {
-			Size:        RegistryMaximumSizeOfFile,
+			FileSystem: fstest.MapFS{
+				"file.md": {
+					Data: make([]byte, RegistryMaximumSizeOfFile),
+				},
+			},
 			ExpectError: true,
 		},
 		"over limit": {
-			Size:        RegistryMaximumSizeOfFile + 1,
+			FileSystem: fstest.MapFS{
+				"file.md": {
+					Data: make([]byte, RegistryMaximumSizeOfFile+1),
+				},
+			},
 			ExpectError: true,
 		},
 	}
@@ -34,15 +48,7 @@ func TestFileSizeCheck(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			file, _ := os.CreateTemp(t.TempDir(), "TestFileSizeCheck")
-
-			defer file.Close()
-
-			if err := file.Truncate(testCase.Size); err != nil {
-				t.Fatalf("error writing temporary file: %s", err)
-			}
-
-			got := FileSizeCheck(file.Name())
+			got := FileSizeCheck(testCase.FileSystem, "file.md")
 
 			if got == nil && testCase.ExpectError {
 				t.Errorf("expected error, got no error")

@@ -5,8 +5,9 @@ package check
 
 import (
 	"fmt"
+	"io/fs"
 	"log"
-	"os"
+	"path/filepath"
 )
 
 type ProviderFileOptions struct {
@@ -17,12 +18,14 @@ type ProviderFileOptions struct {
 }
 
 type ProviderFileCheck struct {
-	Options *ProviderFileOptions
+	Options    *ProviderFileOptions
+	ProviderFs fs.FS
 }
 
-func NewProviderFileCheck(opts *ProviderFileOptions) *ProviderFileCheck {
+func NewProviderFileCheck(providerFs fs.FS, opts *ProviderFileOptions) *ProviderFileCheck {
 	check := &ProviderFileCheck{
-		Options: opts,
+		Options:    opts,
+		ProviderFs: providerFs,
 	}
 
 	if check.Options == nil {
@@ -46,21 +49,21 @@ func (check *ProviderFileCheck) Run(path string) error {
 	log.Printf("[DEBUG] Checking file: %s", fullpath)
 
 	if err := FileExtensionCheck(path, check.Options.ValidExtensions); err != nil {
-		return fmt.Errorf("%s: error checking file extension: %w", path, err)
+		return fmt.Errorf("%s: error checking file extension: %w", filepath.FromSlash(path), err)
 	}
 
-	if err := FileSizeCheck(fullpath); err != nil {
-		return fmt.Errorf("%s: error checking file size: %w", path, err)
+	if err := FileSizeCheck(check.ProviderFs, path); err != nil {
+		return fmt.Errorf("%s: error checking file size: %w", filepath.FromSlash(path), err)
 	}
 
-	content, err := os.ReadFile(fullpath)
+	content, err := fs.ReadFile(check.ProviderFs, path)
 
 	if err != nil {
-		return fmt.Errorf("%s: error reading file: %w", path, err)
+		return fmt.Errorf("%s: error reading file: %w", filepath.FromSlash(path), err)
 	}
 
 	if err := NewFrontMatterCheck(check.Options.FrontMatter).Run(content); err != nil {
-		return fmt.Errorf("%s: error checking file frontmatter: %w", path, err)
+		return fmt.Errorf("%s: error checking file frontmatter: %w", filepath.FromSlash(path), err)
 	}
 
 	return nil

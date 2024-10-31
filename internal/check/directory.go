@@ -6,6 +6,7 @@ package check
 import (
 	"fmt"
 	"log"
+	"path"
 	"path/filepath"
 )
 
@@ -82,7 +83,7 @@ func InvalidDirectoriesCheck(dirPath string) error {
 		return nil
 	}
 
-	return fmt.Errorf("invalid Terraform Provider documentation directory found: %s", dirPath)
+	return fmt.Errorf("invalid Terraform Provider documentation directory found: %s", filepath.FromSlash(dirPath))
 
 }
 
@@ -92,7 +93,7 @@ func MixedDirectoriesCheck(docFiles []string) error {
 	err := fmt.Errorf("mixed Terraform Provider documentation directory layouts found, must use only legacy or registry layout")
 
 	for _, file := range docFiles {
-		directory := filepath.Dir(file)
+		directory := path.Dir(file)
 		log.Printf("[DEBUG] Found directory: %s", directory)
 
 		// Allow docs/ with other files
@@ -120,7 +121,7 @@ func MixedDirectoriesCheck(docFiles []string) error {
 
 func IsValidLegacyDirectory(directory string) bool {
 	for _, validLegacyDirectory := range ValidLegacyDirectories {
-		if directory == filepath.FromSlash(validLegacyDirectory) {
+		if directory == validLegacyDirectory {
 			return true
 		}
 	}
@@ -130,7 +131,7 @@ func IsValidLegacyDirectory(directory string) bool {
 
 func IsValidRegistryDirectory(directory string) bool {
 	for _, validRegistryDirectory := range ValidRegistryDirectories {
-		if directory == filepath.FromSlash(validRegistryDirectory) {
+		if directory == validRegistryDirectory {
 			return true
 		}
 	}
@@ -139,32 +140,32 @@ func IsValidRegistryDirectory(directory string) bool {
 }
 
 func IsValidCdktfDirectory(directory string) bool {
-	if directory == filepath.FromSlash(fmt.Sprintf("%s/%s", LegacyIndexDirectory, CdktfIndexDirectory)) {
+	if directory == fmt.Sprintf("%s/%s", LegacyIndexDirectory, CdktfIndexDirectory) {
 		return true
 	}
 
-	if directory == filepath.FromSlash(fmt.Sprintf("%s/%s", RegistryIndexDirectory, CdktfIndexDirectory)) {
+	if directory == fmt.Sprintf("%s/%s", RegistryIndexDirectory, CdktfIndexDirectory) {
 		return true
 	}
 
 	for _, validCdktfLanguage := range ValidCdktfLanguages {
 
-		if directory == filepath.FromSlash(fmt.Sprintf("%s/%s/%s", LegacyIndexDirectory, CdktfIndexDirectory, validCdktfLanguage)) {
+		if directory == fmt.Sprintf("%s/%s/%s", LegacyIndexDirectory, CdktfIndexDirectory, validCdktfLanguage) {
 			return true
 		}
 
-		if directory == filepath.FromSlash(fmt.Sprintf("%s/%s/%s", RegistryIndexDirectory, CdktfIndexDirectory, validCdktfLanguage)) {
+		if directory == fmt.Sprintf("%s/%s/%s", RegistryIndexDirectory, CdktfIndexDirectory, validCdktfLanguage) {
 			return true
 		}
 
 		for _, validLegacySubdirectory := range ValidLegacySubdirectories {
-			if directory == filepath.FromSlash(fmt.Sprintf("%s/%s/%s/%s", LegacyIndexDirectory, CdktfIndexDirectory, validCdktfLanguage, validLegacySubdirectory)) {
+			if directory == fmt.Sprintf("%s/%s/%s/%s", LegacyIndexDirectory, CdktfIndexDirectory, validCdktfLanguage, validLegacySubdirectory) {
 				return true
 			}
 		}
 
 		for _, validRegistrySubdirectory := range ValidRegistrySubdirectories {
-			if directory == filepath.FromSlash(fmt.Sprintf("%s/%s/%s/%s", RegistryIndexDirectory, CdktfIndexDirectory, validCdktfLanguage, validRegistrySubdirectory)) {
+			if directory == fmt.Sprintf("%s/%s/%s/%s", RegistryIndexDirectory, CdktfIndexDirectory, validCdktfLanguage, validRegistrySubdirectory) {
 				return true
 			}
 		}
