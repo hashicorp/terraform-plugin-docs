@@ -13,17 +13,19 @@ import (
 const (
 	CdktfIndexDirectory = `cdktf`
 
-	LegacyIndexDirectory       = `website/docs`
-	LegacyDataSourcesDirectory = `d`
-	LegacyGuidesDirectory      = `guides`
-	LegacyResourcesDirectory   = `r`
-	LegacyFunctionsDirectory   = `functions`
+	LegacyIndexDirectory              = `website/docs`
+	LegacyDataSourcesDirectory        = `d`
+	LegacyEphemeralResourcesDirectory = `ephemeral-resources`
+	LegacyGuidesDirectory             = `guides`
+	LegacyResourcesDirectory          = `r`
+	LegacyFunctionsDirectory          = `functions`
 
-	RegistryIndexDirectory       = `docs`
-	RegistryDataSourcesDirectory = `data-sources`
-	RegistryGuidesDirectory      = `guides`
-	RegistryResourcesDirectory   = `resources`
-	RegistryFunctionsDirectory   = `functions`
+	RegistryIndexDirectory              = `docs`
+	RegistryDataSourcesDirectory        = `data-sources`
+	RegistryEphemeralResourcesDirectory = `ephemeral-resources`
+	RegistryGuidesDirectory             = `guides`
+	RegistryResourcesDirectory          = `resources`
+	RegistryFunctionsDirectory          = `functions`
 
 	// Terraform Registry Storage Limits
 	// https://www.terraform.io/docs/registry/providers/docs.html#storage-limits
@@ -35,6 +37,7 @@ const (
 var ValidLegacyDirectories = []string{
 	LegacyIndexDirectory,
 	LegacyIndexDirectory + "/" + LegacyDataSourcesDirectory,
+	LegacyIndexDirectory + "/" + LegacyEphemeralResourcesDirectory,
 	LegacyIndexDirectory + "/" + LegacyGuidesDirectory,
 	LegacyIndexDirectory + "/" + LegacyResourcesDirectory,
 	LegacyIndexDirectory + "/" + LegacyFunctionsDirectory,
@@ -43,6 +46,7 @@ var ValidLegacyDirectories = []string{
 var ValidRegistryDirectories = []string{
 	RegistryIndexDirectory,
 	RegistryIndexDirectory + "/" + RegistryDataSourcesDirectory,
+	RegistryIndexDirectory + "/" + RegistryEphemeralResourcesDirectory,
 	RegistryIndexDirectory + "/" + RegistryGuidesDirectory,
 	RegistryIndexDirectory + "/" + RegistryResourcesDirectory,
 	RegistryIndexDirectory + "/" + RegistryFunctionsDirectory,
@@ -59,6 +63,7 @@ var ValidCdktfLanguages = []string{
 var ValidLegacySubdirectories = []string{
 	LegacyIndexDirectory,
 	LegacyDataSourcesDirectory,
+	LegacyEphemeralResourcesDirectory,
 	LegacyGuidesDirectory,
 	LegacyResourcesDirectory,
 }
@@ -66,6 +71,7 @@ var ValidLegacySubdirectories = []string{
 var ValidRegistrySubdirectories = []string{
 	RegistryIndexDirectory,
 	RegistryDataSourcesDirectory,
+	RegistryEphemeralResourcesDirectory,
 	RegistryGuidesDirectory,
 	RegistryResourcesDirectory,
 }

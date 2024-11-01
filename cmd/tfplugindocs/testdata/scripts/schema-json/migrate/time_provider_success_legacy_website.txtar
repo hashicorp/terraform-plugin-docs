@@ -15,6 +15,7 @@ cmpenv templates/resources/offset.md.tmpl exp-templates/resources/offset.md.tmpl
 cmpenv templates/resources/rotating.md.tmpl exp-templates/resources/rotating.md.tmpl
 cmpenv templates/resources/sleep.md.tmpl exp-templates/resources/sleep.md.tmpl
 cmpenv templates/resources/static.md.tmpl exp-templates/resources/static.md.tmpl
+cmpenv templates/ephemeral-resources/ephemeral_static.md.tmpl exp-templates/ephemeral-resources/ephemeral_static.md.tmpl
 
 # Check generated example files
 cmpenv examples/example_1.tf examples/example_1.tf
@@ -35,16 +36,28 @@ cmpenv examples/resources/sleep/example_3.tf exp-examples/resources/sleep/exampl
 cmpenv examples/resources/sleep/import_1.sh exp-examples/resources/sleep/import_1.sh
 cmpenv examples/resources/sleep/import_2.sh exp-examples/resources/sleep/import_2.sh
 
-cmpenv examples/resources/static/example_1.tf examples/resources/static/example_1.tf
-cmpenv examples/resources/static/example_2.tf examples/resources/static/example_2.tf
-cmpenv examples/resources/static/import_1.sh examples/resources/static/import_1.sh
+cmpenv examples/resources/static/example_1.tf exp-examples/resources/static/example_1.tf
+cmpenv examples/resources/static/example_2.tf exp-examples/resources/static/example_2.tf
+cmpenv examples/resources/static/import_1.sh exp-examples/resources/static/import_1.sh
+
+cmpenv examples/ephemeral-resources/ephemeral_static/example_1.tf exp-examples/ephemeral-resources/ephemeral_static/example_1.tf
+cmpenv examples/ephemeral-resources/ephemeral_static/example_2.tf exp-examples/ephemeral-resources/ephemeral_static/example_2.tf
+cmpenv examples/ephemeral-resources/ephemeral_static/import_1.sh exp-examples/ephemeral-resources/ephemeral_static/import_1.sh
 
 # Verify legacy website directory is removed
 ! exists website/
 
 -- expected-output.txt --
 migrating website from "$WORK/website/docs" to "$WORK/templates"
-migrating functons directory: functions
+migrating ephemeral resources directory: ephemeral-resources
+migrating file "ephemeral_static.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/ephemeral-resources/ephemeral_static.md.tmpl"
+extracting code examples from "ephemeral_static.html.markdown"
+creating example file "$WORK/examples/ephemeral-resources/ephemeral_static/example_1.tf"
+creating example file "$WORK/examples/ephemeral-resources/ephemeral_static/example_2.tf"
+creating import file "$WORK/examples/ephemeral-resources/ephemeral_static/import_1.sh"
+finished creating template "$WORK/templates/ephemeral-resources/ephemeral_static.md.tmpl"
+migrating functions directory: functions
 migrating file "rfc3339_parse.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/functions/rfc3339_parse.md.tmpl"
 extracting code examples from "rfc3339_parse.html.markdown"
@@ -518,7 +531,85 @@ $ terraform import time_static.example 2020-02-12T06:36:13Z
 ```
 
 The `triggers` argument cannot be imported.
+-- website/docs/ephemeral-resources/ephemeral_static.html.markdown --
+---
+layout: "time"
+page_title: "Time: time_ephemeral_static"
+description: |-
+  Manages a static time resource.
+---
 
+# Resource: time_static
+
+Manages a static time resource, which keeps a locally sourced UTC timestamp stored in the Terraform state. This prevents perpetual differences caused by using the [`timestamp()` function](https://www.terraform.io/docs/configuration/functions/timestamp.html).
+
+-> Further manipulation of incoming or outgoing values can be accomplished with the [`formatdate()` function](https://www.terraform.io/docs/configuration/functions/formatdate.html) and the [`timeadd()` function](https://www.terraform.io/docs/configuration/functions/timeadd.html).
+
+## Example Usage
+
+### Basic Usage
+
+```hcl
+resource "time_static" "example" {}
+
+output "current_time" {
+  value = time_static.example.rfc3339
+}
+```
+
+### Triggers Usage
+
+```hcl
+resource "time_static" "ami_update" {
+  triggers = {
+    # Save the time each switch of an AMI id
+    ami_id = data.aws_ami.example.id
+  }
+}
+
+resource "aws_instance" "server" {
+  # Read the AMI id "through" the time_static resource to ensure that
+  # both will change together.
+  ami = time_static.ami_update.triggers.ami_id
+
+  tags = {
+    AmiUpdateTime = time_static.ami_update.rfc3339
+  }
+
+  # ... (other aws_instance arguments) ...
+}
+```
+
+## Argument Reference
+
+The following arguments are optional:
+
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will trigger a new base timestamp value to be saved. See [the main provider documentation](../index.html) for more information.
+* `rfc3339` - (Optional) Configure the base timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). Defaults to the current time.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `day` - Number day of timestamp.
+* `hour` - Number hour of timestamp.
+* `id` - UTC RFC3339 timestamp format, e.g. `2020-02-12T06:36:13Z`.
+* `minute` - Number minute of timestamp.
+* `month` - Number month of timestamp.
+* `rfc3339` - UTC RFC3339 format of timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `second` - Number second of timestamp.
+* `unix` - Number of seconds since epoch time, e.g. `1581489373`.
+* `year` - Number year of timestamp.
+
+## Import
+
+This resource can be imported using the UTC RFC3339 value, e.g.
+
+```console
+$ terraform import time_static.example 2020-02-12T06:36:13Z
+```
+
+The `triggers` argument cannot be imported.
 -- exp-examples/example_1.tf --
 resource "time_static" "ami_update" {
   triggers = {
@@ -664,6 +755,33 @@ resource "aws_instance" "server" {
   # ... (other aws_instance arguments) ...
 }
 -- exp-examples/resources/static/import_1.sh --
+$ terraform import time_static.example 2020-02-12T06:36:13Z
+-- exp-examples/ephemeral-resources/ephemeral_static/example_1.tf --
+resource "time_static" "example" {}
+
+output "current_time" {
+  value = time_static.example.rfc3339
+}
+-- exp-examples/ephemeral-resources/ephemeral_static/example_2.tf --
+resource "time_static" "ami_update" {
+  triggers = {
+    # Save the time each switch of an AMI id
+    ami_id = data.aws_ami.example.id
+  }
+}
+
+resource "aws_instance" "server" {
+  # Read the AMI id "through" the time_static resource to ensure that
+  # both will change together.
+  ami = time_static.ami_update.triggers.ami_id
+
+  tags = {
+    AmiUpdateTime = time_static.ami_update.rfc3339
+  }
+
+  # ... (other aws_instance arguments) ...
+}
+-- exp-examples/ephemeral-resources/ephemeral_static/import_1.sh --
 $ terraform import time_static.example 2020-02-12T06:36:13Z
 -- exp-templates/index.md.tmpl --
 ---
@@ -964,5 +1082,60 @@ In addition to all arguments above, the following attributes are exported:
 This resource can be imported using the UTC RFC3339 value, e.g.
 
 {{codefile "shell" "examples/resources/static/import_1.sh"}}
+
+The `triggers` argument cannot be imported.
+-- exp-templates/ephemeral-resources/ephemeral_static.md.tmpl --
+---
+page_title: "Time: time_ephemeral_static"
+description: |-
+  Manages a static time resource.
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
+# Resource: time_static
+
+Manages a static time resource, which keeps a locally sourced UTC timestamp stored in the Terraform state. This prevents perpetual differences caused by using the [`timestamp()` function](https://www.terraform.io/docs/configuration/functions/timestamp.html).
+
+-> Further manipulation of incoming or outgoing values can be accomplished with the [`formatdate()` function](https://www.terraform.io/docs/configuration/functions/formatdate.html) and the [`timeadd()` function](https://www.terraform.io/docs/configuration/functions/timeadd.html).
+
+## Example Usage
+
+### Basic Usage
+
+{{tffile "examples/ephemeral-resources/ephemeral_static/example_1.tf"}}
+
+### Triggers Usage
+
+{{tffile "examples/ephemeral-resources/ephemeral_static/example_2.tf"}}
+
+## Argument Reference
+
+The following arguments are optional:
+
+* `triggers` - (Optional) Arbitrary map of values that, when changed, will trigger a new base timestamp value to be saved. See [the main provider documentation](../index.html) for more information.
+* `rfc3339` - (Optional) Configure the base timestamp with an UTC [RFC3339 time string](https://tools.ietf.org/html/rfc3339#section-5.8) (`YYYY-MM-DDTHH:MM:SSZ`). Defaults to the current time.
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+
+* `day` - Number day of timestamp.
+* `hour` - Number hour of timestamp.
+* `id` - UTC RFC3339 timestamp format, e.g. `2020-02-12T06:36:13Z`.
+* `minute` - Number minute of timestamp.
+* `month` - Number month of timestamp.
+* `rfc3339` - UTC RFC3339 format of timestamp, e.g. `2020-02-12T06:36:13Z`.
+* `second` - Number second of timestamp.
+* `unix` - Number of seconds since epoch time, e.g. `1581489373`.
+* `year` - Number year of timestamp.
+
+## Import
+
+This resource can be imported using the UTC RFC3339 value, e.g.
+
+{{codefile "shell" "examples/ephemeral-resources/ephemeral_static/import_1.sh"}}
 
 The `triggers` argument cannot be imported.

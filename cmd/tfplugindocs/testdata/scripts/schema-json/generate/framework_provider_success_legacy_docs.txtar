@@ -22,6 +22,11 @@ cmp templates/functions/example.markdown docs/functions/example.markdown
 cmp templates/functions/example.html.markdown docs/functions/example.html.markdown
 cmp templates/functions/example.html.md docs/functions/example.html.md
 
+cmp templates/ephemeral-resources/example.md docs/ephemeral-resources/example.md
+cmp templates/ephemeral-resources/example.markdown docs/ephemeral-resources/example.markdown
+cmp templates/ephemeral-resources/example.html.markdown docs/ephemeral-resources/example.html.markdown
+cmp templates/ephemeral-resources/example.html.md docs/ephemeral-resources/example.html.md
+
 cmp templates/index.md docs/index.md
 cmp templates/index.markdown docs/index.markdown
 cmp templates/index.html.markdown docs/index.html.markdown
@@ -38,6 +43,8 @@ generating missing data source content
 data-source "scaffolding_example" static file exists, skipping
 generating missing function content
 function "example" static file exists, skipping
+generating missing ephemeral resource content
+ephemeral resource "scaffolding_example" static file exists, skipping
 generating missing provider content
 provider "terraform-provider-scaffolding" static file exists, skipping
 rendering static website
@@ -47,6 +54,10 @@ copying non-template file: "d/example.html.markdown"
 copying non-template file: "d/example.html.md"
 copying non-template file: "d/example.markdown"
 copying non-template file: "d/example.md"
+copying non-template file: "ephemeral-resources/example.html.markdown"
+copying non-template file: "ephemeral-resources/example.html.md"
+copying non-template file: "ephemeral-resources/example.markdown"
+copying non-template file: "ephemeral-resources/example.md"
 copying non-template file: "functions/example.html.markdown"
 copying non-template file: "functions/example.html.md"
 copying non-template file: "functions/example.markdown"
@@ -119,6 +130,26 @@ Type: {{.Type}}
 
 Name: {{.Name}}
 Type: {{.Type}}
+-- templates/ephemeral-resources/example.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/ephemeral-resources/example.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/ephemeral-resources/example.html.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/ephemeral-resources/example.html.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
 -- templates/index.md --
 # Data Fields
 
@@ -161,100 +192,134 @@ provider "scaffolding" {
 resource "scaffolding_example" "example" {
   configurable_attribute = "some-value"
 }
+-- examples/ephemeral-resources/scaffolding_example/ephemeral-resource.tf --
+resource "scaffolding_example" "example" {
+  configurable_attribute = "some-value"
+}
 -- examples/resources/scaffolding_example/import.sh --
 terraform import scaffolding_example.example
 -- schema.json --
 {
-  "format_version": "1.0",
-  "provider_schemas": {
-    "registry.terraform.io/hashicorp/scaffolding": {
-      "provider": {
-        "version": 0,
-        "block": {
-          "attributes": {
-            "endpoint": {
-              "type": "string",
-              "description": "Example provider attribute",
-              "description_kind": "markdown",
-              "optional": true
-            }
-          },
-          "description": "Example provider",
-          "description_kind": "markdown"
-        }
-      },
-      "resource_schemas": {
-        "scaffolding_example": {
-          "version": 0,
-          "block": {
-            "attributes": {
-              "configurable_attribute": {
-                "type": "string",
-                "description": "Example configurable attribute",
-                "description_kind": "markdown",
-                "optional": true
-              },
-              "defaulted": {
-                "type": "string",
-                "description": "Example configurable attribute with default value",
-                "description_kind": "markdown",
-                "optional": true,
-                "computed": true
-              },
-              "id": {
-                "type": "string",
-                "description": "Example identifier",
-                "description_kind": "markdown",
-                "computed": true
-              }
+    "format_version": "1.0",
+    "provider_schemas": {
+        "registry.terraform.io/hashicorp/scaffolding": {
+            "provider": {
+                "version": 0,
+                "block": {
+                    "attributes": {
+                        "endpoint": {
+                            "type": "string",
+                            "description": "Example provider attribute",
+                            "description_kind": "markdown",
+                            "optional": true
+                        }
+                    },
+                    "description": "Example provider",
+                    "description_kind": "markdown"
+                }
             },
-            "description": "Example resource",
-            "description_kind": "markdown"
-          }
-        }
-      },
-      "data_source_schemas": {
-        "scaffolding_example": {
-          "version": 0,
-          "block": {
-            "attributes": {
-              "configurable_attribute": {
-                "type": "string",
-                "description": "Example configurable attribute",
-                "description_kind": "markdown",
-                "optional": true
-              },
-              "id": {
-                "type": "string",
-                "description": "Example identifier",
-                "description_kind": "markdown",
-                "computed": true
-              }
+            "resource_schemas": {
+                "scaffolding_example": {
+                    "version": 0,
+                    "block": {
+                        "attributes": {
+                            "configurable_attribute": {
+                                "type": "string",
+                                "description": "Example configurable attribute",
+                                "description_kind": "markdown",
+                                "optional": true
+                            },
+                            "defaulted": {
+                                "type": "string",
+                                "description": "Example configurable attribute with default value",
+                                "description_kind": "markdown",
+                                "optional": true,
+                                "computed": true
+                            },
+                            "id": {
+                                "type": "string",
+                                "description": "Example identifier",
+                                "description_kind": "markdown",
+                                "computed": true
+                            }
+                        },
+                        "description": "Example resource",
+                        "description_kind": "markdown"
+                    }
+                }
             },
-            "description": "Example data source",
-            "description_kind": "markdown"
-          }
-        }
-      },
-      "functions": {
-        "example": {
-          "description": "Given a string value, returns the same value.",
-          "summary": "Echo a string",
-          "return_type": "string",
-          "parameters": [
-            {
-              "name": "input",
-              "description": "Value to echo.",
-              "type": "string"
+            "ephemeral_resource_schemas": {
+                "scaffolding_example": {
+                    "version": 0,
+                    "block": {
+                        "attributes": {
+                            "configurable_attribute": {
+                                "type": "string",
+                                "description": "Example configurable attribute",
+                                "description_kind": "markdown",
+                                "optional": true
+                            },
+                            "defaulted": {
+                                "type": "string",
+                                "description": "Example configurable attribute with default value",
+                                "description_kind": "markdown",
+                                "optional": true,
+                                "computed": true
+                            },
+                            "id": {
+                                "type": "string",
+                                "description": "Example identifier",
+                                "description_kind": "markdown",
+                                "computed": true
+                            }
+                        },
+                        "description": "Example ephemeral resource",
+                        "description_kind": "markdown"
+                    }
+                }
+            },
+            "data_source_schemas": {
+                "scaffolding_example": {
+                    "version": 0,
+                    "block": {
+                        "attributes": {
+                            "configurable_attribute": {
+                                "type": "string",
+                                "description": "Example configurable attribute",
+                                "description_kind": "markdown",
+                                "optional": true
+                            },
+                            "id": {
+                                "type": "string",
+                                "description": "Example identifier",
+                                "description_kind": "markdown",
+                                "computed": true
+                            }
+                        },
+                        "description": "Example data source",
+                        "description_kind": "markdown"
+                    }
+                }
+            },
+            "functions": {
+                "example": {
+                    "description": "Given a string value, returns the same value.",
+                    "summary": "Echo a string",
+                    "return_type": "string",
+                    "parameters": [
+                        {
+                            "name": "input",
+                            "description": "Value to echo.",
+                            "type": "string"
+                        }
+                    ],
+                    "variadic_parameter": {
+                        "name": "variadicInput",
+                        "description": "Variadic input to echo.",
+                        "type": "string"
+                    }
+                }
             }
-          ],
-          "variadic_parameter": {
-            "name": "variadicInput",
-            "description": "Variadic input to echo.",
-            "type": "string"
-          }
         }
-      }
     }
-  }
 }

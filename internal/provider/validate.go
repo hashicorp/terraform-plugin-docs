@@ -25,8 +25,8 @@ const (
 	FileExtensionMarkdown     = `.markdown`
 	FileExtensionMd           = `.md`
 
-	DocumentationGlobPattern    = `{docs/index.*,docs/{,cdktf/}{data-sources,guides,resources,functions}/**/*,website/docs/**/*}`
-	DocumentationDirGlobPattern = `{docs/{,cdktf/}{data-sources,guides,resources,functions}{,/*},website/docs/**/*}`
+	DocumentationGlobPattern    = `{docs/index.*,docs/{,cdktf/}{data-sources,ephemeral-resources,guides,resources,functions}/**/*,website/docs/**/*}`
+	DocumentationDirGlobPattern = `{docs/{,cdktf/}{data-sources,ephemeral-resources,guides,resources,functions}{,/*},website/docs/**/*}`
 )
 
 var ValidLegacyFileExtensions = []string{
@@ -253,6 +253,10 @@ func (v *validator) validateStaticDocs() error {
 		functionFiles, _ := fs.ReadDir(v.providerFS, dir+"/functions")
 		mismatchOpt.FunctionEntries = functionFiles
 	}
+	if dirExists(v.providerFS, dir+"/ephemeral-resources") {
+		ephemeralResourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/ephemeral-resources")
+		mismatchOpt.EphemeralResourceEntries = ephemeralResourceFiles
+	}
 
 	v.logger.infof("running file mismatch check")
 	if err := check.NewFileMismatchCheck(mismatchOpt).Run(); err != nil {
@@ -331,6 +335,10 @@ func (v *validator) validateLegacyWebsite() error {
 	if dirExists(v.providerFS, dir+"/functions") {
 		functionFiles, _ := fs.ReadDir(v.providerFS, dir+"/functions")
 		mismatchOpt.FunctionEntries = functionFiles
+	}
+	if dirExists(v.providerFS, dir+"/ephemeral-resources") {
+		ephemeralResourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/ephemeral-resources")
+		mismatchOpt.EphemeralResourceEntries = ephemeralResourceFiles
 	}
 
 	v.logger.infof("running file mismatch check")

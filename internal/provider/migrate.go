@@ -105,7 +105,7 @@ func (m *migrator) Migrate() error {
 		if d.IsDir() {
 			switch d.Name() {
 			case "d", "data-sources": //data-sources
-				m.infof("migrating data-sources directory: %s", d.Name())
+				m.infof("migrating datasources directory: %s", d.Name())
 				err := filepath.WalkDir(path, m.MigrateTemplate("data-sources"))
 				if err != nil {
 					return err
@@ -119,8 +119,15 @@ func (m *migrator) Migrate() error {
 				}
 				return filepath.SkipDir
 			case "functions":
-				m.infof("migrating functons directory: %s", d.Name())
+				m.infof("migrating functions directory: %s", d.Name())
 				err := filepath.WalkDir(path, m.MigrateTemplate("functions"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
+			case "ephemeral-resources":
+				m.infof("migrating ephemeral resources directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("ephemeral-resources"))
 				if err != nil {
 					return err
 				}
