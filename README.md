@@ -201,7 +201,7 @@ For templates:
 | `templates/data-sources.md[.tmpl]`                                 | Generic data source page (or template)        |
 | `templates/data-sources/<data source name>.md[.tmpl]`              | Data source page (or template)                |
 | `templates/ephemeral-resources.md[.tmpl]`                          | Generic ephemeral resource page (or template) |
-| `templates/ephemeral-rsources/<ephemeral resource name>.md[.tmpl]` | Ephemeral resource page (or template)         |
+| `templates/ephemeral-resources/<ephemeral resource name>.md[.tmpl]` | Ephemeral resource page (or template)         |
 | `templates/functions.md[.tmpl]`                                    | Generic function page (or template)           |
 | `templates/functions/<function name>.md[.tmpl]`                    | Function page (or template)                   |
 | `templates/resources.md[.tmpl]`                                    | Generic resource page (or template)           |
