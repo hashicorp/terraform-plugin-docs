@@ -1,3 +1,21 @@
+## 0.20.0 (November 06, 2024)
+
+NOTES:
+
+* all: This Go module has been updated to Go 1.22 per the [Go support policy](https://go.dev/doc/devel/release#policy). It is recommended to review the [Go 1.22 release notes](https://go.dev/doc/go1.22) before upgrading. Any consumers building on earlier Go versions may experience errors. ([#400](https://github.com/hashicorp/terraform-plugin-docs/issues/400))
+
+FEATURES:
+
+* generate: Add support for ephemeral resources ([#415](https://github.com/hashicorp/terraform-plugin-docs/issues/415))
+* migrate: Add support for ephemeral resources ([#415](https://github.com/hashicorp/terraform-plugin-docs/issues/415))
+* validate: Add support for ephemeral resources ([#415](https://github.com/hashicorp/terraform-plugin-docs/issues/415))
+
+BUG FIXES:
+
+* validate: File extension check now runs on `index.*` files instead of just `index.md` files. ([#413](https://github.com/hashicorp/terraform-plugin-docs/issues/413))
+* validate: File extension check now specifies the correct valid extensions in the error message. ([#413](https://github.com/hashicorp/terraform-plugin-docs/issues/413))
+* validate: Front matter check now runs with the correct options on legacy index files. ([#413](https://github.com/hashicorp/terraform-plugin-docs/issues/413))
+
 ## 0.19.4 (June 04, 2024)
 
 NOTES:

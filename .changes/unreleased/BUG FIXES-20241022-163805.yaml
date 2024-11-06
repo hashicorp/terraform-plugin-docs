@@ -1,5 +1,0 @@
-kind: BUG FIXES
-body: 'validate: File extension check now runs on `index.*` files instead of just `index.md` files.'
-time: 2024-10-22T16:38:05.530944-04:00
-custom:
-    Issue: "413"
