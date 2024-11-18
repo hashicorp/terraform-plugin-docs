@@ -76,14 +76,13 @@ func removeAllExt(file string) string {
 // has either the providerShortName or the providerShortName concatenated with the
 // templateFileName (stripped of file extension.
 func resourceSchema(schemas map[string]*tfjson.Schema, providerShortName, templateFileName string) (*tfjson.Schema, string) {
-	if schema, ok := schemas[providerShortName]; ok {
-		return schema, providerShortName
-	}
-
 	resName := providerShortName + "_" + removeAllExt(templateFileName)
-
 	if schema, ok := schemas[resName]; ok {
 		return schema, resName
+	}
+
+	if schema, ok := schemas[providerShortName]; ok {
+		return schema, providerShortName
 	}
 
 	return nil, resName
