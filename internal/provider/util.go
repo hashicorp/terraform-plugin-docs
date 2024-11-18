@@ -4,6 +4,7 @@
 package provider
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -45,6 +46,10 @@ func copyFile(srcPath, dstPath string, mode os.FileMode) error {
 	// If the destination file already exists, we shouldn't blow it away
 	dstFile, err := os.OpenFile(dstPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, mode)
 	if err != nil {
+		// If the file already exists, we can skip it without returning an error.
+		if errors.Is(err, os.ErrExist) {
+			return nil
+		}
 		return err
 	}
 	defer dstFile.Close()
