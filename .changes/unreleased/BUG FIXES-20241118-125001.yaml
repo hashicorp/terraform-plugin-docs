@@ -1,6 +1,0 @@
-kind: BUG FIXES
-body: 'validate: Fixed a bug that caused false positive validation errors for resource
-  types that have the same name as the provider.'
-time: 2024-11-18T12:50:01.114497-05:00
-custom:
-  Issue: "419"

@@ -1,3 +1,11 @@
+## 0.20.1 (November 26, 2024)
+
+BUG FIXES:
+
+* validate: Fixed a bug that caused false positive validation errors for resource types that have the same name as the provider. ([#419](https://github.com/hashicorp/terraform-plugin-docs/issues/419))
+* generate: Fixed a bug that caused all generated resource documentation to have the same content when the provider has a resource type with the same name as the provider. ([#419](https://github.com/hashicorp/terraform-plugin-docs/issues/419))
+* generate: Fixed a bug that would return an error when a static file exists in both `templates` and `docs`, which will now be ignored. ([#421](https://github.com/hashicorp/terraform-plugin-docs/issues/421))
+
 ## 0.20.0 (November 06, 2024)
 
 NOTES:
