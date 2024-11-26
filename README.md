@@ -114,6 +114,11 @@ When you run `tfplugindocs`, by default from the root directory of a provider co
 * Generate function template files, if missing (Requires Terraform v1.8.0+)
 * Generate ephemeral resource template files, if missing (Requires Terraform v1.10.0+)
 * Copy all non-template files to the output website directory
+
+> [!NOTE]
+>
+> Non-template files that already exist in the output website directory will not be overwritten.
+
 * Process all the remaining templates to generate files for the output website directory
 
 For inspiration, you can look at the templates and output of the

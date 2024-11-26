@@ -1,0 +1,7 @@
+kind: BUG FIXES
+body: 'generate: Fixed a bug that caused all generated resource documentation to have
+  the same content when the provider has a resource type with the same name as the
+  provider.'
+time: 2024-11-18T12:51:00.736136-05:00
+custom:
+  Issue: "419"

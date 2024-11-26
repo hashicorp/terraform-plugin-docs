@@ -4,6 +4,7 @@
 package provider
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -45,6 +46,10 @@ func copyFile(srcPath, dstPath string, mode os.FileMode) error {
 	// If the destination file already exists, we shouldn't blow it away
 	dstFile, err := os.OpenFile(dstPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, mode)
 	if err != nil {
+		// If the file already exists, we can skip it without returning an error.
+		if errors.Is(err, os.ErrExist) {
+			return nil
+		}
 		return err
 	}
 	defer dstFile.Close()
@@ -71,14 +76,13 @@ func removeAllExt(file string) string {
 // has either the providerShortName or the providerShortName concatenated with the
 // templateFileName (stripped of file extension.
 func resourceSchema(schemas map[string]*tfjson.Schema, providerShortName, templateFileName string) (*tfjson.Schema, string) {
-	if schema, ok := schemas[providerShortName]; ok {
-		return schema, providerShortName
-	}
-
 	resName := providerShortName + "_" + removeAllExt(templateFileName)
-
 	if schema, ok := schemas[resName]; ok {
 		return schema, resName
+	}
+
+	if schema, ok := schemas[providerShortName]; ok {
+		return schema, providerShortName
 	}
 
 	return nil, resName

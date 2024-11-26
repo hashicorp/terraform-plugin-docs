@@ -84,7 +84,7 @@ func (check *FileMismatchCheck) Run() error {
 	return result
 }
 
-// ResourceFileMismatchCheck checks for mismatched files, either missing or extraneous, against the resource/datasouce schema
+// ResourceFileMismatchCheck checks for mismatched files, either missing or extraneous, against the resource/datasource schema
 func (check *FileMismatchCheck) ResourceFileMismatchCheck(files []os.DirEntry, resourceType string, schemas map[string]*tfjson.Schema) error {
 	if len(files) == 0 {
 		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing file list", resourceType)
@@ -200,7 +200,11 @@ func (check *FileMismatchCheck) FunctionFileMismatchCheck(files []os.DirEntry, f
 
 func (check *FileMismatchCheck) IgnoreFileMismatch(file string) bool {
 	for _, ignoreResourceName := range check.Options.IgnoreFileMismatch {
-		if ignoreResourceName == fileResourceName(check.Options.ProviderShortName, file) {
+		if ignoreResourceName == fileResourceNameWithProvider(check.Options.ProviderShortName, file) {
+			return true
+		} else if ignoreResourceName == TrimFileExtension(file) {
+			// While uncommon, it is valid for a resource type to be named the same as the provider itself.
+			// https://github.com/hashicorp/terraform-plugin-docs/issues/419
 			return true
 		}
 	}
@@ -219,7 +223,13 @@ func (check *FileMismatchCheck) IgnoreFileMissing(resourceName string) bool {
 }
 
 func fileHasResource(schemaResources map[string]*tfjson.Schema, providerName, file string) bool {
-	if _, ok := schemaResources[fileResourceName(providerName, file)]; ok {
+	if _, ok := schemaResources[fileResourceNameWithProvider(providerName, file)]; ok {
+		return true
+	}
+
+	// While uncommon, it is valid for a resource type to be named the same as the provider itself.
+	// https://github.com/hashicorp/terraform-plugin-docs/issues/419
+	if _, ok := schemaResources[TrimFileExtension(file)]; ok {
 		return true
 	}
 
@@ -234,7 +244,7 @@ func fileHasFunction(functions map[string]*tfjson.FunctionSignature, file string
 	return false
 }
 
-func fileResourceName(providerName, fileName string) string {
+func fileResourceNameWithProvider(providerName, fileName string) string {
 	resourceSuffix := TrimFileExtension(fileName)
 
 	return fmt.Sprintf("%s_%s", providerName, resourceSuffix)
@@ -244,7 +254,12 @@ func resourceHasFile(files []os.DirEntry, providerName, resourceName string) boo
 	var found bool
 
 	for _, file := range files {
-		if fileResourceName(providerName, file.Name()) == resourceName {
+		if fileResourceNameWithProvider(providerName, file.Name()) == resourceName {
+			found = true
+			break
+		} else if TrimFileExtension(file.Name()) == resourceName {
+			// While uncommon, it is valid for a resource type to be named the same as the provider itself.
+			// https://github.com/hashicorp/terraform-plugin-docs/issues/419
 			found = true
 			break
 		}

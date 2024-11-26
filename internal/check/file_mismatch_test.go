@@ -82,7 +82,7 @@ func TestFileResourceName(t *testing.T) {
 		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			got := fileResourceName("test", testCase.File)
+			got := fileResourceNameWithProvider("test", testCase.File)
 			want := testCase.Expect
 
 			if got != want {
@@ -111,6 +111,19 @@ func TestFileMismatchCheck(t *testing.T) {
 					ResourceSchemas: map[string]*tfjson.Schema{
 						"test_resource1": {},
 						"test_resource2": {},
+					},
+				},
+			},
+		},
+		"all found - resource with no suffix": {
+			ResourceFiles: fstest.MapFS{
+				"test.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					ResourceSchemas: map[string]*tfjson.Schema{
+						"test": {},
 					},
 				},
 			},
@@ -181,6 +194,23 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
+		"ignore extra file - resource with no suffix": {
+			ResourceFiles: fstest.MapFS{
+				"resource1.md": {},
+				"resource2.md": {},
+				"test.md":      {},
+			},
+			Options: &FileMismatchOptions{
+				IgnoreFileMismatch: []string{"test"},
+				ProviderShortName:  "test",
+				Schema: &tfjson.ProviderSchema{
+					ResourceSchemas: map[string]*tfjson.Schema{
+						"test_resource1": {},
+						"test_resource2": {},
+					},
+				},
+			},
+		},
 		"ignore extra file - function": {
 			FunctionFiles: fstest.MapFS{
 				"function1.md": {},
@@ -209,6 +239,21 @@ func TestFileMismatchCheck(t *testing.T) {
 					ResourceSchemas: map[string]*tfjson.Schema{
 						"test_resource1": {},
 						"test_resource2": {},
+					},
+				},
+			},
+			ExpectError: true,
+		},
+		"missing file - resource with no suffix": {
+			ResourceFiles: fstest.MapFS{
+				"resource1.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					ResourceSchemas: map[string]*tfjson.Schema{
+						"test_resource1": {},
+						"test":           {},
 					},
 				},
 			},
