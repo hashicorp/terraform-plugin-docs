@@ -120,9 +120,9 @@ func (t docTemplate) Render(providerDir string, out io.Writer) error {
 	return renderTemplate(providerDir, "docTemplate", s, out, nil)
 }
 
-func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, schema *tfjson.Schema) (string, error) {
+func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, schema *tfjson.Schema, blocksSection bool) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
-	err := schemamd.Render(schema, schemaBuffer)
+	err := schemamd.Render(schema, schemaBuffer, blocksSection)
 	if err != nil {
 		return "", fmt.Errorf("unable to render schema: %w", err)
 	}
@@ -158,9 +158,9 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 	})
 }
 
-func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
+func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importFile string, schema *tfjson.Schema, blocksSection bool) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
-	err := schemamd.Render(schema, schemaBuffer)
+	err := schemamd.Render(schema, schemaBuffer, blocksSection)
 	if err != nil {
 		return "", fmt.Errorf("unable to render schema: %w", err)
 	}
