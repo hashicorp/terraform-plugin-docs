@@ -1,6 +1,0 @@
-kind: BUG FIXES
-body: 'generate: fix `no such file or directory` error when running `generate` with
-  no existing rendered website directory.'
-time: 2023-11-08T17:25:58.561956-05:00
-custom:
-  Issue: "296"

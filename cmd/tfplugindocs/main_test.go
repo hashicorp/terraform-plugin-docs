@@ -46,3 +46,19 @@ func Test_SchemaJson_GenerateAcceptanceTests(t *testing.T) {
 		Dir: "testdata/scripts/schema-json/generate",
 	})
 }
+
+func Test_SchemaJson_MigrateAcceptanceTests(t *testing.T) {
+	t.Parallel()
+
+	testscript.Run(t, testscript.Params{
+		Dir: "testdata/scripts/schema-json/migrate",
+	})
+}
+
+func Test_SchemaJson_ValidateAcceptanceTests(t *testing.T) {
+	t.Parallel()
+
+	testscript.Run(t, testscript.Params{
+		Dir: "testdata/scripts/schema-json/validate",
+	})
+}

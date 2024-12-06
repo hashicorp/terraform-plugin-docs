@@ -6,7 +6,7 @@ package provider
 import (
 	"testing"
 
-	"github.com/mitchellh/cli"
+	"github.com/hashicorp/cli"
 )
 
 func TestGenerator_terraformProviderSchemaFromFile(t *testing.T) {

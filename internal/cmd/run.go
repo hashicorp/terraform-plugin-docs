@@ -8,8 +8,8 @@ import (
 	"io"
 	"os"
 
+	"github.com/hashicorp/cli"
 	"github.com/mattn/go-colorable"
-	"github.com/mitchellh/cli"
 
 	"github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs/build"
 )
@@ -57,10 +57,19 @@ func initCommands(ui cli.Ui) map[string]cli.CommandFactory {
 		}, nil
 	}
 
+	migrateFactory := func() (cli.Command, error) {
+		return &migrateCmd{
+			commonCmd: commonCmd{
+				ui: ui,
+			},
+		}, nil
+	}
+
 	return map[string]cli.CommandFactory{
 		"":         defaultFactory,
 		"generate": generateFactory,
 		"validate": validateFactory,
+		"migrate":  migrateFactory,
 		//"serve": serveFactory,
 	}
 }

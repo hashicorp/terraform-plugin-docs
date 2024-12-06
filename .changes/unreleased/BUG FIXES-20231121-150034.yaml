@@ -1,6 +1,0 @@
-kind: BUG FIXES
-body: 'generate: fix incorrect rendering of example and import files for providers
-  with no docs templates or with generic fallback templates.'
-time: 2023-11-21T15:00:34.216261-05:00
-custom:
-  Issue: "300"

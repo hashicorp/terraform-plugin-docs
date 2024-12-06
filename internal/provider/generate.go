@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
 
+	"github.com/hashicorp/cli"
 	"github.com/hashicorp/go-version"
 	install "github.com/hashicorp/hc-install"
 	"github.com/hashicorp/hc-install/checkpoint"
@@ -22,7 +22,6 @@ import (
 	"github.com/hashicorp/hc-install/src"
 	"github.com/hashicorp/terraform-exec/tfexec"
 	tfjson "github.com/hashicorp/terraform-json"
-	"github.com/mitchellh/cli"
 	"golang.org/x/exp/slices"
 )
 
@@ -51,6 +50,22 @@ var (
 		"d/%s.html.markdown",
 		"d/%s.html.md",
 	}
+	websiteFunctionFile                 = "functions/%s.md.tmpl"
+	websiteFunctionFallbackFile         = "functions.md.tmpl"
+	websiteFunctionFileStaticCandidates = []string{
+		"functions/%s.md",
+		"functions/%s.markdown",
+		"functions/%s.html.markdown",
+		"functions/%s.html.md",
+	}
+	websiteEphemeralResourceFile                 = "ephemeral-resources/%s.md.tmpl"
+	websiteEphemeralResourceFallbackFile         = "ephemeral-resources.md.tmpl"
+	websiteEphemeralResourceFileStaticCandidates = []string{
+		"ephemeral-resources/%s.md",
+		"ephemeral-resources/%s.markdown",
+		"ephemeral-resources/%s.html.markdown",
+		"ephemeral-resources/%s.html.md",
+	}
 	websiteProviderFile                 = "index.md.tmpl"
 	websiteProviderFileStaticCandidates = []string{
 		"index.markdown",
@@ -63,6 +78,8 @@ var (
 		"data-sources",
 		"guides",
 		"resources",
+		"functions",
+		"ephemeral-resources",
 	}
 
 	managedWebsiteFiles = []string{
@@ -328,6 +345,78 @@ func (g *generator) generateMissingDataSourceTemplate(datasourceName string) err
 	return nil
 }
 
+func (g *generator) generateMissingFunctionTemplate(functionName string) error {
+	templatePath := fmt.Sprintf(websiteFunctionFile, resourceShortName(functionName, g.providerName))
+	templatePath = filepath.Join(g.TempTemplatesDir(), templatePath)
+	if fileExists(templatePath) {
+		g.infof("function %q template exists, skipping", functionName)
+		return nil
+	}
+
+	fallbackTemplatePath := filepath.Join(g.TempTemplatesDir(), websiteFunctionFallbackFile)
+	if fileExists(fallbackTemplatePath) {
+		g.infof("function %q fallback template exists, creating template", functionName)
+		err := cp(fallbackTemplatePath, templatePath)
+		if err != nil {
+			return fmt.Errorf("unable to copy fallback template for %q: %w", functionName, err)
+		}
+		return nil
+	}
+
+	for _, candidate := range websiteFunctionFileStaticCandidates {
+		candidatePath := fmt.Sprintf(candidate, resourceShortName(functionName, g.providerName))
+		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
+		if fileExists(candidatePath) {
+			g.infof("function %q static file exists, skipping", functionName)
+			return nil
+		}
+	}
+
+	g.infof("generating new template for function %q", functionName)
+	err := writeFile(templatePath, string(defaultFunctionTemplate))
+	if err != nil {
+		return fmt.Errorf("unable to write template for %q: %w", functionName, err)
+	}
+
+	return nil
+}
+
+func (g *generator) generateMissingEphemeralResourceTemplate(resourceName string) error {
+	templatePath := fmt.Sprintf(websiteEphemeralResourceFile, resourceShortName(resourceName, g.providerName))
+	templatePath = filepath.Join(g.TempTemplatesDir(), templatePath)
+	if fileExists(templatePath) {
+		g.infof("ephemeral resource %q template exists, skipping", resourceName)
+		return nil
+	}
+
+	fallbackTemplatePath := filepath.Join(g.TempTemplatesDir(), websiteEphemeralResourceFallbackFile)
+	if fileExists(fallbackTemplatePath) {
+		g.infof("ephemeral resource %q fallback template exists, creating template", resourceName)
+		err := cp(fallbackTemplatePath, templatePath)
+		if err != nil {
+			return fmt.Errorf("unable to copy fallback template for %q: %w", resourceName, err)
+		}
+		return nil
+	}
+
+	for _, candidate := range websiteEphemeralResourceFileStaticCandidates {
+		candidatePath := fmt.Sprintf(candidate, resourceShortName(resourceName, g.providerName))
+		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
+		if fileExists(candidatePath) {
+			g.infof("ephemeral resource %q static file exists, skipping", resourceName)
+			return nil
+		}
+	}
+
+	g.infof("generating new template for %q", resourceName)
+	err := writeFile(templatePath, string(defaultResourceTemplate))
+	if err != nil {
+		return fmt.Errorf("unable to write template for %q: %w", resourceName, err)
+	}
+
+	return nil
+}
+
 func (g *generator) generateMissingProviderTemplate() error {
 	templatePath := filepath.Join(g.TempTemplatesDir(), websiteProviderFile)
 	if fileExists(templatePath) {
@@ -377,6 +466,30 @@ func (g *generator) generateMissingTemplates(providerSchema *tfjson.ProviderSche
 		}
 	}
 
+	g.infof("generating missing function content")
+	for name, signature := range providerSchema.Functions {
+		if g.ignoreDeprecated && signature.DeprecationMessage != "" {
+			continue
+		}
+
+		err := g.generateMissingFunctionTemplate(name)
+		if err != nil {
+			return fmt.Errorf("unable to generate template for function %q: %w", name, err)
+		}
+	}
+
+	g.infof("generating missing ephemeral resource content")
+	for name, schema := range providerSchema.EphemeralResourceSchemas {
+		if g.ignoreDeprecated && schema.Block.Deprecated {
+			continue
+		}
+
+		err := g.generateMissingEphemeralResourceTemplate(name)
+		if err != nil {
+			return fmt.Errorf("unable to generate template for ephemeral resource %q: %w", name, err)
+		}
+	}
+
 	g.infof("generating missing provider content")
 	err := g.generateMissingProviderTemplate()
 	if err != nil {
@@ -398,7 +511,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		// Remove subdirectories managed by tfplugindocs
 		if file.IsDir() && slices.Contains(managedWebsiteSubDirectories, file.Name()) {
 			g.infof("removing directory: %q", file.Name())
-			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+			err = os.RemoveAll(filepath.Join(g.ProviderDocsDir(), file.Name()))
 			if err != nil {
 				return fmt.Errorf("unable to remove directory %q from rendered website directory: %w", file.Name(), err)
 			}
@@ -408,7 +521,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		// Remove files managed by tfplugindocs
 		if !file.IsDir() && slices.Contains(managedWebsiteFiles, file.Name()) {
 			g.infof("removing file: %q", file.Name())
-			err = os.RemoveAll(path.Join(g.ProviderDocsDir(), file.Name()))
+			err = os.RemoveAll(filepath.Join(g.ProviderDocsDir(), file.Name()))
 			if err != nil {
 				return fmt.Errorf("unable to remove file %q from rendered website directory: %w", file.Name(), err)
 			}
@@ -420,8 +533,11 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 
 	g.infof("rendering templated website to static markdown")
 
-	err = filepath.Walk(g.websiteTmpDir, func(path string, info os.FileInfo, _ error) error {
-		if info.IsDir() {
+	err = filepath.WalkDir(g.websiteTmpDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return fmt.Errorf("unable to walk path %q: %w", path, err)
+		}
+		if d.IsDir() {
 			// skip directories
 			return nil
 		}
@@ -435,8 +551,11 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		relDir, relFile := filepath.Split(rel)
 		relDir = filepath.ToSlash(relDir)
 
-		// skip special top-level generic resource and data source templates
-		if relDir == "" && (relFile == "resources.md.tmpl" || relFile == "data-sources.md.tmpl") {
+		// skip special top-level generic resource, data source, function, and ephemeral resource templates
+		if relDir == "" && (relFile == "resources.md.tmpl" ||
+			relFile == "data-sources.md.tmpl" ||
+			relFile == "functions.md.tmpl" ||
+			relFile == "ephemeral-resources.md.tmpl") {
 			return nil
 		}
 
@@ -497,11 +616,46 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				}
 				_, err = out.WriteString(render)
 				if err != nil {
-					return fmt.Errorf("unable to write regindered string: %w", err)
+					return fmt.Errorf("unable to write rendered string: %w", err)
 				}
 				return nil
 			}
 			g.warnf("resource entitled %q, or %q does not exist", shortName, resName)
+		case "functions/":
+			funcName := removeAllExt(relFile)
+			if signature, ok := providerSchema.Functions[funcName]; ok {
+				exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "functions", funcName, "function.tf")
+
+				tmpl := functionTemplate(tmplData)
+				render, err := tmpl.Render(g.providerDir, funcName, g.providerName, g.renderedProviderName, "function", exampleFilePath, signature)
+				if err != nil {
+					return fmt.Errorf("unable to render function template %q: %w", rel, err)
+				}
+				_, err = out.WriteString(render)
+				if err != nil {
+					return fmt.Errorf("unable to write rendered string: %w", err)
+				}
+				return nil
+			}
+
+			g.warnf("function entitled %q does not exist", funcName)
+		case "ephemeral-resources/":
+			resSchema, resName := resourceSchema(providerSchema.EphemeralResourceSchemas, shortName, relFile)
+			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "ephemeral-resources", resName, "ephemeral-resource.tf")
+
+			if resSchema != nil {
+				tmpl := resourceTemplate(tmplData)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Ephemeral Resource", exampleFilePath, "", resSchema)
+				if err != nil {
+					return fmt.Errorf("unable to render ephemeral resource template %q: %w", rel, err)
+				}
+				_, err = out.WriteString(render)
+				if err != nil {
+					return fmt.Errorf("unable to write rendered string: %w", err)
+				}
+				return nil
+			}
+			g.warnf("ephemeral resource entitled %q, or %q does not exist", shortName, resName)
 		case "": // provider
 			if relFile == "index.md.tmpl" {
 				tmpl := providerTemplate(tmplData)

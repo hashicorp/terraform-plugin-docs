@@ -1,3 +1,122 @@
+## 0.20.1 (November 26, 2024)
+
+BUG FIXES:
+
+* validate: Fixed a bug that caused false positive validation errors for resource types that have the same name as the provider. ([#419](https://github.com/hashicorp/terraform-plugin-docs/issues/419))
+* generate: Fixed a bug that caused all generated resource documentation to have the same content when the provider has a resource type with the same name as the provider. ([#419](https://github.com/hashicorp/terraform-plugin-docs/issues/419))
+* generate: Fixed a bug that would return an error when a static file exists in both `templates` and `docs`, which will now be ignored. ([#421](https://github.com/hashicorp/terraform-plugin-docs/issues/421))
+
+## 0.20.0 (November 06, 2024)
+
+NOTES:
+
+* all: This Go module has been updated to Go 1.22 per the [Go support policy](https://go.dev/doc/devel/release#policy). It is recommended to review the [Go 1.22 release notes](https://go.dev/doc/go1.22) before upgrading. Any consumers building on earlier Go versions may experience errors. ([#400](https://github.com/hashicorp/terraform-plugin-docs/issues/400))
+
+FEATURES:
+
+* generate: Add support for ephemeral resources ([#415](https://github.com/hashicorp/terraform-plugin-docs/issues/415))
+* migrate: Add support for ephemeral resources ([#415](https://github.com/hashicorp/terraform-plugin-docs/issues/415))
+* validate: Add support for ephemeral resources ([#415](https://github.com/hashicorp/terraform-plugin-docs/issues/415))
+
+BUG FIXES:
+
+* validate: File extension check now runs on `index.*` files instead of just `index.md` files. ([#413](https://github.com/hashicorp/terraform-plugin-docs/issues/413))
+* validate: File extension check now specifies the correct valid extensions in the error message. ([#413](https://github.com/hashicorp/terraform-plugin-docs/issues/413))
+* validate: Front matter check now runs with the correct options on legacy index files. ([#413](https://github.com/hashicorp/terraform-plugin-docs/issues/413))
+
+## 0.19.4 (June 04, 2024)
+
+NOTES:
+
+* validate: The number of files check has been removed to match the latest Terraform Registry ingress logic ([#381](https://github.com/hashicorp/terraform-plugin-docs/issues/381))
+
+BUG FIXES:
+
+* generate: Prevented incorrect attribute paths with nested attributes that contain multiple attributes ([#380](https://github.com/hashicorp/terraform-plugin-docs/issues/380))
+
+## 0.19.3 (May 28, 2024)
+
+BUG FIXES:
+
+* validate: Fixed issue with provider name not defaulting to directory ([#376](https://github.com/hashicorp/terraform-plugin-docs/issues/376))
+
+## 0.19.2 (April 29, 2024)
+
+BUG FIXES:
+
+* migrate: Ensured idempotency of template files when command is ran multiple times ([#364](https://github.com/hashicorp/terraform-plugin-docs/issues/364))
+* generate: Prevented automatic `id` attribute behaviors under blocks ([#365](https://github.com/hashicorp/terraform-plugin-docs/issues/365))
+
+## 0.19.1 (April 22, 2024)
+
+BUG FIXES:
+
+* generate: fixed a bug where attribute titles were not being generated for nested object attributes ([#357](https://github.com/hashicorp/terraform-plugin-docs/issues/357))
+* generate: fixed a bug where the `plainmarkdown` function did not output plain URLs ([#361](https://github.com/hashicorp/terraform-plugin-docs/issues/361))
+
+## 0.19.0 (April 15, 2024)
+
+BREAKING CHANGES:
+
+* generate: the `plainmarkdown` function now removes all markdown elements/formatting to render the output as plain text ([#332](https://github.com/hashicorp/terraform-plugin-docs/issues/332))
+* schemamd: The `schemamd` package has moved to `internal/schemamd` and can no longer be imported ([#354](https://github.com/hashicorp/terraform-plugin-docs/issues/354))
+* functionmd: The `functionmd` package has moved to `internal/functionmd` and can no longer be imported ([#354](https://github.com/hashicorp/terraform-plugin-docs/issues/354))
+
+FEATURES:
+
+* validate: Added support for Provider-defined Function documentation to all checks ([#341](https://github.com/hashicorp/terraform-plugin-docs/issues/341))
+* validate: Added `InvalidDirectoriesCheck` which checks for valid provider documentation folder structure ([#341](https://github.com/hashicorp/terraform-plugin-docs/issues/341))
+* validate: Added `MixedDirectoriesCheck` which throws an error if both legacy documentation and registry documentation are found ([#341](https://github.com/hashicorp/terraform-plugin-docs/issues/341))
+* validate: Added `NumberOfFilesCheck` which checks the number of provider documentation files against the registry limit ([#341](https://github.com/hashicorp/terraform-plugin-docs/issues/341))
+* validate: Added `FileSizeCheck` which checks the provider documentation file size against the registry limit ([#341](https://github.com/hashicorp/terraform-plugin-docs/issues/341))
+* validate: Added `FileExtensionCheck` which checks for valid provider documentation file extensions ([#341](https://github.com/hashicorp/terraform-plugin-docs/issues/341))
+* validate: Added `FrontMatterCheck` which checks the YAML frontmatter of provider documentation for missing required fields or invalid fields ([#341](https://github.com/hashicorp/terraform-plugin-docs/issues/341))
+* validate: Added `FileMismatchCheck` which checks the names/number of provider documentation files against the provider schema ([#341](https://github.com/hashicorp/terraform-plugin-docs/issues/341))
+
+ENHANCEMENTS:
+
+* migrate: Added `--provider-name` flag to override the default provider name when any file names that contain provider name prefixes are removed during migration ([#349](https://github.com/hashicorp/terraform-plugin-docs/issues/349))
+
+BUG FIXES:
+
+* migrate: use relative paths (from provider directory) instead of absolute paths for migrated code templates ([#330](https://github.com/hashicorp/terraform-plugin-docs/issues/330))
+* migrate: fixed a bug where documentation files with provider name prefixes were migrated to templates directory as-is, causing `generate` to create duplicate templates ([#349](https://github.com/hashicorp/terraform-plugin-docs/issues/349))
+* generate: fixed a bug where incorrect attribute titles were being generated for certain nested schemas ([#350](https://github.com/hashicorp/terraform-plugin-docs/issues/350))
+
+## 0.18.0 (January 24, 2024)
+
+FEATURES:
+
+* generate: Add support for Provider-defined Function documentation ([#328](https://github.com/hashicorp/terraform-plugin-docs/issues/328))
+* migrate: Add support for Provider-defined Function documentation ([#328](https://github.com/hashicorp/terraform-plugin-docs/issues/328))
+
+ENHANCEMENTS:
+
+* validate: Add `functions` to list of allowed template and rendered website subdirectories ([#328](https://github.com/hashicorp/terraform-plugin-docs/issues/328))
+
+## 0.17.0 (January 17, 2024)
+
+BREAKING CHANGES:
+
+* generate: templates using `printf` with either `codefile` or `tffile` to render code examples in markdown will need to switch to using those functions directly.
+For example, switch the following template code:
+`{{printf "{{codefile \"shell\" %q}}" .ImportFile}}`
+to
+`{{codefile "shell" .ImportFile}}`  ([#300](https://github.com/hashicorp/terraform-plugin-docs/issues/300))
+
+FEATURES:
+
+* migrate: Added new `migrate` subcommand that migrates existing provider docs using the rendered website source directories (`website/docs/` or `/docs/`) to a `terraform-plugin-docs`-supported templates directory. ([#314](https://github.com/hashicorp/terraform-plugin-docs/issues/314))
+
+ENHANCEMENTS:
+
+* generate: Add `provider-schema` flag to pass in a file path to a provider schema JSON file, allowing the command to skip building the provider and calling Terraform CLI ([#299](https://github.com/hashicorp/terraform-plugin-docs/issues/299))
+
+BUG FIXES:
+
+* generate: fix `no such file or directory` error when running `generate` with no existing rendered website directory. ([#296](https://github.com/hashicorp/terraform-plugin-docs/issues/296))
+* generate: fix incorrect rendering of example and import files for providers with no docs templates or with generic fallback templates. ([#300](https://github.com/hashicorp/terraform-plugin-docs/issues/300))
+
 ## 0.16.0 (July 06, 2023)
 
 ENHANCEMENTS:

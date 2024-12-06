@@ -1,0 +1,310 @@
+{
+    "version": 0,
+    "block": {
+        "attributes": {
+            "bool_attribute": {
+                "type": "bool",
+                "description": "example bool attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "float64_attribute": {
+                "type": "number",
+                "description": "example float64 attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "id": {
+                "type": "string",
+                "description_kind": "plain",
+                "computed": true
+            },
+            "int64_attribute": {
+                "type": "number",
+                "description": "example int64 attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "list_attribute": {
+                "type": [
+                    "list",
+                    "string"
+                ],
+                "description": "example list attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "map_attribute": {
+                "type": [
+                    "map",
+                    "string"
+                ],
+                "description": "example map attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "number_attribute": {
+                "type": "number",
+                "description": "example number attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "object_attribute": {
+                "type": [
+                    "object",
+                    {
+                        "object_attribute_attribute": "string"
+                    }
+                ],
+                "description": "example object attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "object_attribute_with_nested_object_attribute": {
+                "type": [
+                    "object",
+                    {
+                        "nested_object": [
+                            "object",
+                            {
+                                "nested_object_attribute": "string"
+                            }
+                        ],
+                        "object_attribute_attribute": "string"
+                    }
+                ],
+                "description": "example object attribute with nested object attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "sensitive_bool_attribute": {
+                "type": "bool",
+                "description": "example sensitive bool attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "sensitive_float64_attribute": {
+                "type": "number",
+                "description": "example sensitive float64 attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "sensitive_int64_attribute": {
+                "type": "number",
+                "description": "example sensitive int64 attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "sensitive_list_attribute": {
+                "type": [
+                    "list",
+                    "string"
+                ],
+                "description": "example sensitive list attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "sensitive_map_attribute": {
+                "type": [
+                    "map",
+                    "string"
+                ],
+                "description": "example sensitive map attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "sensitive_number_attribute": {
+                "type": "number",
+                "description": "example sensitive number attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "sensitive_object_attribute": {
+                "type": [
+                    "object",
+                    {
+                        "object_attribute_attribute": "string"
+                    }
+                ],
+                "description": "example sensitive object attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "sensitive_set_attribute": {
+                "type": [
+                    "set",
+                    "string"
+                ],
+                "description": "example sensitive set attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "sensitive_string_attribute": {
+                "type": "string",
+                "description": "example sensitive string attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "sensitive": true
+            },
+            "set_attribute": {
+                "type": [
+                    "set",
+                    "string"
+                ],
+                "description": "example set attribute",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "string_attribute": {
+                "type": "string",
+                "description": "example string attribute",
+                "description_kind": "markdown",
+                "optional": true
+            }
+        },
+        "block_types": {
+            "list_nested_block": {
+                "nesting_mode": "list",
+                "block": {
+                    "attributes": {
+                        "list_nested_block_attribute": {
+                            "type": "string",
+                            "description": "example list nested block attribute",
+                            "description_kind": "markdown",
+                            "optional": true
+                        },
+                        "list_nested_block_attribute_with_default": {
+                            "type": "string",
+                            "description": "example list nested block attribute with default",
+                            "description_kind": "markdown",
+                            "optional": true,
+                            "computed": true
+                        }
+                    },
+                    "block_types": {
+                        "nested_list_block": {
+                            "nesting_mode": "list",
+                            "block": {
+                                "attributes": {
+                                    "nested_block_string_attribute": {
+                                        "type": "string",
+                                        "description": "example nested block string attribute",
+                                        "description_kind": "markdown",
+                                        "optional": true
+                                    }
+                                },
+                                "description_kind": "plain"
+                            }
+                        }
+                    },
+                    "description": "example list nested block",
+                    "description_kind": "markdown"
+                }
+            },
+            "list_nested_block_sensitive_nested_attribute": {
+                "nesting_mode": "list",
+                "block": {
+                    "attributes": {
+                        "list_nested_block_attribute": {
+                            "type": "string",
+                            "description": "example list nested block attribute",
+                            "description_kind": "markdown",
+                            "optional": true
+                        },
+                        "list_nested_block_sensitive_attribute": {
+                            "type": "string",
+                            "description": "example sensitive list nested block attribute",
+                            "description_kind": "markdown",
+                            "optional": true,
+                            "sensitive": true
+                        }
+                    },
+                    "description_kind": "plain"
+                }
+            },
+            "set_nested_block": {
+                "nesting_mode": "set",
+                "block": {
+                    "attributes": {
+                        "set_nested_block_attribute": {
+                            "type": "string",
+                            "description": "example set nested block attribute",
+                            "description_kind": "markdown",
+                            "optional": true
+                        }
+                    },
+                    "description": "example set nested block",
+                    "description_kind": "markdown"
+                }
+            },
+            "set_nested_block_sensitive_nested_attribute": {
+                "nesting_mode": "set",
+                "block": {
+                    "attributes": {
+                        "set_nested_block_attribute": {
+                            "type": "string",
+                            "description": "example set nested block attribute",
+                            "description_kind": "markdown",
+                            "computed": true
+                        },
+                        "set_nested_block_sensitive_attribute": {
+                            "type": "string",
+                            "description": "example sensitive set nested block attribute",
+                            "description_kind": "markdown",
+                            "computed": true,
+                            "sensitive": true
+                        }
+                    },
+                    "description": "example sensitive set nested block",
+                    "description_kind": "markdown"
+                }
+            },
+            "single_nested_block": {
+                "nesting_mode": "single",
+                "block": {
+                    "attributes": {
+                        "single_nested_block_attribute": {
+                            "type": "string",
+                            "description": "example single nested block attribute",
+                            "description_kind": "markdown",
+                            "optional": true
+                        }
+                    },
+                    "description": "example single nested block",
+                    "description_kind": "markdown"
+                }
+            },
+            "single_nested_block_sensitive_nested_attribute": {
+                "nesting_mode": "single",
+                "block": {
+                    "attributes": {
+                        "single_nested_block_attribute": {
+                            "type": "string",
+                            "description": "example single nested block attribute",
+                            "description_kind": "markdown",
+                            "optional": true
+                        },
+                        "single_nested_block_sensitive_attribute": {
+                            "type": "string",
+                            "description": "example sensitive single nested block attribute",
+                            "description_kind": "markdown",
+                            "optional": true,
+                            "sensitive": true
+                        }
+                    },
+                    "description": "example sensitive single nested block",
+                    "description_kind": "markdown"
+                }
+            }
+        },
+        "description_kind": "plain"
+    }
+}

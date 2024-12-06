@@ -5,7 +5,7 @@ The primary way users will interact with this is the `tfplugindocs` CLI tool to 
 
 ## `tfplugindocs`
 
-The `tfplugindocs` CLI has two main commands, `validate` and `generate` (`generate` is the default).
+The `tfplugindocs` CLI has three main commands, `migrate`, `validate` and `generate` (`generate` is the default).
 This tool will let you generate documentation for your provider from live example `.tf` files and markdown templates.
 It will also export schema information from the provider (using `terraform providers schema -json`),
 and sync the schema with the reference documents.
@@ -21,6 +21,29 @@ go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@latest
 ```
 
 
+> [!NOTE]
+>
+> Here is a brief `./tools/tools.go` example from https://github.com/hashicorp/terraform-provider-scaffolding-framework:
+>
+> ```go
+> //go:build tools
+>
+> package tools
+>
+> import (
+>   // Documentation generation
+>   _ "github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs"
+> )
+> ```
+>
+> Then run the following to install and verify `tfplugindocs`:
+> ```console
+> export GOBIN=$PWD/bin
+> export PATH=$GOBIN:$PATH
+> go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+> which tfplugindocs
+> ```
+
 ### Usage
 
 ```shell
@@ -30,7 +53,8 @@ Usage: tfplugindocs [--version] [--help] <command> [<args>]
 Available commands are:
                 the generate command is run by default
     generate    generates a plugin website from code, templates, and examples
-    validate    validates a plugin website for the current directory
+    migrate     migrates website files from either the legacy rendered website directory (`website/docs/r`) or the docs rendered website directory (`docs/resources`) to the tfplugindocs supported structure (`templates/`).
+    validate    validates a plugin website
        
 ```
 
@@ -44,11 +68,11 @@ Usage: tfplugindocs generate [<args>]
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
     --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources                                                             (default: "false")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory  
-    --provider-name <ARG>            provider name, as used in Terraform configurations                                                                               
+    --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)                                                                            
     --providers-schema <ARG>         path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI                                                                               
     --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)                                                              
     --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
-    --tf-version <ARG>               terraform binary version to download                                                                                             
+    --tf-version <ARG>               terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform                                                                                             
     --website-source-dir <ARG>       templates directory based on provider-dir                                                                                          (default: "templates")
     --website-temp-dir <ARG>         temporary directory (used during generation)  
 ```
@@ -59,6 +83,24 @@ Usage: tfplugindocs generate [<args>]
 $ tfplugindocs validate --help
 
 Usage: tfplugindocs validate [<args>]
+
+    --provider-dir <ARG>       relative or absolute path to the root provider code directory; this will default to the current working directory if not set                                                              
+    --provider-name <ARG>      provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix) 
+    --providers-schema <ARG>   path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI    
+    --tf-version <ARG>         terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform  
+```
+
+`migrate` command:
+
+```shell
+$ tfplugindocs migrate --help
+
+Usage: tfplugindocs migrate [<args>]
+
+    --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
+    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
+    --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
+    --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)     
 ```
 
 ### How it Works
@@ -71,7 +113,14 @@ When you run `tfplugindocs`, by default from the root directory of a provider co
 * Generate a default provider template file, if missing (**index.md**)
 * Generate resource template files, if missing
 * Generate data source template files, if missing
+* Generate function template files, if missing (Requires Terraform v1.8.0+)
+* Generate ephemeral resource template files, if missing (Requires Terraform v1.10.0+)
 * Copy all non-template files to the output website directory
+
+> [!NOTE]
+>
+> Non-template files that already exist in the output website directory will not be overwritten.
+
 * Process all the remaining templates to generate files for the output website directory
 
 For inspiration, you can look at the templates and output of the
@@ -80,6 +129,14 @@ and [`terraform-provider-tls`](https://github.com/hashicorp/terraform-provider-t
 You can browse their respective docs on the Terraform Registry,
 [here](https://registry.terraform.io/providers/hashicorp/random/latest/docs)
 and [here](https://registry.terraform.io/providers/hashicorp/tls/latest/docs).
+
+### Usage of Terraform binary
+
+If the `--providers-schema` flag is not provided, `tfplugindocs` will use the [Terraform binary](https://github.com/hashicorp/terraform) to generate the provider schema with the commands:
+- [`terraform init`](https://developer.hashicorp.com/terraform/cli/commands/init)
+- [`terraform providers schema`](https://developer.hashicorp.com/terraform/cli/commands/providers/schema)
+
+We recommend using the latest version of Terraform when using `tfplugindocs`, however, the version can be specified with the `--tf-version` flag if needed.
 
 #### About the `id` attribute
 
@@ -102,35 +159,115 @@ Otherwise, the provider developer can set an arbitrary description like this:
     // ...
 ```
 
+#### Validate subcommand
+
+The `validate` subcommand can be used to validate the provider website documentation against the [Terraform Registry's provider documentation guidelines](https://developer.hashicorp.com/terraform/registry/providers/docs) and provider documentation best practices. The current checks in the `validate` command are:
+
+| Check                     | Description                                                                                                                                                                         |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `InvalidDirectoriesCheck` | Checks for valid subdirectory structure and throws an error if an invalid Terraform Provider documentation subdirectory is found.                                                   |
+| `MixedDirectoriesCheck`   | Throws an error if both legacy documentation (`/website/docs`) and registry documentation (`/docs`) are found.                                                                      |
+| `FileSizeCheck`           | Throws an error if the documentation file is above the registry storage limit.                                                                                                      |
+| `FileExtensionCheck`      | Throws an error if the extension of the given file is not a valid registry documentation extension.                                                                                 |
+| `FrontMatterCheck`        | Checks the YAML frontmatter of documentation for missing required fields or invalid fields.                                                                                         |
+| `FileMismatchCheck`       | Throws an error if the names/number of resources/datasources/functions in the provider schema does not match the names/number of files in the corresponding documentation directory |
+
+All check errors are wrapped and returned as a single error message to stderr.
+
+#### Migrate subcommand
+
+The `migrate` subcommand can be used to migrate website files from either the legacy rendered website directory (`website/docs/r`) or the docs 
+rendered website directory (`docs/resources`) to the `tfplugindocs` supported structure (`templates/`). Markdown files in the rendered website 
+directory will be converted to `tfplugindocs` templates. The legacy `website/` directory will be removed after migration to avoid Terraform Registry 
+ingress issues.
+
+The `migrate` subcommand takes the following actions:
+1. Determines the rendered website directory based on the `--provider-dir` argument
+2. Determines the provider name based on the `--provider-name` argument
+3. Copies the contents of the rendered website directory to the `--templates-dir` folder (will create this folder if it doesn't exist)
+4. (if the rendered website is using legacy format) Renames `docs/d/` and `docs/r/` subdirectories to `data-sources/` and `resources/` respectively
+5. Renames files in the `--templates-dir` folder to remove the provider shortname prefix from the file name
+6. Change file suffixes for Markdown files to `.md.tmpl` to create website templates
+7. Extracts code blocks from website docs to create individual example files in `--examples-dir` (will create this folder if it doesn't exist)
+8. Replace extracted example code in website templates with `codefile`/`tffile` template functions referencing the example files.
+9. Copies non-template files to `--templates-dir` folder
+10. Removes the `website/` directory
+
 ### Conventional Paths
 
 The generation of missing documentation is based on a number of assumptions / conventional paths.
 
-> **NOTE:** In the following conventional paths, `<data source name>` and `<resource name>` include the provider prefix as well.
-> For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`
-
 For templates:
 
-| Path                                                      | Description                            |
-|-----------------------------------------------------------|----------------------------------------|
-| `templates/`                                              | Root of templated docs                 |
-| `templates/index.md[.tmpl]`                               | Docs index page (or template)          |
-| `templates/data-sources.md[.tmpl]`                        | Generic data source page (or template) |
-| `templates/data-sources/<data source name>.md[.tmpl]`     | Data source page (or template)         |
-| `templates/resources.md[.tmpl]`                           | Generic resource page (or template)    |
-| `templates/resources/<resource name>.md[.tmpl]`           | Resource page (or template)            |
+> **NOTE:** In the following conventional paths for templates, `<data source name>`, `<resource name>`, and `<function name>` do not include the provider prefix.
+
+| Path                                                               | Description                                   |
+|--------------------------------------------------------------------|-----------------------------------------------|
+| `templates/`                                                       | Root of templated docs                        |
+| `templates/index.md[.tmpl]`                                        | Docs index page (or template)                 |
+| `templates/data-sources.md[.tmpl]`                                 | Generic data source page (or template)        |
+| `templates/data-sources/<data source name>.md[.tmpl]`              | Data source page (or template)                |
+| `templates/ephemeral-resources.md[.tmpl]`                          | Generic ephemeral resource page (or template) |
+| `templates/ephemeral-resources/<ephemeral resource name>.md[.tmpl]` | Ephemeral resource page (or template)         |
+| `templates/functions.md[.tmpl]`                                    | Generic function page (or template)           |
+| `templates/functions/<function name>.md[.tmpl]`                    | Function page (or template)                   |
+| `templates/resources.md[.tmpl]`                                    | Generic resource page (or template)           |
+| `templates/resources/<resource name>.md[.tmpl]`                    | Resource page (or template)                   |
 
 Note: the `.tmpl` extension is necessary, for the file to be correctly handled as a template.
 
 For examples:
 
-| Path                                                      | Description                     |
-|-----------------------------------------------------------|---------------------------------|
-| `examples/`                                               | Root of examples                |
-| `examples/provider/provider.tf`                           | Provider example config         |
-| `examples/data-sources/<data source name>/data-source.tf` | Data source example config      |
-| `examples/resources/<resource name>/resource.tf`          | Resource example config         |
-| `examples/resources/<resource name>/import.sh`            | Resource example import command |
+> **NOTE:** In the following conventional paths for examples, `<data source name>` and `<resource name>` include the provider prefix as well, but the provider prefix is **NOT** included in`<function name>`.
+> For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`
+
+| Path                                                                      | Description                       |
+|---------------------------------------------------------------------------|-----------------------------------|
+| `examples/`                                                               | Root of examples                  |
+| `examples/provider/provider.tf`                                           | Provider example config           |
+| `examples/data-sources/<data source name>/data-source.tf`                 | Data source example config        |
+| `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource.tf` | Ephemeral resource example config |
+| `examples/functions/<function name>/function.tf`                          | Function example config           |
+| `examples/resources/<resource name>/resource.tf`                          | Resource example config           |
+| `examples/resources/<resource name>/import.sh`                            | Resource example import command   |
+
+#### Migration
+
+The `migrate` subcommand assumes the following conventional paths for the rendered website directory:
+
+> **NOTE:** In the following conventional paths for templates, `<data source name>`, `<resource name>`, and `<function name>` do not include the provider prefix.
+> if the `--provider-name` argument is set, the provider prefix will be removed from the file names during migration.
+
+Legacy website directory structure:
+
+| Path                                                                       | Description                 |
+|----------------------------------------------------------------------------|-----------------------------|
+| `website/`                                                                 | Root of website docs        |
+| `website/docs/guides`                                                      | Root of guides subdirectory |
+| `website/docs/index.html.markdown`                                         | Docs index page             |
+| `website/docs/d/<data source name>.html.markdown`                          | Data source page            |
+| `website/docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
+| `website/docs/functons/<function name>.html.markdown`                      | Functions page              |
+| `website/docs/r/<resource name>.html.markdown`                             | Resource page               |
+
+Docs website directory structure:
+
+| Path                                                               | Description                 |
+|--------------------------------------------------------------------|-----------------------------|
+| `docs/`                                                            | Root of website docs        |
+| `docs/guides`                                                      | Root of guides subdirectory |
+| `docs/index.html.markdown`                                         | Docs index page             |
+| `docs/data-sources/<data source name>.html.markdown`               | Data source page            |
+| `docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
+| `docs/functions/<function name>.html.markdown`                     | Function page               |
+| `docs/resources/<resource name>.html.markdown`                     | Resource page               |
+
+Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
+and `docs/resources/` subdirectories will be converted to `tfplugindocs` templates. 
+
+The `website/docs/guides/` and `docs/guides/` subdirectories will be copied as-is to the `--templates-dir` folder. 
+
+All other files in the conventional paths will be ignored.
 
 ### Templates
 
@@ -139,7 +276,7 @@ using the following data fields and functions:
 
 #### Data fields
 
-##### Provider
+##### Provider Fields
 
 |                   Field |  Type  | Description                                                                               |
 |------------------------:|:------:|-------------------------------------------------------------------------------------------|
@@ -151,7 +288,7 @@ using the following data fields and functions:
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |       `.SchemaMarkdown` | string | a Markdown formatted Provider Schema definition                                           |
 
-##### Resources / Data Source
+##### Managed Resource / Ephemeral Resource / Data Source Fields
 
 |                   Field |  Type  | Description                                                                               |
 |------------------------:|:------:|-------------------------------------------------------------------------------------------|
@@ -167,7 +304,25 @@ using the following data fields and functions:
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |       `.SchemaMarkdown` | string | a Markdown formatted Resource / Data Source Schema definition                             |
 
-#### Functions
+##### Provider-defined Function Fields
+
+|                               Field |  Type  | Description                                                                               |
+|------------------------------------:|:------:|-------------------------------------------------------------------------------------------|
+|                             `.Name` | string | Name of the function (ex. `echo`)                                                         |
+|                             `.Type` | string | Returns `Function`                                                                        |
+|                      `.Description` | string | Function description                                                                      |
+|                          `.Summary` | string | Function summary                                                                          |
+|                       `.HasExample` |  bool  | Is there an example file?                                                                 |
+|                      `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
+|                     `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
+|                `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|             `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+|        `.FunctionSignatureMarkdown` | string | a Markdown formatted Function signature                                                   |
+|        `.FunctionArgumentsMarkdown` | string | a Markdown formatted Function arguments definition                                        |
+|                      `.HasVariadic` |  bool  | Does this function have a variadic argument?                                              |
+| `.FunctionVariadicArgumentMarkdown` | string | a Markdown formatted Function variadic argument definition                                |
+
+#### Template Functions
 
 | Function        | Description                                                                                       |
 |-----------------|---------------------------------------------------------------------------------------------------|
