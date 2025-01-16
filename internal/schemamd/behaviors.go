@@ -77,7 +77,3 @@ func childBlockIsReadOnly(block *tfjson.SchemaBlockType) bool {
 
 	return true
 }
-
-func childAttributeIsWriteOnly(att *tfjson.SchemaAttribute) bool {
-	return att.WriteOnly
-}
