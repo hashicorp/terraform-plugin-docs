@@ -31,6 +31,15 @@ func TestWriteAttributeDescription(t *testing.T) {
 			},
 		},
 		{
+			"(String, Required, Write-only) This is an attribute.",
+			&tfjson.SchemaAttribute{
+				AttributeType: cty.String,
+				Required:      true,
+				Description:   "This is an attribute.",
+				WriteOnly:     true,
+			},
+		},
+		{
 			"(String, Required, Deprecated) This is an attribute.",
 			&tfjson.SchemaAttribute{
 				AttributeType: cty.String,
