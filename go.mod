@@ -4,7 +4,7 @@ go 1.22.7
 
 require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
-	github.com/bmatcuk/doublestar/v4 v4.7.1
+	github.com/bmatcuk/doublestar/v4 v4.8.0
 	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/cli v1.1.6
 	github.com/hashicorp/go-version v1.7.0
@@ -15,7 +15,7 @@ require (
 	github.com/rogpeppe/go-internal v1.13.1
 	github.com/yuin/goldmark v1.7.7
 	github.com/yuin/goldmark-meta v1.1.0
-	github.com/zclconf/go-cty v1.16.0
+	github.com/zclconf/go-cty v1.16.1
 	go.abhg.dev/goldmark/frontmatter v0.2.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 	golang.org/x/text v0.21.0
