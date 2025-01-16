@@ -45,7 +45,7 @@ type groupFilter struct {
 }
 
 var (
-	// Attributes and Blocks are in one of 3 characteristic groups:
+	// Attributes and Blocks are in one of 4 characteristic groups:
 	// * Required
 	// * Optional
 	// * Read-Only

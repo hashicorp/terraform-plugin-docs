@@ -26,6 +26,7 @@
 - `single_nested_block` (Block, Optional) example single nested block (see [below for nested schema](#nestedblock--single_nested_block))
 - `single_nested_block_sensitive_nested_attribute` (Block, Optional) example sensitive single nested block (see [below for nested schema](#nestedblock--single_nested_block_sensitive_nested_attribute))
 - `string_attribute` (String) example string attribute
+- `write_only_string_attribute` (String, Write-only) example write only string attribute
 
 ### Read-Only
 

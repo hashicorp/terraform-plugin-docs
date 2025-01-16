@@ -97,6 +97,13 @@ func WriteNestedAttributeTypeDescription(w io.Writer, att *tfjson.SchemaAttribut
 		}
 	}
 
+	if att.WriteOnly {
+		_, err := io.WriteString(w, ", Write-only")
+		if err != nil {
+			return err
+		}
+	}
+
 	_, err = io.WriteString(w, ")")
 	if err != nil {
 		return err
