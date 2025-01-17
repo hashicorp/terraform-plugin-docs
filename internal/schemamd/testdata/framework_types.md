@@ -40,6 +40,7 @@ Optional:
 
 - `list_nested_block_attribute` (String) example list nested block attribute
 - `list_nested_block_attribute_with_default` (String) example list nested block attribute with default
+- `list_nested_block_write_only_attribute` (String, Write-only) example list nested block write-only attribute
 - `nested_list_block` (Block List) (see [below for nested schema](#nestedblock--list_nested_block--nested_list_block))
 
 <a id="nestedblock--list_nested_block--nested_list_block"></a>
@@ -99,6 +100,7 @@ Optional:
 Optional:
 
 - `set_nested_block_attribute` (String) example set nested block attribute
+- `set_nested_block_write_only_attribute` (String, Write-only) example set nested block write-only attribute
 
 
 <a id="nestedblock--single_nested_block"></a>
