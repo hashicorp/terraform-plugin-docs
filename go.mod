@@ -6,7 +6,7 @@ require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
 	github.com/bmatcuk/doublestar/v4 v4.8.1
 	github.com/google/go-cmp v0.6.0
-	github.com/hashicorp/cli v1.1.6
+	github.com/hashicorp/cli v1.1.7
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/hc-install v0.9.1
 	github.com/hashicorp/terraform-exec v0.22.0
@@ -49,7 +49,7 @@ require (
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect
