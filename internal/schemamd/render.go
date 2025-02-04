@@ -92,7 +92,7 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 	nestedTypes := []nestedType{}
 	switch {
 	case att.AttributeNestedType != nil:
-		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		_, err = io.WriteString(w, " (See [below for nested schema](#"+anchorID+"))")
 		if err != nil {
 			return nil, err
 		}
@@ -106,7 +106,7 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 			group: group,
 		})
 	case att.AttributeType.IsObjectType():
-		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		_, err = io.WriteString(w, " (See [below for nested schema](#"+anchorID+"))")
 		if err != nil {
 			return nil, err
 		}
@@ -120,7 +120,7 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 			group: group,
 		})
 	case att.AttributeType.IsCollectionType() && att.AttributeType.ElementType().IsObjectType():
-		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		_, err = io.WriteString(w, " (See [below for nested schema](#"+anchorID+"))")
 		if err != nil {
 			return nil, err
 		}
@@ -166,7 +166,7 @@ func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) (
 		block:     block.Block,
 	}
 
-	_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+	_, err = io.WriteString(w, " (See [below for nested schema](#"+anchorID+"))")
 	if err != nil {
 		return nil, err
 	}
@@ -412,7 +412,7 @@ func writeObjectAttribute(w io.Writer, path []string, att cty.Type, group groupF
 	nestedTypes := []nestedType{}
 	switch {
 	case att.IsObjectType():
-		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		_, err = io.WriteString(w, " (See [below for nested schema](#"+anchorID+"))")
 		if err != nil {
 			return nil, err
 		}
@@ -426,7 +426,7 @@ func writeObjectAttribute(w io.Writer, path []string, att cty.Type, group groupF
 			group: group,
 		})
 	case att.IsCollectionType() && att.ElementType().IsObjectType():
-		_, err = io.WriteString(w, " (see [below for nested schema](#"+anchorID+"))")
+		_, err = io.WriteString(w, " (See [below for nested schema](#"+anchorID+"))")
 		if err != nil {
 			return nil, err
 		}

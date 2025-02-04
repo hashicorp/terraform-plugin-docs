@@ -66,25 +66,25 @@ example resource
 
 ### Required
 
-- `required_object_attribute` (Object) example required object attribute (see [below for nested schema](#nestedatt--required_object_attribute))
+- `required_object_attribute` (Object) example required object attribute (See [below for nested schema](#nestedatt--required_object_attribute))
 
 ### Optional
 
-- `list_nested_block_optional_id` (Block List) example list nested block with optional id attribute (see [below for nested schema](#nestedblock--list_nested_block_optional_id))
-- `list_nested_block_required_id` (Block List) example list nested block with required id attribute (see [below for nested schema](#nestedblock--list_nested_block_required_id))
-- `optional_object_attribute` (Object) example optional object attribute (see [below for nested schema](#nestedatt--optional_object_attribute))
-- `set_nested_block_optional_id` (Block Set) example set nested block with optional id attribute (see [below for nested schema](#nestedblock--set_nested_block_optional_id))
-- `set_nested_block_required_id` (Block Set) example set nested block with required id attribute (see [below for nested schema](#nestedblock--set_nested_block_required_id))
-- `single_nested_block_optional_id` (Block, Optional) example single nested block with optional id attribute (see [below for nested schema](#nestedblock--single_nested_block_optional_id))
-- `single_nested_block_required_id` (Block, Optional) example single nested block with required id attribute (see [below for nested schema](#nestedblock--single_nested_block_required_id))
+- `list_nested_block_optional_id` (Block List) example list nested block with optional id attribute (See [below for nested schema](#nestedblock--list_nested_block_optional_id))
+- `list_nested_block_required_id` (Block List) example list nested block with required id attribute (See [below for nested schema](#nestedblock--list_nested_block_required_id))
+- `optional_object_attribute` (Object) example optional object attribute (See [below for nested schema](#nestedatt--optional_object_attribute))
+- `set_nested_block_optional_id` (Block Set) example set nested block with optional id attribute (See [below for nested schema](#nestedblock--set_nested_block_optional_id))
+- `set_nested_block_required_id` (Block Set) example set nested block with required id attribute (See [below for nested schema](#nestedblock--set_nested_block_required_id))
+- `single_nested_block_optional_id` (Block, Optional) example single nested block with optional id attribute (See [below for nested schema](#nestedblock--single_nested_block_optional_id))
+- `single_nested_block_required_id` (Block, Optional) example single nested block with required id attribute (See [below for nested schema](#nestedblock--single_nested_block_required_id))
 
 ### Read-Only
 
-- `computed_object_attribute` (Object) example computed object attribute (see [below for nested schema](#nestedatt--computed_object_attribute))
+- `computed_object_attribute` (Object) example computed object attribute (See [below for nested schema](#nestedatt--computed_object_attribute))
 - `id` (String) The ID of this resource.
-- `list_nested_block_computed_id` (Block List) example list nested block with computed id attribute (see [below for nested schema](#nestedblock--list_nested_block_computed_id))
-- `set_nested_block_computed_id` (Block Set) example set nested block with computed id attribute (see [below for nested schema](#nestedblock--set_nested_block_computed_id))
-- `single_nested_block_computed_id` (Block, Read-only) example single nested block with computed id attribute (see [below for nested schema](#nestedblock--single_nested_block_computed_id))
+- `list_nested_block_computed_id` (Block List) example list nested block with computed id attribute (See [below for nested schema](#nestedblock--list_nested_block_computed_id))
+- `set_nested_block_computed_id` (Block Set) example set nested block with computed id attribute (See [below for nested schema](#nestedblock--set_nested_block_computed_id))
+- `single_nested_block_computed_id` (Block, Read-only) example single nested block with computed id attribute (See [below for nested schema](#nestedblock--single_nested_block_computed_id))
 
 <a id="nestedatt--required_object_attribute"></a>
 ### Nested Schema for `required_object_attribute`
