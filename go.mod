@@ -4,18 +4,18 @@ go 1.22.7
 
 require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
-	github.com/bmatcuk/doublestar/v4 v4.8.0
+	github.com/bmatcuk/doublestar/v4 v4.8.1
 	github.com/google/go-cmp v0.6.0
-	github.com/hashicorp/cli v1.1.6
+	github.com/hashicorp/cli v1.1.7
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/hc-install v0.9.1
-	github.com/hashicorp/terraform-exec v0.21.0
+	github.com/hashicorp/terraform-exec v0.22.0
 	github.com/hashicorp/terraform-json v0.24.0
 	github.com/mattn/go-colorable v0.1.14
 	github.com/rogpeppe/go-internal v1.13.1
 	github.com/yuin/goldmark v1.7.7
 	github.com/yuin/goldmark-meta v1.1.0
-	github.com/zclconf/go-cty v1.16.1
+	github.com/zclconf/go-cty v1.16.2
 	go.abhg.dev/goldmark/frontmatter v0.2.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 	golang.org/x/text v0.21.0
@@ -49,7 +49,7 @@ require (
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect
