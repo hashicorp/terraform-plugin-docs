@@ -163,7 +163,6 @@ func TestWriteAttributeDescription(t *testing.T) {
 			},
 		},
 	} {
-		c := c
 		t.Run(c.expected, func(t *testing.T) {
 			t.Parallel()
 

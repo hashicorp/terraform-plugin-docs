@@ -38,8 +38,6 @@ func TestFileHasResource(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -78,8 +76,6 @@ func TestFileResourceName(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			got := fileResourceNameWithProvider("test", testCase.File)
@@ -333,8 +329,6 @@ func TestFileMismatchCheck(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -381,8 +375,6 @@ func TestResourceHasFile(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -424,8 +416,6 @@ func TestFunctionHasFile(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -464,8 +454,6 @@ func TestResourceNames(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

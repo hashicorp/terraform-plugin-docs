@@ -60,7 +60,6 @@ func TestRender(t *testing.T) {
 			"testdata/deep_nested_write_only_attributes.md",
 		},
 	} {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 

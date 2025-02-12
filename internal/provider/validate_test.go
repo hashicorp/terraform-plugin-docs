@@ -183,8 +183,6 @@ func TestValidateStaticDocs_DirectoryChecks(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -409,8 +407,6 @@ func TestValidateStaticDocs_FileChecks(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -557,8 +553,6 @@ func TestValidateStaticDocs_FileMismatchCheck(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -671,8 +665,6 @@ func TestValidateLegacyWebsite_DirectoryChecks(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -905,8 +897,6 @@ func TestValidateLegacyWebsite_FileChecks(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -1053,8 +1043,6 @@ func TestValidateLegacyWebsite_FileMismatchCheck(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -1116,8 +1104,6 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
