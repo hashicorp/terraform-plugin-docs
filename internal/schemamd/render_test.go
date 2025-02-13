@@ -54,8 +54,12 @@ func TestRender(t *testing.T) {
 			"testdata/deep_nested_attributes.schema.json",
 			"testdata/deep_nested_attributes.md",
 		},
+		{
+			"deep_nested_write_only_attributes",
+			"testdata/deep_nested_write_only_attributes.schema.json",
+			"testdata/deep_nested_write_only_attributes.md",
+		},
 	} {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 

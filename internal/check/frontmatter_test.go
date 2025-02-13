@@ -141,8 +141,6 @@ subcategory: Example Subcategory
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

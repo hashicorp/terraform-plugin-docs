@@ -39,6 +39,24 @@ func TestWriteNestedAttributeTypeDescription(t *testing.T) {
 			},
 		},
 		{
+			"(Attributes, Optional, Write-only) This is an attribute.",
+			&tfjson.SchemaAttribute{
+				Description: "This is an attribute.",
+				AttributeNestedType: &tfjson.SchemaNestedAttributeType{
+					NestingMode: tfjson.SchemaNestingModeSingle,
+					Attributes: map[string]*tfjson.SchemaAttribute{
+						"foo": {
+							AttributeType: cty.String,
+							Required:      true,
+							Description:   "This is a nested attribute.",
+						},
+					},
+				},
+				Optional:  true,
+				WriteOnly: true,
+			},
+		},
+		{
 			"(Attributes List, Min: 2, Max: 3) This is an attribute.",
 			&tfjson.SchemaAttribute{
 				Description: "This is an attribute.",
@@ -91,7 +109,6 @@ func TestWriteNestedAttributeTypeDescription(t *testing.T) {
 			},
 		},
 	} {
-		c := c
 		t.Run(c.expected, func(t *testing.T) {
 			t.Parallel()
 

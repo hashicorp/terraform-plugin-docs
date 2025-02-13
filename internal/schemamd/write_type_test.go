@@ -49,7 +49,6 @@ func TestWriteType(t *testing.T) {
 			"bool": cty.Bool,
 		}))))},
 	} {
-		c := c
 		t.Run(fmt.Sprintf("%s %s", c.ty.FriendlyName(), c.expected), func(t *testing.T) {
 			t.Parallel()
 
