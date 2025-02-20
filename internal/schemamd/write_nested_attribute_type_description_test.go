@@ -39,7 +39,7 @@ func TestWriteNestedAttributeTypeDescription(t *testing.T) {
 			},
 		},
 		{
-			"(Attributes, Optional, Write-only) This is an attribute.",
+			"(Attributes, Optional, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) This is an attribute.",
 			&tfjson.SchemaAttribute{
 				Description: "This is an attribute.",
 				AttributeNestedType: &tfjson.SchemaNestedAttributeType{
