@@ -175,6 +175,13 @@
                 "description_kind": "markdown",
                 "optional": true,
                 "write_only": true
+            },
+            "required_write_only_string_attribute": {
+                "type": "string",
+                "description": "example required write-only string attribute",
+                "description_kind": "markdown",
+                "required": true,
+                "write_only": true
             }
         },
         "block_types": {

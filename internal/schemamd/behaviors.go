@@ -11,6 +11,10 @@ func childAttributeIsRequired(att *tfjson.SchemaAttribute) bool {
 	return att.Required
 }
 
+func childAttributeIsWriteOnly(att *tfjson.SchemaAttribute) bool {
+	return att.WriteOnly
+}
+
 func childBlockIsRequired(block *tfjson.SchemaBlockType) bool {
 	return block.MinItems > 0
 }
@@ -76,4 +80,21 @@ func childBlockIsReadOnly(block *tfjson.SchemaBlockType) bool {
 	}
 
 	return true
+}
+
+// childBlockContainsWriteOnly returns true for blocks that contain any write-only attributes.
+func childBlockContainsWriteOnly(block *tfjson.SchemaBlockType) bool {
+	for _, childBlock := range block.Block.NestedBlocks {
+		if childBlockContainsWriteOnly(childBlock) {
+			return true
+		}
+	}
+
+	for _, childAtt := range block.Block.Attributes {
+		if childAttributeIsWriteOnly(childAtt) {
+			return true
+		}
+	}
+
+	return false
 }
