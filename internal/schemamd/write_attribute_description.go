@@ -59,7 +59,7 @@ func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, include
 	}
 
 	if att.WriteOnly {
-		_, err := io.WriteString(w, ", Write-only")
+		_, err := io.WriteString(w, ", [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)")
 		if err != nil {
 			return err
 		}

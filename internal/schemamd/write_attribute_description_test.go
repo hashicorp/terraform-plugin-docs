@@ -31,7 +31,7 @@ func TestWriteAttributeDescription(t *testing.T) {
 			},
 		},
 		{
-			"(String, Required, Write-only) This is an attribute.",
+			"(String, Required, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) This is an attribute.",
 			&tfjson.SchemaAttribute{
 				AttributeType: cty.String,
 				Required:      true,

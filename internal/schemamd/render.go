@@ -305,6 +305,28 @@ nameLoop:
 		}
 
 		for _, name := range sortedNames {
+			if childBlock, ok := block.NestedBlocks[name]; ok {
+				if childBlockContainsWriteOnly(childBlock) {
+					_, err := io.WriteString(w,
+						"> **NOTE**: [Write-only arguments](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments) are supported in Terraform 1.11 and later.\n\n")
+					if err != nil {
+						return err
+					}
+					break
+				}
+			} else if childAtt, ok := block.Attributes[name]; ok {
+				if childAttributeIsWriteOnly(childAtt) {
+					_, err := io.WriteString(w,
+						"> **NOTE**: [Write-only arguments](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments) are supported in Terraform 1.11 and later.\n\n")
+					if err != nil {
+						return err
+					}
+					break
+				}
+			}
+		}
+
+		for _, name := range sortedNames {
 			path := make([]string, len(parents), len(parents)+1)
 			copy(path, parents)
 			path = append(path, name)

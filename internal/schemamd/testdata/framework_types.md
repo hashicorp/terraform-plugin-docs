@@ -1,6 +1,14 @@
 ## Schema
 
+### Required
+
+> **NOTE**: [Write-only arguments](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments) are supported in Terraform 1.11 and later.
+
+- `required_write_only_string_attribute` (String, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) example required write-only string attribute
+
 ### Optional
+
+> **NOTE**: [Write-only arguments](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments) are supported in Terraform 1.11 and later.
 
 - `bool_attribute` (Boolean) example bool attribute
 - `float64_attribute` (Number) example float64 attribute
@@ -26,7 +34,7 @@
 - `single_nested_block` (Block, Optional) example single nested block (see [below for nested schema](#nestedblock--single_nested_block))
 - `single_nested_block_sensitive_nested_attribute` (Block, Optional) example sensitive single nested block (see [below for nested schema](#nestedblock--single_nested_block_sensitive_nested_attribute))
 - `string_attribute` (String) example string attribute
-- `write_only_string_attribute` (String, Write-only) example write only string attribute
+- `write_only_string_attribute` (String, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) example write only string attribute
 
 ### Read-Only
 
@@ -38,9 +46,11 @@
 
 Optional:
 
+> **NOTE**: [Write-only arguments](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments) are supported in Terraform 1.11 and later.
+
 - `list_nested_block_attribute` (String) example list nested block attribute
 - `list_nested_block_attribute_with_default` (String) example list nested block attribute with default
-- `list_nested_block_write_only_attribute` (String, Write-only) example list nested block write-only attribute
+- `list_nested_block_write_only_attribute` (String, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) example list nested block write-only attribute
 - `nested_list_block` (Block List) (see [below for nested schema](#nestedblock--list_nested_block--nested_list_block))
 
 <a id="nestedblock--list_nested_block--nested_list_block"></a>
@@ -99,8 +109,10 @@ Optional:
 
 Optional:
 
+> **NOTE**: [Write-only arguments](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments) are supported in Terraform 1.11 and later.
+
 - `set_nested_block_attribute` (String) example set nested block attribute
-- `set_nested_block_write_only_attribute` (String, Write-only) example set nested block write-only attribute
+- `set_nested_block_write_only_attribute` (String, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) example set nested block write-only attribute
 
 
 <a id="nestedblock--single_nested_block"></a>
