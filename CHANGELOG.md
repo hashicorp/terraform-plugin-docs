@@ -1,3 +1,9 @@
+## 0.21.0 (February 27, 2025)
+
+FEATURES:
+
+* generate: Add support for write-only arguments ([#434](https://github.com/hashicorp/terraform-plugin-docs/issues/434))
+
 ## 0.20.1 (November 26, 2024)
 
 BUG FIXES:
