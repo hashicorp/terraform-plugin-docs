@@ -5,7 +5,7 @@ go 1.22.7
 require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
 	github.com/bmatcuk/doublestar/v4 v4.8.1
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/hashicorp/cli v1.1.7
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/hc-install v0.9.1
