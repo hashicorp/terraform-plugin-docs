@@ -1,6 +1,7 @@
 module github.com/hashicorp/terraform-plugin-docs
 
 go 1.22.7
+toolchain go1.23.7
 
 require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
@@ -18,7 +19,7 @@ require (
 	github.com/zclconf/go-cty v1.16.2
 	go.abhg.dev/goldmark/frontmatter v0.2.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
-	golang.org/x/text v0.22.0
+	golang.org/x/text v0.23.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
