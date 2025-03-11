@@ -104,7 +104,7 @@ func (check *FrontMatterCheck) Run(src []byte) error {
 
 	if allowedSubcategories := check.Options.AllowedSubcategories; len(allowedSubcategories) != 0 && frontMatter.Subcategory != nil {
 		if !slices.Contains(allowedSubcategories, *frontMatter.Subcategory) {
-			return fmt.Errorf("YAML frontmatter contains a subcategory that is not in the allowed list (%s)", *frontMatter.Subcategory)
+			return fmt.Errorf("YAML frontmatter contains a subcategory (%s) that is not in the allowed list", *frontMatter.Subcategory)
 		}
 	}
 

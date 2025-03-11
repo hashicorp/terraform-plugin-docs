@@ -263,9 +263,14 @@ func (v *validator) validateStaticDocs() error {
 		}
 
 		// Configure FrontMatterOptions based on file type
+		relativeToGuides, err := filepath.Rel(dir+"/guides", path)
+		if err != nil {
+			return fmt.Errorf("error determining relative path (%s): %w", path, err)
+		}
+
 		if removeAllExt(d.Name()) == "index" {
 			options.FrontMatter = RegistryIndexFrontMatterOptions
-		} else if _, relErr := filepath.Rel(dir+"/guides", path); relErr == nil {
+		} else if filepath.IsLocal(relativeToGuides) {
 			options.FrontMatter = RegistryGuideFrontMatterOptions
 
 			if len(v.allowedGuideSubcategories) != 0 {
