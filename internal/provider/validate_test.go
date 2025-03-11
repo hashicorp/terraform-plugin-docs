@@ -1130,14 +1130,12 @@ func TestLoadAllowedSubcategories(t *testing.T) {
 		"list": {
 			Options: ValidatorOptions{
 				AllowedGuideSubcategories:    "CategoryOne,CategoryTwo,CategoryThree",
-				AllowedIndexSubcategories:    "CategoryOne,CategoryTwo,CategoryThree",
 				AllowedResourceSubcategories: "CategoryOne,CategoryTwo,CategoryThree",
 			},
 		},
 		"file": {
 			Options: ValidatorOptions{
 				AllowedGuideSubcategoriesFile:    "testdata/allowed-subcategories.txt",
-				AllowedIndexSubcategoriesFile:    "testdata/allowed-subcategories.txt",
 				AllowedResourceSubcategoriesFile: "testdata/allowed-subcategories.txt",
 			},
 		},
@@ -1156,7 +1154,6 @@ func TestLoadAllowedSubcategories(t *testing.T) {
 
 			results := map[string][]string{
 				"guide":    v.allowedGuideSubcategories,
-				"index":    v.allowedIndexSubcategories,
 				"resource": v.allowedResourceSubcategories,
 			}
 
