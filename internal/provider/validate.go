@@ -76,8 +76,6 @@ var RegistryGuideFrontMatterOptions = &check.FrontMatterOptions{
 type ValidatorOptions struct {
 	AllowedGuideSubcategories        string
 	AllowedGuideSubcategoriesFile    string
-	AllowedIndexSubcategories        string
-	AllowedIndexSubcategoriesFile    string
 	AllowedResourceSubcategories     string
 	AllowedResourceSubcategoriesFile string
 }
@@ -92,7 +90,6 @@ type validator struct {
 	providerSchema *tfjson.ProviderSchema
 
 	allowedGuideSubcategories    []string
-	allowedIndexSubcategories    []string
 	allowedResourceSubcategories []string
 
 	logger *Logger
@@ -162,18 +159,6 @@ func (v *validator) loadAllowedSubcategories(opts ValidatorOptions) error {
 			return fmt.Errorf("error getting allowed guide subcategories: %w", err)
 		}
 		v.allowedGuideSubcategories = allowedGuideSubcategories
-	}
-
-	if o := opts.AllowedIndexSubcategories; o != "" {
-		v.allowedIndexSubcategories = strings.Split(o, ",")
-	}
-
-	if o := opts.AllowedIndexSubcategoriesFile; o != "" {
-		allowedIndexSubcategories, err := allowedSubcategoriesFile(o)
-		if err != nil {
-			return fmt.Errorf("error getting allowed index subcategories: %w", err)
-		}
-		v.allowedIndexSubcategories = allowedIndexSubcategories
 	}
 
 	if o := opts.AllowedResourceSubcategories; o != "" {
@@ -280,10 +265,6 @@ func (v *validator) validateStaticDocs() error {
 		// Configure FrontMatterOptions based on file type
 		if removeAllExt(d.Name()) == "index" {
 			options.FrontMatter = RegistryIndexFrontMatterOptions
-
-			if len(v.allowedIndexSubcategories) != 0 {
-				options.FrontMatter.AllowedSubcategories = v.allowedIndexSubcategories
-			}
 		} else if _, relErr := filepath.Rel(dir+"/guides", path); relErr == nil {
 			options.FrontMatter = RegistryGuideFrontMatterOptions
 
@@ -377,10 +358,6 @@ func (v *validator) validateLegacyWebsite() error {
 		// Configure FrontMatterOptions based on file type
 		if removeAllExt(d.Name()) == "index" {
 			options.FrontMatter = LegacyIndexFrontMatterOptions
-
-			if len(v.allowedIndexSubcategories) != 0 {
-				options.FrontMatter.AllowedSubcategories = v.allowedIndexSubcategories
-			}
 		} else {
 			options.FrontMatter = LegacyFrontMatterOptions
 
