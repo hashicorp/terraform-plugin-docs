@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/hashicorp/cli"
@@ -72,6 +73,15 @@ var RegistryGuideFrontMatterOptions = &check.FrontMatterOptions{
 	RequirePageTitle: true,
 }
 
+type ValidatorOptions struct {
+	AllowedGuideSubcategories        string
+	AllowedGuideSubcategoriesFile    string
+	AllowedIndexSubcategories        string
+	AllowedIndexSubcategoriesFile    string
+	AllowedResourceSubcategories     string
+	AllowedResourceSubcategoriesFile string
+}
+
 type validator struct {
 	providerName        string
 	providerDir         string
@@ -81,10 +91,14 @@ type validator struct {
 	tfVersion      string
 	providerSchema *tfjson.ProviderSchema
 
+	allowedGuideSubcategories    []string
+	allowedIndexSubcategories    []string
+	allowedResourceSubcategories []string
+
 	logger *Logger
 }
 
-func Validate(ui cli.Ui, providerDir, providerName, providersSchemaPath, tfversion string) error {
+func Validate(ui cli.Ui, providerDir, providerName, providersSchemaPath, tfversion string, opts ValidatorOptions) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -127,9 +141,54 @@ func Validate(ui cli.Ui, providerDir, providerName, providersSchemaPath, tfversi
 		logger: NewLogger(ui),
 	}
 
+	if err := v.loadAllowedSubcategories(opts); err != nil {
+		return fmt.Errorf("error loading allowed subcategories: %w", err)
+	}
+
 	ctx := context.Background()
 
 	return v.validate(ctx)
+}
+
+func (v *validator) loadAllowedSubcategories(opts ValidatorOptions) error {
+
+	if o := opts.AllowedGuideSubcategories; o != "" {
+		v.allowedGuideSubcategories = strings.Split(o, ",")
+	}
+
+	if o := opts.AllowedGuideSubcategoriesFile; o != "" {
+		allowedGuideSubcategories, err := allowedSubcategoriesFile(o)
+		if err != nil {
+			return fmt.Errorf("error getting allowed guide subcategories: %w", err)
+		}
+		v.allowedGuideSubcategories = allowedGuideSubcategories
+	}
+
+	if o := opts.AllowedIndexSubcategories; o != "" {
+		v.allowedIndexSubcategories = strings.Split(o, ",")
+	}
+
+	if o := opts.AllowedIndexSubcategoriesFile; o != "" {
+		allowedIndexSubcategories, err := allowedSubcategoriesFile(o)
+		if err != nil {
+			return fmt.Errorf("error getting allowed index subcategories: %w", err)
+		}
+		v.allowedIndexSubcategories = allowedIndexSubcategories
+	}
+
+	if o := opts.AllowedResourceSubcategories; o != "" {
+		v.allowedResourceSubcategories = strings.Split(o, ",")
+	}
+
+	if o := opts.AllowedResourceSubcategoriesFile; o != "" {
+		allowedResourceSubcategories, err := allowedSubcategoriesFile(o)
+		if err != nil {
+			return fmt.Errorf("error getting allowed resource subcategories: %w", err)
+		}
+		v.allowedResourceSubcategories = allowedResourceSubcategories
+	}
+
+	return nil
 }
 
 func (v *validator) validate(ctx context.Context) error {

@@ -96,11 +96,21 @@ func (cmd *validateCmd) Run(args []string) int {
 }
 
 func (cmd *validateCmd) runInternal() error {
+	opts := provider.ValidatorOptions{
+		AllowedGuideSubcategories:        cmd.flagAllowedGuideSubcategories,
+		AllowedGuideSubcategoriesFile:    cmd.flagAllowedGuideSubcategoriesFile,
+		AllowedIndexSubcategories:        cmd.flagAllowedIndexSubcategories,
+		AllowedIndexSubcategoriesFile:    cmd.flagAllowedIndexSubcategoriesFile,
+		AllowedResourceSubcategories:     cmd.flagAllowedResourceSubcategories,
+		AllowedResourceSubcategoriesFile: cmd.flagAllowedResourceSubcategoriesFile,
+	}
+
 	err := provider.Validate(cmd.ui,
 		cmd.flagProviderDir,
 		cmd.flagProviderName,
 		cmd.flagProvidersSchema,
 		cmd.tfVersion,
+		opts,
 	)
 	if err != nil {
 		return errors.Join(errors.New("validation errors found: "), err)
