@@ -1123,60 +1123,30 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 func TestLoadAllowedSubcategories(t *testing.T) {
 	t.Parallel()
 
-	subcategoryList := "CategoryOne,CategoryTwo,CategoryThree"
-	subcategoryFile := "testdata/allowed-subcategories.txt"
-
-	expectedSubcategories := []string{
-		"CategoryOne",
-		"CategoryTwo",
-		"CategoryThree",
-	}
-
 	testCases := map[string]struct {
 		Options    ValidatorOptions
 		CheckValue string
 	}{
-		"guide list": {
+		"list": {
 			Options: ValidatorOptions{
-				AllowedGuideSubcategories: subcategoryList,
+				AllowedGuideSubcategories:    "CategoryOne,CategoryTwo,CategoryThree",
+				AllowedIndexSubcategories:    "CategoryOne,CategoryTwo,CategoryThree",
+				AllowedResourceSubcategories: "CategoryOne,CategoryTwo,CategoryThree",
 			},
-			CheckValue: "guide",
 		},
-		"index list": {
+		"file": {
 			Options: ValidatorOptions{
-				AllowedIndexSubcategories: subcategoryList,
+				AllowedGuideSubcategoriesFile:    "testdata/allowed-subcategories.txt",
+				AllowedIndexSubcategoriesFile:    "testdata/allowed-subcategories.txt",
+				AllowedResourceSubcategoriesFile: "testdata/allowed-subcategories.txt",
 			},
-			CheckValue: "index",
-		},
-		"resource list": {
-			Options: ValidatorOptions{
-				AllowedResourceSubcategories: subcategoryList,
-			},
-			CheckValue: "resource",
-		},
-		"guide file": {
-			Options: ValidatorOptions{
-				AllowedGuideSubcategoriesFile: subcategoryFile,
-			},
-			CheckValue: "guide",
-		},
-		"index file": {
-			Options: ValidatorOptions{
-				AllowedIndexSubcategoriesFile: subcategoryFile,
-			},
-			CheckValue: "index",
-		},
-		"resource file": {
-			Options: ValidatorOptions{
-				AllowedResourceSubcategoriesFile: subcategoryFile,
-			},
-			CheckValue: "resource",
 		},
 	}
 
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
 			v := &validator{}
+			expected := []string{"CategoryOne", "CategoryTwo", "CategoryThree"}
 
 			got := v.loadAllowedSubcategories(testCase.Options)
 
@@ -1184,18 +1154,16 @@ func TestLoadAllowedSubcategories(t *testing.T) {
 				t.Fatalf("Unexpected error: %s", got)
 			}
 
-			var check []string
-			switch testCase.CheckValue {
-			case "guide":
-				check = v.allowedGuideSubcategories
-			case "index":
-				check = v.allowedIndexSubcategories
-			case "resource":
-				check = v.allowedResourceSubcategories
+			results := map[string][]string{
+				"guide":    v.allowedGuideSubcategories,
+				"index":    v.allowedIndexSubcategories,
+				"resource": v.allowedResourceSubcategories,
 			}
 
-			if !slices.Equal(expectedSubcategories, check) {
-				t.Fatalf("unexpected result: wanted: %v, got: %v", expectedSubcategories, check)
+			for checkName, value := range results {
+				if !slices.Equal(expected, value) {
+					t.Fatalf("unexpected result for allowed %s subcategories: wanted: %v, got: %v", checkName, expected, value)
+				}
 			}
 		})
 	}
