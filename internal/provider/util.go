@@ -4,6 +4,7 @@
 package provider
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
@@ -191,4 +192,28 @@ func newMarkdownRenderer() goldmark.Markdown {
 		goldmark.WithRenderer(mr),
 	)
 	return gm
+}
+
+func allowedSubcategoriesFile(path string) ([]string, error) {
+	log.Printf("[DEBUG] Reading Subcategories File %s", path)
+
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("error opening allowed subcategories file (%s): %w", path, err)
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	var allowedSubcategories []string
+	for scanner.Scan() {
+		allowedSubcategories = append(allowedSubcategories, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("error reading allowed subcategories file (%s): %w", path, err)
+	}
+
+	return allowedSubcategories, nil
 }

@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"io/fs"
 	"path/filepath"
+	"slices"
 	"testing"
 	"testing/fstest"
 
@@ -1114,6 +1115,87 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 
 			if match != testCase.ExpectMatch {
 				t.Errorf("expected match: %t, got match: %t", testCase.ExpectMatch, match)
+			}
+		})
+	}
+}
+
+func TestLoadAllowedSubcategories(t *testing.T) {
+	t.Parallel()
+
+	subcategoryList := "CategoryOne,CategoryTwo,CategoryThree"
+	subcategoryFile := "testdata/allowed-subcategories.txt"
+
+	expectedSubcategories := []string{
+		"CategoryOne",
+		"CategoryTwo",
+		"CategoryThree",
+	}
+
+	testCases := map[string]struct {
+		Options    ValidatorOptions
+		CheckValue string
+	}{
+		"guide list": {
+			Options: ValidatorOptions{
+				AllowedGuideSubcategories: subcategoryList,
+			},
+			CheckValue: "guide",
+		},
+		"index list": {
+			Options: ValidatorOptions{
+				AllowedIndexSubcategories: subcategoryList,
+			},
+			CheckValue: "index",
+		},
+		"resource list": {
+			Options: ValidatorOptions{
+				AllowedResourceSubcategories: subcategoryList,
+			},
+			CheckValue: "resource",
+		},
+		"guide file": {
+			Options: ValidatorOptions{
+				AllowedGuideSubcategoriesFile: subcategoryFile,
+			},
+			CheckValue: "guide",
+		},
+		"index file": {
+			Options: ValidatorOptions{
+				AllowedIndexSubcategoriesFile: subcategoryFile,
+			},
+			CheckValue: "index",
+		},
+		"resource file": {
+			Options: ValidatorOptions{
+				AllowedResourceSubcategoriesFile: subcategoryFile,
+			},
+			CheckValue: "resource",
+		},
+	}
+
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			v := &validator{}
+
+			got := v.loadAllowedSubcategories(testCase.Options)
+
+			if got != nil {
+				t.Fatalf("Unexpected error: %s", got)
+			}
+
+			var check []string
+			switch testCase.CheckValue {
+			case "guide":
+				check = v.allowedGuideSubcategories
+			case "index":
+				check = v.allowedIndexSubcategories
+			case "resource":
+				check = v.allowedResourceSubcategories
+			}
+
+			if !slices.Equal(expectedSubcategories, check) {
+				t.Fatalf("unexpected result: wanted: %v, got: %v", expectedSubcategories, check)
 			}
 		})
 	}
