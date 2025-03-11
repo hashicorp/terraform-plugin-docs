@@ -141,10 +141,6 @@ subcategory: Example Subcategory
 		"allowed subcategory option": {
 			Source: `
 ---
-description: |-
- Example description
-layout: "example"
-page_title: Example Page Title
 subcategory: Example Subcategory
 ---
 `,
@@ -156,10 +152,6 @@ subcategory: Example Subcategory
 		"disallowed subcategory option": {
 			Source: `
 ---
-description: |-
- Example description
-layout: "example"
-page_title: Example Page Title
 subcategory: Example Subcategory
 ---
 `,
