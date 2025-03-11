@@ -138,6 +138,36 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
+		"allowed subcategory option": {
+			Source: `
+---
+description: |-
+ Example description
+layout: "example"
+page_title: Example Page Title
+subcategory: Example Subcategory
+---
+`,
+			Options: &FrontMatterOptions{
+				AllowedSubcategories: []string{"Example Subcategory"},
+			},
+			ExpectError: false,
+		},
+		"disallowed subcategory option": {
+			Source: `
+---
+description: |-
+ Example description
+layout: "example"
+page_title: Example Page Title
+subcategory: Example Subcategory
+---
+`,
+			Options: &FrontMatterOptions{
+				AllowedSubcategories: []string{"Subcategory"},
+			},
+			ExpectError: true,
+		},
 	}
 
 	for name, testCase := range testCases {
