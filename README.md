@@ -165,14 +165,14 @@ Otherwise, the provider developer can set an arbitrary description like this:
 
 The `validate` subcommand can be used to validate the provider website documentation against the [Terraform Registry's provider documentation guidelines](https://developer.hashicorp.com/terraform/registry/providers/docs) and provider documentation best practices. The current checks in the `validate` command are:
 
-| Check                     | Description                                                                                                                                                                         |
-|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `InvalidDirectoriesCheck` | Checks for valid subdirectory structure and throws an error if an invalid Terraform Provider documentation subdirectory is found.                                                   |
-| `MixedDirectoriesCheck`   | Throws an error if both legacy documentation (`/website/docs`) and registry documentation (`/docs`) are found.                                                                      |
-| `FileSizeCheck`           | Throws an error if the documentation file is above the registry storage limit.                                                                                                      |
-| `FileExtensionCheck`      | Throws an error if the extension of the given file is not a valid registry documentation extension.                                                                                 |
-| `FrontMatterCheck`        | Checks the YAML frontmatter of documentation for missing required fields or invalid fields. Optionally, checks that the `subcategory` is within the specified allow list.           |
-| `FileMismatchCheck`       | Throws an error if the names/number of resources/datasources/functions in the provider schema does not match the names/number of files in the corresponding documentation directory.|
+| Check                     | Description                                                                                                                                                                          |
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `InvalidDirectoriesCheck` | Checks for valid subdirectory structure and throws an error if an invalid Terraform Provider documentation subdirectory is found.                                                    |
+| `MixedDirectoriesCheck`   | Throws an error if both legacy documentation (`/website/docs`) and registry documentation (`/docs`) are found.                                                                       |
+| `FileSizeCheck`           | Throws an error if the documentation file is above the registry storage limit.                                                                                                       |
+| `FileExtensionCheck`      | Throws an error if the extension of the given file is not a valid registry documentation extension.                                                                                  |
+| `FrontMatterCheck`        | Checks the YAML frontmatter of documentation for missing required fields or invalid fields. Optionally, checks that the `subcategory` is within the specified allow list.            |
+| `FileMismatchCheck`       | Throws an error if the names/number of resources/datasources/functions in the provider schema does not match the names/number of files in the corresponding documentation directory. |
 
 All check errors are wrapped and returned as a single error message to stderr.
 
