@@ -17,8 +17,6 @@ type validateCmd struct {
 
 	flagAllowedGuideSubcategories        string
 	flagAllowedGuideSubcategoriesFile    string
-	flagAllowedIndexSubcategories        string
-	flagAllowedIndexSubcategoriesFile    string
 	flagAllowedResourceSubcategories     string
 	flagAllowedResourceSubcategoriesFile string
 	flagProviderName                     string
