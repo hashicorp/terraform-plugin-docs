@@ -280,10 +280,22 @@ func (v *validator) validateStaticDocs() error {
 		// Configure FrontMatterOptions based on file type
 		if removeAllExt(d.Name()) == "index" {
 			options.FrontMatter = RegistryIndexFrontMatterOptions
+
+			if len(v.allowedIndexSubcategories) != 0 {
+				options.FrontMatter.AllowedSubcategories = v.allowedIndexSubcategories
+			}
 		} else if _, relErr := filepath.Rel(dir+"/guides", path); relErr == nil {
 			options.FrontMatter = RegistryGuideFrontMatterOptions
+
+			if len(v.allowedGuideSubcategories) != 0 {
+				options.FrontMatter.AllowedSubcategories = v.allowedGuideSubcategories
+			}
 		} else {
 			options.FrontMatter = RegistryFrontMatterOptions
+
+			if len(v.allowedResourceSubcategories) != 0 {
+				options.FrontMatter.AllowedSubcategories = v.allowedResourceSubcategories
+			}
 		}
 		v.logger.infof("running file checks on %s", path)
 		result = errors.Join(result, check.NewProviderFileCheck(v.providerFS, options).Run(path))
@@ -365,8 +377,16 @@ func (v *validator) validateLegacyWebsite() error {
 		// Configure FrontMatterOptions based on file type
 		if removeAllExt(d.Name()) == "index" {
 			options.FrontMatter = LegacyIndexFrontMatterOptions
+
+			if len(v.allowedIndexSubcategories) != 0 {
+				options.FrontMatter.AllowedSubcategories = v.allowedIndexSubcategories
+			}
 		} else {
 			options.FrontMatter = LegacyFrontMatterOptions
+
+			if len(v.allowedResourceSubcategories) != 0 {
+				options.FrontMatter.AllowedSubcategories = v.allowedResourceSubcategories
+			}
 		}
 		v.logger.infof("running file checks on %s", path)
 		result = errors.Join(result, check.NewProviderFileCheck(v.providerFS, options).Run(path))
