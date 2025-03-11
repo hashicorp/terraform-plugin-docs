@@ -73,8 +73,6 @@ func (cmd *validateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("validate", flag.ExitOnError)
 	fs.StringVar(&cmd.flagAllowedGuideSubcategories, "allowed-guide-subcategories", "", "Comma separated list of allowed guide frontmatter subcategories")
 	fs.StringVar(&cmd.flagAllowedGuideSubcategoriesFile, "allowed-guide-subcategories-file", "", "Path to newline separated file of allowed guide frontmatter subcategories")
-	fs.StringVar(&cmd.flagAllowedIndexSubcategories, "allowed-index-subcategories", "", "Comma separated list of allowed index frontmatter subcategories")
-	fs.StringVar(&cmd.flagAllowedIndexSubcategoriesFile, "allowed-index-subcategories-file", "", "Path to newline separated file of allowed index frontmatter subcategories")
 	fs.StringVar(&cmd.flagAllowedResourceSubcategories, "allowed-resource-subcategories", "", "Comma separated list of allowed resource frontmatter subcategories")
 	fs.StringVar(&cmd.flagAllowedResourceSubcategoriesFile, "allowed-resource-subcategories-file", "", "Path to newline separated file of allowed resource frontmatter subcategories")
 	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)")
@@ -99,8 +97,6 @@ func (cmd *validateCmd) runInternal() error {
 	opts := provider.ValidatorOptions{
 		AllowedGuideSubcategories:        cmd.flagAllowedGuideSubcategories,
 		AllowedGuideSubcategoriesFile:    cmd.flagAllowedGuideSubcategoriesFile,
-		AllowedIndexSubcategories:        cmd.flagAllowedIndexSubcategories,
-		AllowedIndexSubcategoriesFile:    cmd.flagAllowedIndexSubcategoriesFile,
 		AllowedResourceSubcategories:     cmd.flagAllowedResourceSubcategories,
 		AllowedResourceSubcategoriesFile: cmd.flagAllowedResourceSubcategoriesFile,
 	}
