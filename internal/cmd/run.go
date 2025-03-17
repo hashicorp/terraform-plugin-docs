@@ -114,9 +114,8 @@ func Run(name, version string, args []string, stdin io.Reader, stdout, stderr io
 }
 
 // Main has the required function signature for use with testscript
-func Main() int {
-
-	return Run(
+func Main() {
+	Run(
 		"tfplugindocs",
 		build.GetVersion(),
 		os.Args[1:],
