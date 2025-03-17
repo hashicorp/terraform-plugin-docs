@@ -14,7 +14,7 @@ import (
 
 func TestMain(m *testing.M) {
 	testscript.Main(m, map[string]func(){
-		"tfplugindocs": cmd.Main,
+		"tfplugindocs": cmd.TestScriptMain,
 	})
 }
 
