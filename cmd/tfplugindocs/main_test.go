@@ -13,9 +13,9 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	os.Exit(testscript.RunMain(m, map[string]func() int{
-		"tfplugindocs": cmd.Main,
-	}))
+	testscript.Main(m, map[string]func(){
+		"tfplugindocs": cmd.TestScriptMain,
+	})
 }
 
 func Test_ProviderBuild_GenerateAcceptanceTests(t *testing.T) {
