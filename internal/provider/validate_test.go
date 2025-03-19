@@ -1143,7 +1143,6 @@ func TestLoadAllowedSubcategories(t *testing.T) {
 
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			t.Parallel()
 			v := &validator{}
 			expected := []string{"CategoryOne", "CategoryTwo", "CategoryThree"}
 
