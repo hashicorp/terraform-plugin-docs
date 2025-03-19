@@ -53,7 +53,7 @@ Available commands are:
     generate    generates a plugin website from code, templates, and examples
     migrate     migrates website files from either the legacy rendered website directory (`website/docs/r`) or the docs rendered website directory (`docs/resources`) to the tfplugindocs supported structure (`templates/`).
     validate    validates a plugin website
-       
+
 ```
 
 `generate` command:
@@ -65,14 +65,14 @@ Usage: tfplugindocs generate [<args>]
 
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
     --ignore-deprecated <ARG>        don't generate documentation for deprecated resources and data-sources                                                             (default: "false")
-    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory  
-    --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)                                                                            
-    --providers-schema <ARG>         path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI                                                                               
-    --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)                                                              
+    --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
+    --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)
+    --providers-schema <ARG>         path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI
+    --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)
     --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
-    --tf-version <ARG>               terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform                                                                                             
+    --tf-version <ARG>               terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform
     --website-source-dir <ARG>       templates directory based on provider-dir                                                                                          (default: "templates")
-    --website-temp-dir <ARG>         temporary directory (used during generation)  
+    --website-temp-dir <ARG>         temporary directory (used during generation)
 ```
 
 `validate` command:
@@ -82,10 +82,14 @@ $ tfplugindocs validate --help
 
 Usage: tfplugindocs validate [<args>]
 
-    --provider-dir <ARG>       relative or absolute path to the root provider code directory; this will default to the current working directory if not set                                                              
-    --provider-name <ARG>      provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix) 
-    --providers-schema <ARG>   path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI    
-    --tf-version <ARG>         terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform  
+    --allowed-guide-subcategories <ARG>           comma separated list of allowed guide frontmatter subcategories
+    --allowed-guide-subcategories-file <ARG>      path to newline separated file of allowed guide frontmatter subcategories
+    --allowed-resource-subcategories <ARG>        comma separated list of allowed resource frontmatter subcategories
+    --allowed-resource-subcategories-file <ARG>   path to newline separated file of allowed resource frontmatter subcategories
+    --provider-dir <ARG>                          relative or absolute path to the root provider code directory; this will default to the current working directory if not set
+    --provider-name <ARG>                         provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)
+    --providers-schema <ARG>                      path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI
+    --tf-version <ARG>                            terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform
 ```
 
 `migrate` command:
@@ -98,7 +102,7 @@ Usage: tfplugindocs migrate [<args>]
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
     --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
-    --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)     
+    --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)
 ```
 
 ### How it Works
@@ -161,22 +165,22 @@ Otherwise, the provider developer can set an arbitrary description like this:
 
 The `validate` subcommand can be used to validate the provider website documentation against the [Terraform Registry's provider documentation guidelines](https://developer.hashicorp.com/terraform/registry/providers/docs) and provider documentation best practices. The current checks in the `validate` command are:
 
-| Check                     | Description                                                                                                                                                                         |
-|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `InvalidDirectoriesCheck` | Checks for valid subdirectory structure and throws an error if an invalid Terraform Provider documentation subdirectory is found.                                                   |
-| `MixedDirectoriesCheck`   | Throws an error if both legacy documentation (`/website/docs`) and registry documentation (`/docs`) are found.                                                                      |
-| `FileSizeCheck`           | Throws an error if the documentation file is above the registry storage limit.                                                                                                      |
-| `FileExtensionCheck`      | Throws an error if the extension of the given file is not a valid registry documentation extension.                                                                                 |
-| `FrontMatterCheck`        | Checks the YAML frontmatter of documentation for missing required fields or invalid fields.                                                                                         |
-| `FileMismatchCheck`       | Throws an error if the names/number of resources/datasources/functions in the provider schema does not match the names/number of files in the corresponding documentation directory |
+| Check                     | Description                                                                                                                                                                          |
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `InvalidDirectoriesCheck` | Checks for valid subdirectory structure and throws an error if an invalid Terraform Provider documentation subdirectory is found.                                                    |
+| `MixedDirectoriesCheck`   | Throws an error if both legacy documentation (`/website/docs`) and registry documentation (`/docs`) are found.                                                                       |
+| `FileSizeCheck`           | Throws an error if the documentation file is above the registry storage limit.                                                                                                       |
+| `FileExtensionCheck`      | Throws an error if the extension of the given file is not a valid registry documentation extension.                                                                                  |
+| `FrontMatterCheck`        | Checks the YAML frontmatter of documentation for missing required fields or invalid fields. Optionally, checks that the `subcategory` is within the specified allow list.            |
+| `FileMismatchCheck`       | Throws an error if the names/number of resources/datasources/functions in the provider schema does not match the names/number of files in the corresponding documentation directory. |
 
 All check errors are wrapped and returned as a single error message to stderr.
 
 #### Migrate subcommand
 
-The `migrate` subcommand can be used to migrate website files from either the legacy rendered website directory (`website/docs/r`) or the docs 
-rendered website directory (`docs/resources`) to the `tfplugindocs` supported structure (`templates/`). Markdown files in the rendered website 
-directory will be converted to `tfplugindocs` templates. The legacy `website/` directory will be removed after migration to avoid Terraform Registry 
+The `migrate` subcommand can be used to migrate website files from either the legacy rendered website directory (`website/docs/r`) or the docs
+rendered website directory (`docs/resources`) to the `tfplugindocs` supported structure (`templates/`). Markdown files in the rendered website
+directory will be converted to `tfplugindocs` templates. The legacy `website/` directory will be removed after migration to avoid Terraform Registry
 ingress issues.
 
 The `migrate` subcommand takes the following actions:
@@ -260,10 +264,10 @@ Docs website directory structure:
 | `docs/functions/<function name>.html.markdown`                     | Function page               |
 | `docs/resources/<resource name>.html.markdown`                     | Resource page               |
 
-Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`, 
-and `docs/resources/` subdirectories will be converted to `tfplugindocs` templates. 
+Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`,
+and `docs/resources/` subdirectories will be converted to `tfplugindocs` templates.
 
-The `website/docs/guides/` and `docs/guides/` subdirectories will be copied as-is to the `--templates-dir` folder. 
+The `website/docs/guides/` and `docs/guides/` subdirectories will be copied as-is to the `--templates-dir` folder.
 
 All other files in the conventional paths will be ignored.
 
@@ -356,13 +360,13 @@ This repo uses the `testscript` [package](https://pkg.go.dev/github.com/rogpeppe
 
 There are two types of acceptance tests: full provider build tests in `tfplugindocs/testdata/scripts/provider-build` and provider schema json tests in `tfplugindocs/testdata/scripts/schema-json`.
 
-Provider build tests run the default `tfplugindocs` command which builds the provider source code and runs Terraform to retrieve the schema. These tests require the full provider source code to build a valid provider binary. 
+Provider build tests run the default `tfplugindocs` command which builds the provider source code and runs Terraform to retrieve the schema. These tests require the full provider source code to build a valid provider binary.
 
-Schema json tests run the `tfplugindocs` command with the `--providers-schema=<arg>` flag to specify a provider schemas json file. This allows the test to skip the provider build and Terraform CLI call, instead using the specified file to generate docs. 
+Schema json tests run the `tfplugindocs` command with the `--providers-schema=<arg>` flag to specify a provider schemas json file. This allows the test to skip the provider build and Terraform CLI call, instead using the specified file to generate docs.
 
 You can run `make testacc` to run the full suite of acceptance tests. By default, the provider build acceptance tests will create a temporary directory in `/tmp/tftmp` for testing, but you can change this location in `cmd/tfplugindocs/main_test.go`. The schema json tests uses the `testscript` package's [default work directory](https://pkg.go.dev/github.com/rogpeppe/go-internal/testscript#Params.WorkdirRoot).
 
 The test scripts are defined in the `tfplugindocs/testdata/scripts` directory. Each script includes the test, golden files, and the provider source code or schema JSON file needed to run the test.
 
-Each script is a [text archive](https://pkg.go.dev/golang.org/x/tools/txtar). You can install the `txtar` CLI locally by running `go install golang.org/x/exp/cmd/txtar@latest` to extract the files in the test script for debugging. 
+Each script is a [text archive](https://pkg.go.dev/golang.org/x/tools/txtar). You can install the `txtar` CLI locally by running `go install golang.org/x/exp/cmd/txtar@latest` to extract the files in the test script for debugging.
 You can also use `txtar` CLI archive files into the `.txtar` format to create new tests or modify existing ones.

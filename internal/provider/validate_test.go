@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"io/fs"
 	"path/filepath"
+	"slices"
 	"testing"
 	"testing/fstest"
 
@@ -1114,6 +1115,54 @@ func TestDocumentationDirGlobPattern(t *testing.T) {
 
 			if match != testCase.ExpectMatch {
 				t.Errorf("expected match: %t, got match: %t", testCase.ExpectMatch, match)
+			}
+		})
+	}
+}
+
+func TestLoadAllowedSubcategories(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		Options    ValidatorOptions
+		CheckValue string
+	}{
+		"list": {
+			Options: ValidatorOptions{
+				AllowedGuideSubcategories:    "CategoryOne,CategoryTwo,CategoryThree",
+				AllowedResourceSubcategories: "CategoryOne,CategoryTwo,CategoryThree",
+			},
+		},
+		"file": {
+			Options: ValidatorOptions{
+				AllowedGuideSubcategoriesFile:    "testdata/allowed-subcategories.txt",
+				AllowedResourceSubcategoriesFile: "testdata/allowed-subcategories.txt",
+			},
+		},
+	}
+
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			v := &validator{}
+			expected := []string{"CategoryOne", "CategoryTwo", "CategoryThree"}
+
+			got := v.loadAllowedSubcategories(testCase.Options)
+
+			if got != nil {
+				t.Fatalf("Unexpected error: %s", got)
+			}
+
+			results := map[string][]string{
+				"guide":    v.allowedGuideSubcategories,
+				"resource": v.allowedResourceSubcategories,
+			}
+
+			for checkName, value := range results {
+				if !slices.Equal(expected, value) {
+					t.Fatalf("unexpected result for allowed %s subcategories: wanted: %v, got: %v", checkName, expected, value)
+				}
 			}
 		})
 	}

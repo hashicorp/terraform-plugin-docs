@@ -138,6 +138,28 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
+		"allowed subcategory option": {
+			Source: `
+---
+subcategory: Example Subcategory
+---
+`,
+			Options: &FrontMatterOptions{
+				AllowedSubcategories: []string{"Example Subcategory"},
+			},
+			ExpectError: false,
+		},
+		"disallowed subcategory option": {
+			Source: `
+---
+subcategory: Example Subcategory
+---
+`,
+			Options: &FrontMatterOptions{
+				AllowedSubcategories: []string{"Subcategory"},
+			},
+			ExpectError: true,
+		},
 	}
 
 	for name, testCase := range testCases {
