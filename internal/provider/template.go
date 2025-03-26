@@ -53,15 +53,17 @@ func newTemplate(providerDir, name, text string) (*template.Template, error) {
 	titleCaser := cases.Title(language.Und)
 
 	tmpl.Funcs(map[string]interface{}{
-		"codefile":      codeFile(providerDir),
-		"lower":         strings.ToLower,
-		"plainmarkdown": mdplain.PlainMarkdown,
-		"prefixlines":   tmplfuncs.PrefixLines,
-		"split":         strings.Split,
-		"tffile":        terraformCodeFile(providerDir),
-		"title":         titleCaser.String,
-		"trimspace":     strings.TrimSpace,
-		"upper":         strings.ToUpper,
+		"codefile":            codeFile(providerDir),
+		"lower":               strings.ToLower,
+		"plainmarkdown":       mdplain.PlainMarkdown,
+		"prefixlines":         tmplfuncs.PrefixLines,
+		"split":               strings.Split,
+		"tffile":              terraformCodeFile(providerDir),
+		"title":               titleCaser.String,
+		"trimspace":           strings.TrimSpace,
+		"upper":               strings.ToUpper,
+		"includefile":         tmplfuncs.IncludeFile,
+		"includefileifexists": tmplfuncs.IncludeFileIfExists,
 	})
 
 	var err error
