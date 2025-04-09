@@ -1,16 +1,11 @@
-issues:
-  max-issues-per-linter: 0
-  max-same-issues: 0
-
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
     - copyloopvar
     - durationcheck
     - errcheck
     - forcetypeassert
-    - gofmt
-    - gosimple
     - govet
     - ineffassign
     - makezero
@@ -23,7 +18,33 @@ linters:
     - unparam
     - unused
     - usetesting
-
-run:
-  # Prevent false positive timeouts in CI
-  timeout: 5m
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+  settings:
+    staticcheck:
+      checks:
+        - all
+        - '-QF1002' # "could use tagged switch" -- https://staticcheck.dev/docs/checks/#QF1002
+        - '-QF1012' # "Use fmt.Fprintf(...) instead of WriteString" -- https://staticcheck.dev/docs/checks/#QF1012
+        - '-ST1003' # example: "const autoTFVarsJson should be autoTFVarsJSON" -- https://staticcheck.dev/docs/checks/#ST1003
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
