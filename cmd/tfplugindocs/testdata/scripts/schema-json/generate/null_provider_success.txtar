@@ -209,12 +209,12 @@ class MyConvertedCode(TerraformStack):
 ### Optional
 
 - `has_computed_default` (String) If set, its literal value will be stored and returned. If not, its value defaults to `"default"`. This argument exists primarily for testing and has little practical use.
-- `inputs` (Map of String) A map of arbitrary strings that is copied into the `outputs` attribute, and accessible directly for interpolation.
+- `inputs` (Map of Strings) A map of arbitrary strings that is copied into the `outputs` attribute, and accessible directly for interpolation.
 
 ### Read-Only
 
 - `id` (String, Deprecated) This attribute is only present for some legacy compatibility issues and should not be used. It will be removed in a future version.
-- `outputs` (Map of String) After the data source is "read", a copy of the `inputs` map.
+- `outputs` (Map of Strings) After the data source is "read", a copy of the `inputs` map.
 - `random` (String) A random value. This is primarily for testing and has little practical use; prefer the [hashicorp/random provider](https://registry.terraform.io/providers/hashicorp/random) for more practical random number use-cases.
 
 
@@ -319,7 +319,7 @@ class MyConvertedCode(TerraformStack):
 
 ### Optional
 
-- `triggers` (Map of String) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
+- `triggers` (Map of Strings) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
 
 ### Read-Only
 
@@ -437,12 +437,12 @@ class MyConvertedCode extends TerraformStack {
 ### Optional
 
 - `hasComputedDefault` (String) If set, its literal value will be stored and returned. If not, its value defaults to `"default"`. This argument exists primarily for testing and has little practical use.
-- `inputs` (Map of String) A map of arbitrary strings that is copied into the `outputs` attribute, and accessible directly for interpolation.
+- `inputs` (Map of Strings) A map of arbitrary strings that is copied into the `outputs` attribute, and accessible directly for interpolation.
 
 ### Read-Only
 
 - `id` (String, Deprecated) This attribute is only present for some legacy compatibility issues and should not be used. It will be removed in a future version.
-- `outputs` (Map of String) After the data source is "read", a copy of the `inputs` map.
+- `outputs` (Map of Strings) After the data source is "read", a copy of the `inputs` map.
 - `random` (String) A random value. This is primarily for testing and has little practical use; prefer the [hashicorp/random provider](https://registry.terraform.io/providers/hashicorp/random) for more practical random number use-cases.
 
 
@@ -557,7 +557,7 @@ class MyConvertedCode extends TerraformStack {
 
 ### Optional
 
-- `triggers` (Map of String) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
+- `triggers` (Map of Strings) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
 
 ### Read-Only
 
@@ -644,12 +644,12 @@ output "all_server_ips" {
 ### Optional
 
 - `has_computed_default` (String) If set, its literal value will be stored and returned. If not, its value defaults to `"default"`. This argument exists primarily for testing and has little practical use.
-- `inputs` (Map of String) A map of arbitrary strings that is copied into the `outputs` attribute, and accessible directly for interpolation.
+- `inputs` (Map of Strings) A map of arbitrary strings that is copied into the `outputs` attribute, and accessible directly for interpolation.
 
 ### Read-Only
 
 - `id` (String, Deprecated) This attribute is only present for some legacy compatibility issues and should not be used. It will be removed in a future version.
-- `outputs` (Map of String) After the data source is "read", a copy of the `inputs` map.
+- `outputs` (Map of Strings) After the data source is "read", a copy of the `inputs` map.
 - `random` (String) A random value. This is primarily for testing and has little practical use; prefer the [hashicorp/random provider](https://registry.terraform.io/providers/hashicorp/random) for more practical random number use-cases.
 
 -- docs/index.md --
@@ -738,7 +738,7 @@ resource "null_resource" "cluster" {
 
 ### Optional
 
-- `triggers` (Map of String) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
+- `triggers` (Map of Strings) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
 
 ### Read-Only
 

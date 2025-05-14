@@ -52,6 +52,12 @@ func WriteType(w io.Writer, ty cty.Type) error {
 		if err != nil {
 			return fmt.Errorf("unable to write element type for %q: %w", ty.FriendlyName(), err)
 		}
+		if !ty.ElementType().IsCollectionType() {
+			_, err = io.WriteString(w, "s")
+			if err != nil {
+				return err
+			}
+		}
 		return nil
 	case ty.IsTupleType():
 		// TODO: write additional type info?
