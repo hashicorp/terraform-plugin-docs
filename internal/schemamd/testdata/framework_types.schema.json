@@ -168,6 +168,20 @@
                 "description": "example string attribute",
                 "description_kind": "markdown",
                 "optional": true
+            },
+            "write_only_string_attribute": {
+                "type": "string",
+                "description": "example write only string attribute",
+                "description_kind": "markdown",
+                "optional": true,
+                "write_only": true
+            },
+            "required_write_only_string_attribute": {
+                "type": "string",
+                "description": "example required write-only string attribute",
+                "description_kind": "markdown",
+                "required": true,
+                "write_only": true
             }
         },
         "block_types": {
@@ -180,6 +194,13 @@
                             "description": "example list nested block attribute",
                             "description_kind": "markdown",
                             "optional": true
+                        },
+                        "list_nested_block_write_only_attribute": {
+                            "type": "string",
+                            "description": "example list nested block write-only attribute",
+                            "description_kind": "markdown",
+                            "optional": true,
+                            "write_only": true
                         },
                         "list_nested_block_attribute_with_default": {
                             "type": "string",
@@ -239,6 +260,13 @@
                             "description": "example set nested block attribute",
                             "description_kind": "markdown",
                             "optional": true
+                        },
+                        "set_nested_block_write_only_attribute": {
+                            "type": "string",
+                            "description": "example set nested block write-only attribute",
+                            "description_kind": "markdown",
+                            "optional": true,
+                            "write_only": true
                         }
                     },
                     "description": "example set nested block",

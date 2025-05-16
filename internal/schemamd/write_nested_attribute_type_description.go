@@ -97,6 +97,13 @@ func WriteNestedAttributeTypeDescription(w io.Writer, att *tfjson.SchemaAttribut
 		}
 	}
 
+	if att.WriteOnly {
+		_, err := io.WriteString(w, ", [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)")
+		if err != nil {
+			return err
+		}
+	}
+
 	_, err = io.WriteString(w, ")")
 	if err != nil {
 		return err

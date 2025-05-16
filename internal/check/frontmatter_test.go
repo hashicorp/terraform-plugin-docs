@@ -138,11 +138,31 @@ subcategory: Example Subcategory
 			},
 			ExpectError: true,
 		},
+		"allowed subcategory option": {
+			Source: `
+---
+subcategory: Example Subcategory
+---
+`,
+			Options: &FrontMatterOptions{
+				AllowedSubcategories: []string{"Example Subcategory"},
+			},
+			ExpectError: false,
+		},
+		"disallowed subcategory option": {
+			Source: `
+---
+subcategory: Example Subcategory
+---
+`,
+			Options: &FrontMatterOptions{
+				AllowedSubcategories: []string{"Subcategory"},
+			},
+			ExpectError: true,
+		},
 	}
 
 	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

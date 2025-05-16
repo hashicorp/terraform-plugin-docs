@@ -37,7 +37,7 @@ func TestChildAttributeIsRequired(t *testing.T) {
 			false,
 		},
 	} {
-		c := c
+
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -76,7 +76,7 @@ func TestChildAttributeIsOptional(t *testing.T) {
 			true,
 		},
 	} {
-		c := c
+
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -133,7 +133,7 @@ func TestChildAttributeIsReadOnly(t *testing.T) {
 			true,
 		},
 	} {
-		c := c
+
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -189,7 +189,7 @@ func TestChildBlockIsRequired(t *testing.T) {
 			false,
 		},
 	} {
-		c := c
+
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -359,7 +359,7 @@ func TestChildBlockIsOptional(t *testing.T) {
 			true,
 		},
 	} {
-		c := c
+
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -519,7 +519,7 @@ func TestChildBlockIsReadOnly(t *testing.T) {
 			true,
 		},
 	} {
-		c := c
+
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 
