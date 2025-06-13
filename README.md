@@ -286,7 +286,7 @@ using the following data fields and functions:
 |           `.HasExample` |  bool  | Is there an example file?                                                                 |
 |          `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|    `.ProviderShortName` | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |       `.SchemaMarkdown` | string | a Markdown formatted Provider Schema definition                                           |
 
@@ -317,7 +317,7 @@ using the following data fields and functions:
 |                       `.HasExample` |  bool  | Is there an example file?                                                                 |
 |                      `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
 |                     `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|                `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|                `.ProviderShortName` | string | Short version of the rendered provider name (ex. `random`)                                |
 |             `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |        `.FunctionSignatureMarkdown` | string | a Markdown formatted Function signature                                                   |
 |        `.FunctionArgumentsMarkdown` | string | a Markdown formatted Function arguments definition                                        |
