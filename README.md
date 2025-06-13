@@ -302,7 +302,7 @@ using the following data fields and functions:
 |            `.HasImport` |  bool  | Is there an import file?                                                                  |
 |           `.ImportFile` | string | Path to the file with the command for importing the resource                              |
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|    `.ProviderShortName` | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |       `.SchemaMarkdown` | string | a Markdown formatted Resource / Data Source Schema definition                             |
 
