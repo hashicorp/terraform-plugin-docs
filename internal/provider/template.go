@@ -323,7 +323,7 @@ description: |-
 ## Arguments
 
 {{ .FunctionArgumentsMarkdown }}
-{{ if .HasVariadic -}}
+{{- if .HasVariadic }}
 {{ .FunctionVariadicArgumentMarkdown }}
 {{- end }}
 `
