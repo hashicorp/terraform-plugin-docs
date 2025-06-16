@@ -232,6 +232,7 @@ For examples:
 | `examples/functions/<function name>/function.tf`                          | Function example config           |
 | `examples/resources/<resource name>/resource.tf`                          | Resource example config           |
 | `examples/resources/<resource name>/import.sh`                            | Resource example import command   |
+| `examples/resources/<resource name>/import.tf`                            | Resource example import config    |
 
 #### Migration
 
@@ -280,31 +281,33 @@ using the following data fields and functions:
 
 ##### Provider Fields
 
-|                   Field |  Type  | Description                                                                               |
-|------------------------:|:------:|-------------------------------------------------------------------------------------------|
-|          `.Description` | string | Provider description                                                                      |
-|           `.HasExample` |  bool  | Is there an example file?                                                                 |
-|          `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
-|         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|    `.ProviderShortName` | string | Short version of the rendered provider name (ex. `random`)                                |
+| Field                   | Type   | Description                                                                               |
+|-------------------------|--------|-------------------------------------------------------------------------------------------|
+| `.Description`          | string | Provider description                                                                      |
+| `.HasExample`           | bool   | Is there an example file?                                                                 |
+| `.ExampleFile`          | string | Path to the file with the terraform configuration example                                 |
+| `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
+| `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
-|       `.SchemaMarkdown` | string | a Markdown formatted Provider Schema definition                                           |
+| `.SchemaMarkdown`       | string | a Markdown formatted Provider Schema definition                                           |
 
 ##### Managed Resource / Ephemeral Resource / Data Source Fields
 
-|                   Field |  Type  | Description                                                                               |
-|------------------------:|:------:|-------------------------------------------------------------------------------------------|
-|                 `.Name` | string | Name of the resource/data-source (ex. `tls_certificate`)                                  |
-|                 `.Type` | string | Either `Resource` or `Data Source`                                                        |
-|          `.Description` | string | Resource / Data Source description                                                        |
-|           `.HasExample` |  bool  | Is there an example file?                                                                 |
-|          `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
-|            `.HasImport` |  bool  | Is there an import file?                                                                  |
-|           `.ImportFile` | string | Path to the file with the command for importing the resource                              |
-|         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|    `.ProviderShortName` | string | Short version of the rendered provider name (ex. `random`)                                |
+| Field                   | Type   | Description                                                                               |
+|-------------------------|--------|-------------------------------------------------------------------------------------------|
+| `.Name`                 | string | Name of the resource/data-source (ex. `tls_certificate`)                                  |
+| `.Type`                 | string | Either `Resource` or `Data Source`                                                        |
+| `.Description`          | string | Resource / Data Source description                                                        |
+| `.HasExample`           | bool   | Is there an example file?                                                                 |
+| `.ExampleFile`          | string | Path to the file with the terraform configuration example                                 |
+| `.HasImport`            | bool   | Is there an import shell file? (`terraform import` shell example)                         |
+| `.ImportFile`           | string | Path to the file with the command for importing the resource                              |
+| `.HasImportConfig`      | bool   | Is there an import terraform config file? (`import` block example)                        |
+| `.ImportConfigFile`     | string | Path to the file with the Terraform configuration for importing the resource              |
+| `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
+| `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
-|       `.SchemaMarkdown` | string | a Markdown formatted Resource / Data Source Schema definition                             |
+| `.SchemaMarkdown`       | string | a Markdown formatted Resource / Data Source Schema definition                             |
 
 ##### Provider-defined Function Fields
 
