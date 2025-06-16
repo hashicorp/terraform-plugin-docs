@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 
 	"github.com/hashicorp/cli"
@@ -443,7 +444,16 @@ func (g *generator) generateMissingProviderTemplate() error {
 
 func (g *generator) generateMissingTemplates(providerSchema *tfjson.ProviderSchema) error {
 	g.infof("generating missing resource content")
-	for name, schema := range providerSchema.ResourceSchemas {
+
+	resourceKeys := make([]string, 0, len(providerSchema.ResourceSchemas))
+	for key := range providerSchema.ResourceSchemas {
+		resourceKeys = append(resourceKeys, key)
+	}
+	sort.Strings(resourceKeys)
+
+	for _, name := range resourceKeys {
+		schema := providerSchema.ResourceSchemas[name]
+
 		if g.ignoreDeprecated && schema.Block.Deprecated {
 			continue
 		}
@@ -455,7 +465,16 @@ func (g *generator) generateMissingTemplates(providerSchema *tfjson.ProviderSche
 	}
 
 	g.infof("generating missing data source content")
-	for name, schema := range providerSchema.DataSourceSchemas {
+
+	dataSourceKeys := make([]string, 0, len(providerSchema.DataSourceSchemas))
+	for key := range providerSchema.DataSourceSchemas {
+		dataSourceKeys = append(dataSourceKeys, key)
+	}
+	sort.Strings(dataSourceKeys)
+
+	for _, name := range dataSourceKeys {
+		schema := providerSchema.DataSourceSchemas[name]
+
 		if g.ignoreDeprecated && schema.Block.Deprecated {
 			continue
 		}
@@ -467,7 +486,16 @@ func (g *generator) generateMissingTemplates(providerSchema *tfjson.ProviderSche
 	}
 
 	g.infof("generating missing function content")
-	for name, signature := range providerSchema.Functions {
+
+	functionKeys := make([]string, 0, len(providerSchema.Functions))
+	for key := range providerSchema.Functions {
+		functionKeys = append(functionKeys, key)
+	}
+	sort.Strings(functionKeys)
+
+	for _, name := range functionKeys {
+		signature := providerSchema.Functions[name]
+
 		if g.ignoreDeprecated && signature.DeprecationMessage != "" {
 			continue
 		}
@@ -479,7 +507,16 @@ func (g *generator) generateMissingTemplates(providerSchema *tfjson.ProviderSche
 	}
 
 	g.infof("generating missing ephemeral resource content")
-	for name, schema := range providerSchema.EphemeralResourceSchemas {
+
+	ephemeralKeys := make([]string, 0, len(providerSchema.EphemeralResourceSchemas))
+	for key := range providerSchema.EphemeralResourceSchemas {
+		ephemeralKeys = append(ephemeralKeys, key)
+	}
+	sort.Strings(ephemeralKeys)
+
+	for _, name := range ephemeralKeys {
+		schema := providerSchema.EphemeralResourceSchemas[name]
+
 		if g.ignoreDeprecated && schema.Block.Deprecated {
 			continue
 		}
