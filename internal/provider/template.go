@@ -323,7 +323,7 @@ description: |-
 ## Arguments
 
 {{ .FunctionArgumentsMarkdown }}
-{{ if .HasVariadic -}}
+{{- if .HasVariadic }}
 {{ .FunctionVariadicArgumentMarkdown }}
 {{- end }}
 `
@@ -331,7 +331,6 @@ description: |-
 const defaultProviderTemplate providerTemplate = `---
 ` + frontmatterComment + `
 page_title: "{{.ProviderShortName}} Provider"
-subcategory: ""
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
