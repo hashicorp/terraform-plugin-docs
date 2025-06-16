@@ -150,7 +150,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 		ExampleFile: exampleFile,
 
 		ProviderName:      providerName,
-		ProviderShortName: providerShortName(providerName),
+		ProviderShortName: providerShortName(renderedProviderName),
 
 		SchemaMarkdown: schemaComment + "\n" + schemaBuffer.String(),
 
@@ -199,7 +199,7 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		ImportFile: importFile,
 
 		ProviderName:      providerName,
-		ProviderShortName: providerShortName(providerName),
+		ProviderShortName: providerShortName(renderedProviderName),
 
 		SchemaMarkdown: schemaComment + "\n" + schemaBuffer.String(),
 
@@ -257,7 +257,7 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 		ExampleFile: exampleFile,
 
 		ProviderName:      providerName,
-		ProviderShortName: providerShortName(providerName),
+		ProviderShortName: providerShortName(renderedProviderName),
 
 		FunctionSignatureMarkdown: signatureComment + "\n" + funcSig,
 		FunctionArgumentsMarkdown: argumentComment + "\n" + funcArgs,
@@ -271,7 +271,7 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 
 const defaultResourceTemplate resourceTemplate = `---
 ` + frontmatterComment + `
-page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
+page_title: "{{.Name}} {{.Type}} - {{.RenderedProviderName}}"
 subcategory: ""
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
@@ -300,7 +300,7 @@ Import is supported using the following syntax:
 
 const defaultFunctionTemplate functionTemplate = `---
 ` + frontmatterComment + `
-page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
+page_title: "{{.Name}} {{.Type}} - {{.RenderedProviderName}}"
 subcategory: ""
 description: |-
 {{ .Summary | plainmarkdown | trimspace | prefixlines "  " }}

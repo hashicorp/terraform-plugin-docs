@@ -68,7 +68,7 @@ Usage: tfplugindocs generate [<args>]
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
     --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)
     --providers-schema <ARG>         path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI
-    --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...)
+    --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...); defaults to the --provider-name
     --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
     --tf-version <ARG>               terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform
     --website-source-dir <ARG>       templates directory based on provider-dir                                                                                          (default: "templates")
@@ -286,7 +286,7 @@ using the following data fields and functions:
 |           `.HasExample` |  bool  | Is there an example file?                                                                 |
 |          `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|    `.ProviderShortName` | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |       `.SchemaMarkdown` | string | a Markdown formatted Provider Schema definition                                           |
 
@@ -302,7 +302,7 @@ using the following data fields and functions:
 |            `.HasImport` |  bool  | Is there an import file?                                                                  |
 |           `.ImportFile` | string | Path to the file with the command for importing the resource                              |
 |         `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|    `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|    `.ProviderShortName` | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |       `.SchemaMarkdown` | string | a Markdown formatted Resource / Data Source Schema definition                             |
 
@@ -317,7 +317,7 @@ using the following data fields and functions:
 |                       `.HasExample` |  bool  | Is there an example file?                                                                 |
 |                      `.ExampleFile` | string | Path to the file with the terraform configuration example                                 |
 |                     `.ProviderName` | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-|                `.ProviderShortName` | string | Short version of the provider name (ex. `random`)                                         |
+|                `.ProviderShortName` | string | Short version of the rendered provider name (ex. `random`)                                |
 |             `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 |        `.FunctionSignatureMarkdown` | string | a Markdown formatted Function signature                                                   |
 |        `.FunctionArgumentsMarkdown` | string | a Markdown formatted Function arguments definition                                        |
