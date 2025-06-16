@@ -158,7 +158,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 	})
 }
 
-func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importConfigFile, importCmdFile string, schema *tfjson.Schema) (string, error) {
+func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importIDConfigFile, importCmdFile string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -181,8 +181,8 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		HasImport  bool
 		ImportFile string
 
-		HasImportConfig  bool
-		ImportConfigFile string
+		HasImportIDConfig  bool
+		ImportIDConfigFile string
 
 		ProviderName      string
 		ProviderShortName string
@@ -201,8 +201,8 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		HasImport:  importCmdFile != "" && fileExists(importCmdFile),
 		ImportFile: importCmdFile,
 
-		HasImportConfig:  importConfigFile != "" && fileExists(importConfigFile),
-		ImportConfigFile: importConfigFile,
+		HasImportIDConfig:  importIDConfigFile != "" && fileExists(importIDConfigFile),
+		ImportIDConfigFile: importIDConfigFile,
 
 		ProviderName:      providerName,
 		ProviderShortName: providerShortName(renderedProviderName),
@@ -294,17 +294,17 @@ description: |-
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
-{{- if or .HasImport .HasImportConfig }}
+{{- if or .HasImport .HasImportIDConfig }}
 
 ## Import
 
 Import is supported using the following syntax:
 {{- end }}
-{{- if .HasImportConfig }}
+{{- if .HasImportIDConfig }}
 
 In Terraform v1.5.0 and later, the [` + "`" + `import` + "`" + ` block](https://developer.hashicorp.com/terraform/language/import) can be used, for example:
 
-{{tffile .ImportConfigFile }}
+{{tffile .ImportIDConfigFile }}
 {{- end }}
 {{- if .HasImport }}
 

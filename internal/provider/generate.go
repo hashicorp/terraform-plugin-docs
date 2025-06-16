@@ -644,11 +644,11 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
 			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "resource.tf")
 			importFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import.sh")
-			importConfigFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import.tf")
+			importIDConfigFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import-id.tf")
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Resource", exampleFilePath, importConfigFilePath, importFilePath, resSchema)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Resource", exampleFilePath, importIDConfigFilePath, importFilePath, resSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
