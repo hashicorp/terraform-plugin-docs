@@ -191,7 +191,7 @@ codefile:
 Import is supported using the following syntax:
 
 ```shell
-terraform import scaffolding_example.example
+terraform import scaffolding_example.test "id-123"
 ```
 
 tffile:
@@ -371,12 +371,12 @@ data "scaffolding_example" "example" {
 provider "scaffolding" {
   # example configuration here
 }
+-- examples/resources/scaffolding_example/import.sh --
+terraform import scaffolding_example.test "id-123"
 -- examples/resources/scaffolding_example/resource.tf --
 resource "scaffolding_example" "example" {
   configurable_attribute = "some-value"
 }
--- examples/resources/scaffolding_example/import.sh --
-terraform import scaffolding_example.example
 -- internal/provider/example_data_source.go --
 // Copyright (c) HashiCorp, Inc.
 // SPDX-License-Identifier: MPL-2.0
