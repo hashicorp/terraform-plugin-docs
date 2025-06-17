@@ -127,10 +127,23 @@ resource "scaffolding_example" "example" {
 
 Import is supported using the following syntax:
 
+In Terraform v1.5.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/import) can be used with the `id` attribute, for example:
+
+```terraform
+import {
+  to = scaffolding_example.example
+  id = "id-123"
+}
+
+resource "scaffolding_example" "example" {
+  configurable_attribute = "some-value"
+}
+```
+
 The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
 
 ```shell
-terraform import scaffolding_example.test "id-123"
+terraform import scaffolding_example.example "id-123"
 ```
 -- examples/README.md --
 # Examples
@@ -150,8 +163,17 @@ data "scaffolding_example" "example" {
 provider "scaffolding" {
   # example configuration here
 }
+-- examples/resources/scaffolding_example/import-id.tf --
+import {
+  to = scaffolding_example.example
+  id = "id-123"
+}
+
+resource "scaffolding_example" "example" {
+  configurable_attribute = "some-value"
+}
 -- examples/resources/scaffolding_example/import.sh --
-terraform import scaffolding_example.test "id-123"
+terraform import scaffolding_example.example "id-123"
 -- examples/resources/scaffolding_example/resource.tf --
 resource "scaffolding_example" "example" {
   configurable_attribute = "some-value"
