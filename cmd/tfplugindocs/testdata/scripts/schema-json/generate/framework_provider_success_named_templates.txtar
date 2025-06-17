@@ -192,6 +192,8 @@ HasExample: true
 ExampleFile: $WORK/examples/resources/scaffolding_example/resource.tf
 HasImport: true
 ImportFile: $WORK/examples/resources/scaffolding_example/import.sh
+HasImportIDConfig: true
+ImportIDConfigFile: $WORK/examples/resources/scaffolding_example/import-id.tf
 ProviderName: terraform-provider-scaffolding
 ProviderShortName: Scaffolding
 RenderedProviderName: Scaffolding
@@ -239,7 +241,7 @@ codefile:
 Import is supported using the following syntax:
 
 ```shell
-terraform import scaffolding_example.example
+terraform import scaffolding_example.example "id-123"
 ```
 
 tffile:
@@ -452,6 +454,8 @@ HasExample: {{.HasExample}}
 ExampleFile: {{.ExampleFile}}
 HasImport: {{.HasImport}}
 ImportFile: {{.ImportFile}}
+HasImportIDConfig: {{.HasImportIDConfig}}
+ImportIDConfigFile: {{.ImportIDConfigFile}}
 ProviderName: {{.ProviderName}}
 ProviderShortName: {{.ProviderShortName}}
 RenderedProviderName: {{.RenderedProviderName}}
@@ -587,8 +591,17 @@ resource "scaffolding_example" "example" {
 resource "scaffolding_example" "example" {
   configurable_attribute = "some-value"
 }
+-- examples/resources/scaffolding_example/import-id.tf --
+import {
+  to = scaffolding_example.example
+  id = "id-123"
+}
+
+resource "scaffolding_example" "example" {
+  configurable_attribute = "some-value"
+}
 -- examples/resources/scaffolding_example/import.sh --
-terraform import scaffolding_example.example
+terraform import scaffolding_example.example "id-123"
 -- schema.json --
 {
     "format_version": "1.0",

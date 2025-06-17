@@ -93,7 +93,7 @@ provider "scaffolding" {
 		},
 	}
 
-	result, err := tpl.Render("testdata/test-provider-dir", "testTemplate", "test-provider", "test-provider", "Resource", "provider.tf", "provider.tf", &schema)
+	result, err := tpl.Render("testdata/test-provider-dir", "testTemplate", "test-provider", "test-provider", "Resource", "provider.tf", "", "", &schema)
 	if err != nil {
 		t.Error(err)
 	}
