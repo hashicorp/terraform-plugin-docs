@@ -629,7 +629,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Data Source", exampleFilePath, "", "", resSchema)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Data Source", exampleFilePath, "", "", "", resSchema, nil)
 				if err != nil {
 					return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 				}
@@ -642,13 +642,15 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 			g.warnf("data source entitled %q, or %q does not exist", shortName, resName)
 		case "resources/":
 			resSchema, resName := resourceSchema(providerSchema.ResourceSchemas, shortName, relFile)
+			resIdentitySchema := resourceIdentitySchema(providerSchema.ResourceIdentitySchemas, shortName, relFile)
 			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "resource.tf")
 			importFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import.sh")
 			importIDConfigFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import-id.tf")
+			importIdentityConfigFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import-identity.tf")
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Resource", exampleFilePath, importIDConfigFilePath, importFilePath, resSchema)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Resource", exampleFilePath, importIDConfigFilePath, importIdentityConfigFilePath, importFilePath, resSchema, resIdentitySchema)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
@@ -683,7 +685,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Ephemeral Resource", exampleFilePath, "", "", resSchema)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Ephemeral Resource", exampleFilePath, "", "", "", resSchema, nil)
 				if err != nil {
 					return fmt.Errorf("unable to render ephemeral resource template %q: %w", rel, err)
 				}
