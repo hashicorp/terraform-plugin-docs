@@ -52,6 +52,8 @@ These are the elements outlined in John Gruber’s original design document. All
 
 Plain URL: https://www.markdownguide.org
 
+[`Code Link`](https://www.markdownguide.org)
+
 ### Image
 
 ![alt text](https://www.markdownguide.org/assets/images/tux.png)
