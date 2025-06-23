@@ -56,11 +56,9 @@ func (r *TextRender) Render(w io.Writer, source []byte, n ast.Node) error {
 			// we want to write the text of the
 			// link before the url
 			child := node.FirstChild()
-			if child != nil {
-				t, ok := child.(*ast.Text)
-				if ok {
-					out.Write(t.Value(source))
-				}
+			err := r.renderText(source, out, child)
+			if err != nil {
+				return ast.WalkStop, err
 			}
 
 			if !isRelativeLink(node.Destination) {
@@ -85,6 +83,32 @@ func (r *TextRender) Render(w io.Writer, source []byte, n ast.Node) error {
 		return err
 	}
 	_, err = w.Write(out.Bytes())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// renderText writes any encountered ast.Text node value to the buffer,
+// ignoring all other node types. This is intended to be a rough replacement
+// of the deprecated (*BaseNode).Text() method in the yuin/goldmark library.
+func (r *TextRender) renderText(source []byte, out *bytes.Buffer, n ast.Node) error {
+	err := ast.Walk(n, func(node ast.Node, entering bool) (ast.WalkStatus, error) {
+		if !entering || node.Type() == ast.TypeDocument {
+			return ast.WalkContinue, nil
+		}
+
+		switch node := node.(type) {
+		case *ast.Text:
+			out.Write(node.Value(source))
+			if node.SoftLineBreak() {
+				doubleSpace(out)
+			}
+			return ast.WalkContinue, nil
+
+		}
+		return ast.WalkContinue, nil
+	})
 	if err != nil {
 		return err
 	}
