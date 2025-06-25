@@ -196,8 +196,17 @@ resource "scaffolding_example" "example" {
 resource "scaffolding_example" "example" {
   configurable_attribute = "some-value"
 }
+-- examples/resources/scaffolding_example/import-by-string-id.tf --
+import {
+  to = scaffolding_example.example
+  id = "id-123"
+}
+
+resource "scaffolding_example" "example" {
+  configurable_attribute = "some-value"
+}
 -- examples/resources/scaffolding_example/import.sh --
-terraform import scaffolding_example.example
+terraform import scaffolding_example.example "id-123"
 -- schema.json --
 {
     "format_version": "1.0",
