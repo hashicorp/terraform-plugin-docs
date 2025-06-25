@@ -172,15 +172,21 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 
 	hasImportIdentityConfig := importIdentityConfigFile != "" && fileExists(importIdentityConfigFile)
 	identitySchemaBuffer := bytes.NewBuffer(nil)
-	if hasImportIdentityConfig {
-		if identitySchema == nil {
-			return "", fmt.Errorf("unable to render: an identity import example (%q) was provided for a resource (%q) that does not support resource identity", importIdentityConfigFile, name)
+
+	// Always render the identity schema if we have one, so it can be used in custom templates.
+	if identitySchema != nil {
+		_, err := io.WriteString(identitySchemaBuffer, schemaComment+"\n")
+		if err != nil {
+			return "", fmt.Errorf("unable to render identity schema comment: %w", err)
 		}
 
-		err := schemamd.RenderIdentitySchema(identitySchema, identitySchemaBuffer)
+		err = schemamd.RenderIdentitySchema(identitySchema, identitySchemaBuffer)
 		if err != nil {
 			return "", fmt.Errorf("unable to render identity schema: %w", err)
 		}
+	} else if hasImportIdentityConfig {
+		// If there is an identity example, but we don't have an identity schema, we should return an error to ensure the example file was intended.
+		return "", fmt.Errorf("unable to render: an identity import example (%q) was provided for a resource (%q) that does not support resource identity", importIdentityConfigFile, name)
 	}
 
 	return renderStringTemplate(providerDir, "resourceTemplate", s, struct {
@@ -223,7 +229,7 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 
 		HasImportIdentityConfig:  hasImportIdentityConfig,
 		ImportIdentityConfigFile: importIdentityConfigFile,
-		IdentitySchemaMarkdown:   schemaComment + "\n" + identitySchemaBuffer.String(),
+		IdentitySchemaMarkdown:   identitySchemaBuffer.String(),
 
 		ProviderName:      providerName,
 		ProviderShortName: providerShortName(renderedProviderName),
