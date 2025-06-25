@@ -305,7 +305,7 @@ import {
 resource "scaffolding_example" "example" {
   configurable_attribute = "some-value"
 }
--- examples/resources/scaffolding_example/import-identity.tf --
+-- examples/resources/scaffolding_example/import-by-identity.tf --
 import {
   to = scaffolding_example.example
   identity = {
