@@ -193,7 +193,7 @@ ExampleFile: $WORK/examples/resources/scaffolding_example/resource.tf
 HasImport: true
 ImportFile: $WORK/examples/resources/scaffolding_example/import.sh
 HasImportIDConfig: true
-ImportIDConfigFile: $WORK/examples/resources/scaffolding_example/import-id.tf
+ImportIDConfigFile: $WORK/examples/resources/scaffolding_example/import-by-string-id.tf
 ProviderName: terraform-provider-scaffolding
 ProviderShortName: Scaffolding
 RenderedProviderName: Scaffolding
@@ -591,7 +591,7 @@ resource "scaffolding_example" "example" {
 resource "scaffolding_example" "example" {
   configurable_attribute = "some-value"
 }
--- examples/resources/scaffolding_example/import-id.tf --
+-- examples/resources/scaffolding_example/import-by-string-id.tf --
 import {
   to = scaffolding_example.example
   id = "id-123"

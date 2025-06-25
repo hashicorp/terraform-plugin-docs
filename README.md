@@ -232,7 +232,7 @@ For examples:
 | `examples/functions/<function name>/function.tf`                          | Function example config              |
 | `examples/resources/<resource name>/resource.tf`                          | Resource example config              |
 | `examples/resources/<resource name>/import.sh`                            | Resource example import command      |
-| `examples/resources/<resource name>/import-id.tf`                         | Resource example import by id config |
+| `examples/resources/<resource name>/import-by-string-id.tf`               | Resource example import by id config |
 
 #### Migration
 
