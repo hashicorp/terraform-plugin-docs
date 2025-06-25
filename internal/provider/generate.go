@@ -645,7 +645,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 			resIdentitySchema := resourceIdentitySchema(providerSchema.ResourceIdentitySchemas, shortName, relFile)
 			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "resource.tf")
 			importFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import.sh")
-			importIDConfigFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import-id.tf")
+			importIDConfigFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import-by-string-id.tf")
 			importIdentityConfigFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import-identity.tf")
 
 			if resSchema != nil {
