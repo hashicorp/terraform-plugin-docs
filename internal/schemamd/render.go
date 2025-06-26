@@ -81,7 +81,7 @@ func writeIdentitySchemaAttributes(w io.Writer, attrs map[string]*tfjson.Identit
 		requiredAttr := attrs[name]
 		// Write the header
 		if i == 0 {
-			_, err := io.WriteString(w, "#### Required for Import\n\n")
+			_, err := io.WriteString(w, "#### Required\n\n")
 			if err != nil {
 				return err
 			}
@@ -102,7 +102,7 @@ func writeIdentitySchemaAttributes(w io.Writer, attrs map[string]*tfjson.Identit
 		optionalAttr := attrs[name]
 		// Write the header
 		if i == 0 {
-			_, err := io.WriteString(w, "#### Optional for Import\n\n")
+			_, err := io.WriteString(w, "#### Optional\n\n")
 			if err != nil {
 				return err
 			}
