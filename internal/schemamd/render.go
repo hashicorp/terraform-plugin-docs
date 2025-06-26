@@ -79,7 +79,6 @@ func writeIdentitySchemaAttributes(w io.Writer, attrs map[string]*tfjson.Identit
 
 	for i, name := range requiredForImportNames {
 		requiredAttr := attrs[name]
-		// Write the header
 		if i == 0 {
 			_, err := io.WriteString(w, "#### Required\n\n")
 			if err != nil {
@@ -100,7 +99,6 @@ func writeIdentitySchemaAttributes(w io.Writer, attrs map[string]*tfjson.Identit
 
 	for i, name := range optionalForImportNames {
 		optionalAttr := attrs[name]
-		// Write the header
 		if i == 0 {
 			_, err := io.WriteString(w, "#### Optional\n\n")
 			if err != nil {
@@ -117,7 +115,6 @@ func writeIdentitySchemaAttributes(w io.Writer, attrs map[string]*tfjson.Identit
 	return nil
 }
 
-// TODO: I think this is enough, no need for nested types of anything complicated because the schema is simple.
 func writeIdentityAttribute(w io.Writer, name string, attr *tfjson.IdentityAttribute) error {
 	_, err := io.WriteString(w, "- `"+name+"` ")
 	if err != nil {
