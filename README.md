@@ -223,16 +223,17 @@ For examples:
 > **NOTE:** In the following conventional paths for examples, `<data source name>` and `<resource name>` include the provider prefix as well, but the provider prefix is **NOT** included in`<function name>`.
 > For example, the data source [`caller_identity`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) in the `aws` provider would have an "example" conventional path of: `examples/data-sources/aws_caller_identity/data-source.tf`
 
-| Path                                                                      | Description                          |
-|---------------------------------------------------------------------------|--------------------------------------|
-| `examples/`                                                               | Root of examples                     |
-| `examples/provider/provider.tf`                                           | Provider example config              |
-| `examples/data-sources/<data source name>/data-source.tf`                 | Data source example config           |
-| `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource.tf` | Ephemeral resource example config    |
-| `examples/functions/<function name>/function.tf`                          | Function example config              |
-| `examples/resources/<resource name>/resource.tf`                          | Resource example config              |
-| `examples/resources/<resource name>/import.sh`                            | Resource example import command      |
-| `examples/resources/<resource name>/import-by-string-id.tf`               | Resource example import by id config |
+| Path                                                                      | Description                                |
+|---------------------------------------------------------------------------|--------------------------------------------|
+| `examples/`                                                               | Root of examples                           |
+| `examples/provider/provider.tf`                                           | Provider example config                    |
+| `examples/data-sources/<data source name>/data-source.tf`                 | Data source example config                 |
+| `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource.tf` | Ephemeral resource example config          |
+| `examples/functions/<function name>/function.tf`                          | Function example config                    |
+| `examples/resources/<resource name>/resource.tf`                          | Resource example config                    |
+| `examples/resources/<resource name>/import.sh`                            | Resource example import command            |
+| `examples/resources/<resource name>/import-by-string-id.tf`               | Resource example import by id config       |
+| `examples/resources/<resource name>/import-by-identity.tf`                | Resource example import by identity config |
 
 #### Migration
 
@@ -293,21 +294,24 @@ using the following data fields and functions:
 
 ##### Managed Resource / Ephemeral Resource / Data Source Fields
 
-| Field                   | Type   | Description                                                                               |
-|-------------------------|--------|-------------------------------------------------------------------------------------------|
-| `.Name`                 | string | Name of the resource/data-source (ex. `tls_certificate`)                                  |
-| `.Type`                 | string | Either `Resource` or `Data Source`                                                        |
-| `.Description`          | string | Resource / Data Source description                                                        |
-| `.HasExample`           | bool   | Is there an example file?                                                                 |
-| `.ExampleFile`          | string | Path to the file with the terraform configuration example                                 |
-| `.HasImport`            | bool   | Is there an import shell file? (`terraform import` shell example)                         |
-| `.ImportFile`           | string | Path to the file with the command for importing the resource                              |
-| `.HasImportIDConfig`    | bool   | Is there an import terraform config file? (`import` block example with `id`)              |
-| `.ImportIDConfigFile`   | string | Path to the file with the Terraform configuration for importing the resource by `id`      |
-| `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-| `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                |
-| `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
-| `.SchemaMarkdown`       | string | a Markdown formatted Resource / Data Source Schema definition                             |
+| Field                       | Type   | Description                                                                                |
+|-----------------------------|--------|--------------------------------------------------------------------------------------------|
+| `.Name`                     | string | Name of the resource/data-source (ex. `tls_certificate`)                                   |
+| `.Type`                     | string | Either `Resource` or `Data Source`                                                         |
+| `.Description`              | string | Resource / Data Source description                                                         |
+| `.HasExample`               | bool   | Is there an example file?                                                                  |
+| `.ExampleFile`              | string | Path to the file with the terraform configuration example                                  |
+| `.HasImport`                | bool   | Is there an import shell file? (`terraform import` shell example)                          |
+| `.ImportFile`               | string | Path to the file with the command for importing the resource                               |
+| `.HasImportIDConfig`        | bool   | Is there an import terraform config file? (`import` block example with `id`)               |
+| `.ImportIDConfigFile`       | string | Path to the file with the Terraform configuration for importing the resource by `id`       |
+| `.HasImportIdentityConfig`  | bool   | Is there an import terraform config file? (`import` block example with `identity`)         |
+| `.ImportIdentityConfigFile` | string | Path to the file with the Terraform configuration for importing the resource by `identity` |
+| `.IdentitySchemaMarkdown`   | string | a Markdown formatted Resource Identity Schema definition                                   |
+| `.ProviderName`             | string | Canonical provider name (ex. `terraform-provider-random`)                                  |
+| `.ProviderShortName`        | string | Short version of the rendered provider name (ex. `random`)                                 |
+| `.RenderedProviderName`     | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName`  |
+| `.SchemaMarkdown`           | string | a Markdown formatted Resource / Data Source Schema definition                              |
 
 ##### Provider-defined Function Fields
 

@@ -203,7 +203,7 @@ In Terraform v1.12.0 and later, the [`import` block](https://developer.hashicorp
 import {
   to = scaffolding_example.example
   identity = {
-    name    = "austin"
+    name    = "resource-abc"
     project = "test-project-123" # can also be read via SCAFFOLDING_PROJECT environment variable
     region  = "us-east-2"        # can also be read via SCAFFOLDING_REGION environment variable
   }
@@ -309,7 +309,7 @@ resource "scaffolding_example" "example" {
 import {
   to = scaffolding_example.example
   identity = {
-    name    = "austin"
+    name    = "resource-abc"
     project = "test-project-123" # can also be read via SCAFFOLDING_PROJECT environment variable
     region  = "us-east-2"        # can also be read via SCAFFOLDING_REGION environment variable
   }
