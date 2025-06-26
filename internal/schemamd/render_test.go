@@ -98,3 +98,56 @@ func TestRender(t *testing.T) {
 		})
 	}
 }
+
+func TestRenderIdentitySchema(t *testing.T) {
+	t.Parallel()
+
+	for _, c := range []struct {
+		name         string
+		inputFile    string
+		expectedFile string
+	}{
+		{
+			"identity",
+			"testdata/identity.schema.json",
+			"testdata/identity.md",
+		},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
+			input, err := os.ReadFile(c.inputFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expected, err := os.ReadFile(c.expectedFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var identitySchema tfjson.IdentitySchema
+
+			err = json.Unmarshal(input, &identitySchema)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			b := &strings.Builder{}
+			err = schemamd.RenderIdentitySchema(&identitySchema, b)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Remove \r characters so tests don't fail on windows
+			expectedStr := strings.ReplaceAll(string(expected), "\r", "")
+
+			// Remove trailing newlines before comparing (some text editors remove them).
+			expectedStr = strings.TrimRight(expectedStr, "\n")
+			actual := strings.TrimRight(b.String(), "\n")
+			if diff := cmp.Diff(expectedStr, actual); diff != "" {
+				t.Fatalf("Unexpected diff (-wanted, +got): %s", diff)
+			}
+		})
+	}
+}

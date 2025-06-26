@@ -6,6 +6,7 @@ package schemamd
 import (
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strings"
 
@@ -30,6 +31,122 @@ func Render(schema *tfjson.Schema, w io.Writer) error {
 	err = writeRootBlock(w, schema.Block)
 	if err != nil {
 		return fmt.Errorf("unable to render schema: %w", err)
+	}
+
+	return nil
+}
+
+func RenderIdentitySchema(identitySchema *tfjson.IdentitySchema, w io.Writer) error {
+	_, err := io.WriteString(w, "### Identity Schema\n\n")
+	if err != nil {
+		return err
+	}
+
+	err = writeIdentitySchemaAttributes(w, identitySchema.Attributes)
+	if err != nil {
+		return fmt.Errorf("unable to render identity schema: %w", err)
+	}
+
+	return nil
+}
+
+func writeIdentitySchemaAttributes(w io.Writer, attrs map[string]*tfjson.IdentityAttribute) error {
+	attrNames := []string{}
+	for n := range attrs {
+		attrNames = append(attrNames, n)
+	}
+
+	requiredForImportNames := []string{}
+	optionalForImportNames := []string{}
+	for _, name := range attrNames {
+		attr := attrs[name]
+
+		if attr.RequiredForImport {
+			requiredForImportNames = append(requiredForImportNames, name)
+			continue
+		}
+
+		if attr.OptionalForImport {
+			optionalForImportNames = append(optionalForImportNames, name)
+			continue
+		}
+
+		return fmt.Errorf("invalid schema: for %q attribute, either RequiredForImport for OptionalForImport must be set to true", name)
+	}
+
+	slices.Sort(requiredForImportNames)
+	slices.Sort(optionalForImportNames)
+
+	for i, name := range requiredForImportNames {
+		requiredAttr := attrs[name]
+		if i == 0 {
+			_, err := io.WriteString(w, "#### Required\n\n")
+			if err != nil {
+				return err
+			}
+		}
+
+		err := writeIdentityAttribute(w, name, requiredAttr)
+		if err != nil {
+			return fmt.Errorf("unable to render identity attribute %q: %w", name, err)
+		}
+	}
+
+	_, err := io.WriteString(w, "\n")
+	if err != nil {
+		return err
+	}
+
+	for i, name := range optionalForImportNames {
+		optionalAttr := attrs[name]
+		if i == 0 {
+			_, err := io.WriteString(w, "#### Optional\n\n")
+			if err != nil {
+				return err
+			}
+		}
+
+		err := writeIdentityAttribute(w, name, optionalAttr)
+		if err != nil {
+			return fmt.Errorf("unable to render identity attribute %q: %w", name, err)
+		}
+	}
+
+	return nil
+}
+
+func writeIdentityAttribute(w io.Writer, name string, attr *tfjson.IdentityAttribute) error {
+	_, err := io.WriteString(w, "- `"+name+"` ")
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(w, "(")
+	if err != nil {
+		return err
+	}
+
+	err = WriteType(w, attr.IdentityType)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(w, ")")
+	if err != nil {
+		return err
+	}
+
+	desc := strings.TrimSpace(attr.Description)
+	if desc != "" {
+		_, err = io.WriteString(w, " "+desc)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = io.WriteString(w, "\n")
+	if err != nil {
+		return err
 	}
 
 	return nil
