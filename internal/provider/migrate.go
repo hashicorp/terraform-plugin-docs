@@ -296,7 +296,7 @@ func (m *migrator) ExtractCodeExamples(content []byte, newRelDir string, templat
 		if fencedNode, isFenced := node.(*ast.FencedCodeBlock); isFenced && fencedNode.Info != nil {
 			var ext, exampleName, examplePath, template string
 
-			lang := string(fencedNode.Info.Value(content)[:])
+			lang := string(fencedNode.Info.Text(content)[:])
 			switch lang {
 			case "hcl", "terraform":
 				exampleCount++
