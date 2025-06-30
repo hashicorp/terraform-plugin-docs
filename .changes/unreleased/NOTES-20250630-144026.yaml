@@ -1,0 +1,6 @@
+kind: NOTES
+body: 'generate: Generated import documentation will now contain more information about which methods are
+    supported by the provider (CLI command, config by ID, config by identity).'
+time: 2025-06-30T14:40:26.94407-04:00
+custom:
+    Issue: "496"
