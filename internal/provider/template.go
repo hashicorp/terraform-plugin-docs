@@ -158,7 +158,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 	})
 }
 
-func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importIDConfigFile, importCmdFile string, schema *tfjson.Schema) (string, error) {
+func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importIDConfigFile, importIdentityConfigFile, importCmdFile string, schema *tfjson.Schema, identitySchema *tfjson.IdentitySchema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -168,6 +168,25 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 	s := string(t)
 	if s == "" {
 		return "", nil
+	}
+
+	hasImportIdentityConfig := importIdentityConfigFile != "" && fileExists(importIdentityConfigFile)
+	identitySchemaBuffer := bytes.NewBuffer(nil)
+
+	// Always render the identity schema if we have one, so it can be used in custom templates.
+	if identitySchema != nil {
+		_, err := io.WriteString(identitySchemaBuffer, schemaComment+"\n")
+		if err != nil {
+			return "", fmt.Errorf("unable to render identity schema comment: %w", err)
+		}
+
+		err = schemamd.RenderIdentitySchema(identitySchema, identitySchemaBuffer)
+		if err != nil {
+			return "", fmt.Errorf("unable to render identity schema: %w", err)
+		}
+	} else if hasImportIdentityConfig {
+		// If there is an identity example, but we don't have an identity schema, we should return an error to ensure the example file was intended.
+		return "", fmt.Errorf("unable to render: an identity import example (%q) was provided for a resource (%q) that does not support resource identity", importIdentityConfigFile, name)
 	}
 
 	return renderStringTemplate(providerDir, "resourceTemplate", s, struct {
@@ -183,6 +202,10 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 
 		HasImportIDConfig  bool
 		ImportIDConfigFile string
+
+		HasImportIdentityConfig  bool
+		ImportIdentityConfigFile string
+		IdentitySchemaMarkdown   string
 
 		ProviderName      string
 		ProviderShortName string
@@ -203,6 +226,10 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 
 		HasImportIDConfig:  importIDConfigFile != "" && fileExists(importIDConfigFile),
 		ImportIDConfigFile: importIDConfigFile,
+
+		HasImportIdentityConfig:  hasImportIdentityConfig,
+		ImportIdentityConfigFile: importIdentityConfigFile,
+		IdentitySchemaMarkdown:   identitySchemaBuffer.String(),
 
 		ProviderName:      providerName,
 		ProviderShortName: providerShortName(renderedProviderName),
@@ -294,11 +321,19 @@ description: |-
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
-{{- if or .HasImport .HasImportIDConfig }}
+{{- if or .HasImport .HasImportIDConfig .HasImportIdentityConfig }}
 
 ## Import
 
 Import is supported using the following syntax:
+{{- end }}
+{{- if .HasImportIdentityConfig }}
+
+In Terraform v1.12.0 and later, the [` + "`" + `import` + "`" + ` block](https://developer.hashicorp.com/terraform/language/import) can be used with the ` + "`" + `identity` + "`" + ` attribute, for example:
+
+{{tffile .ImportIdentityConfigFile }}
+
+{{ .IdentitySchemaMarkdown | trimspace }}
 {{- end }}
 {{- if .HasImportIDConfig }}
 

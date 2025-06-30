@@ -1,0 +1,46 @@
+{
+    "version": 0,
+    "attributes": {
+        "float64_attribute": {
+            "type": "number",
+            "description": "example float64 attribute",
+            "optional_for_import": true
+        },
+        "number_attribute": {
+            "type": "number",
+            "description": "example number attribute",
+            "optional_for_import": true
+        },
+        "list_of_strings_attribute": {
+            "type": [
+                "list",
+                "string"
+            ],
+            "description": "example list attribute with string elements",
+            "required_for_import": true
+        },
+        "bool_attribute": {
+            "type": "bool",
+            "description": "example bool attribute",
+            "required_for_import": true
+        },
+        "string_attribute": {
+            "type": "string",
+            "description": "example string attribute",
+            "required_for_import": true
+        },
+        "int64_attribute": {
+            "type": "number",
+            "description": "example int64 attribute",
+            "optional_for_import": true
+        },
+        "list_of_bools_attribute": {
+            "type": [
+                "list",
+                "bool"
+            ],
+            "description": "example list attribute with bool elements",
+            "required_for_import": true
+        }
+    }
+}
