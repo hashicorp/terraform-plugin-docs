@@ -158,7 +158,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 	})
 }
 
-func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importFile string, schema *tfjson.Schema) (string, error) {
+func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importIDConfigFile, importCmdFile string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -181,6 +181,9 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		HasImport  bool
 		ImportFile string
 
+		HasImportIDConfig  bool
+		ImportIDConfigFile string
+
 		ProviderName      string
 		ProviderShortName string
 
@@ -195,8 +198,11 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		HasExample:  exampleFile != "" && fileExists(exampleFile),
 		ExampleFile: exampleFile,
 
-		HasImport:  importFile != "" && fileExists(importFile),
-		ImportFile: importFile,
+		HasImport:  importCmdFile != "" && fileExists(importCmdFile),
+		ImportFile: importCmdFile,
+
+		HasImportIDConfig:  importIDConfigFile != "" && fileExists(importIDConfigFile),
+		ImportIDConfigFile: importIDConfigFile,
 
 		ProviderName:      providerName,
 		ProviderShortName: providerShortName(renderedProviderName),
@@ -288,11 +294,21 @@ description: |-
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
-{{- if .HasImport }}
+{{- if or .HasImport .HasImportIDConfig }}
 
 ## Import
 
 Import is supported using the following syntax:
+{{- end }}
+{{- if .HasImportIDConfig }}
+
+In Terraform v1.5.0 and later, the [` + "`" + `import` + "`" + ` block](https://developer.hashicorp.com/terraform/language/import) can be used with the ` + "`" + `id` + "`" + ` attribute, for example:
+
+{{tffile .ImportIDConfigFile }}
+{{- end }}
+{{- if .HasImport }}
+
+The [` + "`" + `terraform import` + "`" + ` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
 
 {{codefile "shell" .ImportFile }}
 {{- end }}
