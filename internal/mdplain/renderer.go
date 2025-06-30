@@ -26,51 +26,59 @@ func (r *TextRender) Render(w io.Writer, source []byte, n ast.Node) error {
 		}
 
 		switch node := node.(type) {
-		case *ast.Blockquote, *ast.CodeSpan:
-			return ast.WalkContinue, nil
-		case *ast.Heading, *ast.CodeBlock, *ast.List:
+		case *ast.Blockquote, *ast.Heading:
 			doubleSpace(out)
-			return ast.WalkContinue, nil
+			out.Write(node.Text(source))
+			return ast.WalkSkipChildren, nil
 		case *ast.ThematicBreak:
 			doubleSpace(out)
+			return ast.WalkSkipChildren, nil
+		case *ast.CodeBlock:
+			doubleSpace(out)
+			for i := 0; i < node.Lines().Len(); i++ {
+				line := node.Lines().At(i)
+				out.Write(line.Value(source))
+			}
 			return ast.WalkSkipChildren, nil
 		case *ast.FencedCodeBlock:
 			doubleSpace(out)
 			doubleSpace(out)
-			out.Write(node.Lines().Value(source))
+			for i := 0; i < node.Lines().Len(); i++ {
+				line := node.Lines().At(i)
+				_, _ = out.Write(line.Value(source))
+			}
+			return ast.WalkSkipChildren, nil
+		case *ast.List:
+			doubleSpace(out)
 			return ast.WalkContinue, nil
 		case *ast.Paragraph:
 			doubleSpace(out)
-			if node.Lines().Value(source)[0] == '|' { // Write tables as-is.
-				out.Write(node.Lines().Value(source))
+			if node.Text(source)[0] == '|' { // Write tables as-is.
+				for i := 0; i < node.Lines().Len(); i++ {
+					line := node.Lines().At(i)
+					out.Write(line.Value(source))
+				}
 				return ast.WalkSkipChildren, nil
 			}
 			return ast.WalkContinue, nil
 		case *extAST.Strikethrough:
-			out.Write(node.Lines().Value(source))
+			out.Write(node.Text(source))
 			return ast.WalkContinue, nil
 		case *ast.AutoLink:
 			out.Write(node.URL(source))
 			return ast.WalkSkipChildren, nil
+		case *ast.CodeSpan:
+			out.Write(node.Text(source))
+			return ast.WalkSkipChildren, nil
 		case *ast.Link:
-			// we want to write the text of the
-			// link before the url
-			child := node.FirstChild()
-			if child != nil {
-				t, ok := child.(*ast.Text)
-				if ok {
-					out.Write(t.Value(source))
-				}
-			}
-
+			_, err := out.Write(node.Text(source))
 			if !isRelativeLink(node.Destination) {
 				out.WriteString(" ")
 				out.Write(node.Destination)
 			}
-
-			return ast.WalkSkipChildren, nil
+			return ast.WalkSkipChildren, err
 		case *ast.Text:
-			out.Write(node.Value(source))
+			out.Write(node.Text(source))
 			if node.SoftLineBreak() {
 				doubleSpace(out)
 			}
