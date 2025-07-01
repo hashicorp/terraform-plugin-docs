@@ -1,5 +1,0 @@
-kind: BUG FIXES
-body: 'generate: Remove `subcategory` field from default provider templates'
-time: 2025-06-13T15:28:46.039473-04:00
-custom:
-    Issue: "446"

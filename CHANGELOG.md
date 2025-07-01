@@ -1,3 +1,30 @@
+## 0.22.0 (July 01, 2025)
+
+BREAKING CHANGES:
+
+* generate: The `.ProviderShortName` template function now uses the rendered provider name to derive the provider short name. Users that pass in the `--rendered-provider-name` flag might see a different output for this function ([#492](https://github.com/hashicorp/terraform-plugin-docs/issues/492))
+
+NOTES:
+
+* generate: Generated import documentation will now contain more information about which methods are supported by the provider (CLI command, config by ID, config by identity). ([#495](https://github.com/hashicorp/terraform-plugin-docs/issues/495))
+
+FEATURES:
+
+* generate: Added support for defining import example file (`import-by-string-id.tf`) using Terraform configuration and the `id` attribute ([#472](https://github.com/hashicorp/terraform-plugin-docs/issues/472))
+* generate: Added support for defining import example file (`import-by-identity.tf`) using Terraform configuration and the `identity` attribute (managed resource identity) ([#496](https://github.com/hashicorp/terraform-plugin-docs/issues/496))
+
+ENHANCEMENTS:
+
+* validate: Add `allowed-guide-subcategories` and `allowed-resource-subcategories` to provide a list of allowed subcategories ([#456](https://github.com/hashicorp/terraform-plugin-docs/issues/456))
+* validate: Add `allowed-guide-subcategories-file` and `allowed-resource-subcategories-file` to provide a file containing a list of allowed subcategories ([#456](https://github.com/hashicorp/terraform-plugin-docs/issues/456))
+* generate: Default resource and function templates now use `.RenderedProviderName` instead of `.ProviderName` ([#492](https://github.com/hashicorp/terraform-plugin-docs/issues/492))
+* generate: Remove trailing whitespace from default function template when `.HasVariadic` evaluates to false ([#489](https://github.com/hashicorp/terraform-plugin-docs/issues/489))
+
+BUG FIXES:
+
+* validate: Fixed a bug that caused all non-index files to be detected as guides ([#456](https://github.com/hashicorp/terraform-plugin-docs/issues/456))
+* generate: Remove `subcategory` field from default provider templates ([#446](https://github.com/hashicorp/terraform-plugin-docs/issues/446))
+
 ## 0.21.0 (February 27, 2025)
 
 FEATURES:

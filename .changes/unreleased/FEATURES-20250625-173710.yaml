@@ -1,6 +1,0 @@
-kind: FEATURES
-body: 'generate: Added support for defining import example file (`import-by-identity.tf`) using Terraform configuration
-    and the `identity` attribute (managed resource identity)'
-time: 2025-06-25T17:37:10.853795-04:00
-custom:
-    Issue: "496"

@@ -1,5 +1,0 @@
-kind: FEATURES
-body: 'generate: Added support for defining import example file (`import-by-string-id.tf`) using Terraform configuration and the `id` attribute'
-time: 2025-06-16T18:13:22.627319-04:00
-custom:
-    Issue: "472"

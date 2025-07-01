@@ -1,6 +1,0 @@
-kind: BREAKING CHANGES
-body: 'generate: The `.ProviderShortName` template function now uses the rendered provider name to derive the provider short name. Users that pass in the 
-    `--rendered-provider-name` flag might see a different output for this function'
-time: 2025-06-13T13:51:04.745115-04:00
-custom:
-    Issue: "492"

@@ -1,5 +1,0 @@
-kind: ENHANCEMENTS
-body: 'generate: Remove trailing whitespace from default function template when `.HasVariadic` evaluates to false'
-time: 2025-06-13T16:29:58.411584-04:00
-custom:
-    Issue: "489"

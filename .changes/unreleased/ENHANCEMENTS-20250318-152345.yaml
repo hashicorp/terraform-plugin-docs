@@ -1,5 +1,0 @@
-kind: ENHANCEMENTS
-body: 'validate: Add `allowed-guide-subcategories-file` and `allowed-resource-subcategories-file` to provide a file containing a list of allowed subcategories'
-time: 2025-03-18T15:23:45.718553-05:00
-custom:
-    Issue: "456"
