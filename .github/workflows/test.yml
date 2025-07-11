@@ -1,8 +1,16 @@
 name: test
 
 on:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - 'README.md'
+      - 'CHANGELOG.md'
   push:
-
+    branches: [ main ]
+    paths-ignore:
+      - 'README.md'
+      - 'CHANGELOG.md'
 jobs:
   test:
     runs-on: ${{ matrix.os }}
