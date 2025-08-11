@@ -8,6 +8,28 @@
           "description_kind": "plain"
         }
       },
+      "action_schemas": {
+        "null_fake_action": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "required_attr": {
+                "type": "string",
+                "description": "Required attribute",
+                "description_kind": "plain",
+                "required": true
+              },
+              "optional_attr": {
+                "type": "string",
+                "description": "Optional attribute",
+                "description_kind": "plain",
+                "optional": true
+              }
+            }
+          },
+          "unlinked": {}
+        }
+      },
       "resource_schemas": {
         "null_resource": {
           "version": 0,

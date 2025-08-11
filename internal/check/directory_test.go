@@ -11,7 +11,7 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-var DocumentationGlobPattern = `{docs/index.*,docs/{,cdktf/}{data-sources,ephemeral-resources,guides,resources,functions}/**/*,website/docs/**/*}`
+var DocumentationGlobPattern = `{docs/index.*,docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,resources,functions}/**/*,website/docs/**/*}`
 
 func TestMixedDirectoriesCheck(t *testing.T) {
 	t.Parallel()
@@ -30,6 +30,13 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 				"docs/cdktf/typescript/index.md": {},
 				"website/docs/index.md":          {},
 			},
+		},
+		"invalid mixed directories - registry action": {
+			ProviderFS: fstest.MapFS{
+				"docs/actions/invalid.md": {},
+				"website/docs/index.md":   {},
+			},
+			ExpectError: true,
 		},
 		"invalid mixed directories - registry data source": {
 			ProviderFS: fstest.MapFS{
@@ -63,6 +70,13 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 			ProviderFS: fstest.MapFS{
 				"docs/functions/invalid.md": {},
 				"website/docs/index.md":     {},
+			},
+			ExpectError: true,
+		},
+		"invalid mixed directories - legacy action": {
+			ProviderFS: fstest.MapFS{
+				"website/docs/actions/invalid.html.markdown": {},
+				"docs/resources/thing.md":                    {},
 			},
 			ExpectError: true,
 		},
