@@ -45,6 +45,7 @@ generating missing function content
 function "example" static file exists, skipping
 generating missing ephemeral resource content
 ephemeral resource "scaffolding_example" static file exists, skipping
+generating missing action content
 generating missing provider content
 provider "terraform-provider-scaffolding" static file exists, skipping
 rendering static website

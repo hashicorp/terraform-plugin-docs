@@ -26,6 +26,7 @@ generating missing function content
 function "example" template exists, skipping
 generating missing ephemeral resource content
 ephemeral resource "scaffolding_example" template exists, skipping
+generating missing action content
 generating missing provider content
 provider "terraform-provider-scaffolding" template exists, skipping
 rendering static website

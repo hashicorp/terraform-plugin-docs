@@ -18,6 +18,7 @@ generating new template for "scaffolding_example"
 generating missing data source content
 generating missing function content
 generating missing ephemeral resource content
+generating missing action content
 generating missing provider content
 generating new template for "terraform-provider-scaffolding"
 rendering static website
