@@ -1,0 +1,32 @@
+{
+    "block": {
+        "unlinked": {},
+        "attributes": {
+            "required_attr": {
+                "description_kind": "plain",
+                "description": "Required attribute",
+                "required": true,
+                "type": "string"
+            }
+        },
+        "block_types": {
+            "list_block": {
+                "block": {
+                    "attributes": {
+                        "optional_attr": {
+                            "description_kind": "plain",
+                            "description": "Optional attribute",
+                            "optional": true,
+                            "type": "string"
+                        }
+                    },
+                    "description_kind": "plain"
+                },
+                "max_items": 1,
+                "nesting_mode": "list"
+            }
+        },
+        "description_kind": "plain"
+    },
+    "version": 0
+}

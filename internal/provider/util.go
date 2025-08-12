@@ -89,6 +89,19 @@ func resourceSchema(schemas map[string]*tfjson.Schema, providerShortName, templa
 	return nil, resName
 }
 
+func actionSchema(schemas map[string]*tfjson.ActionSchema, providerShortName, templateFileName string) (*tfjson.ActionSchema, string) {
+	resName := providerShortName + "_" + removeAllExt(templateFileName)
+	if schema, ok := schemas[resName]; ok {
+		return schema, resName
+	}
+
+	if schema, ok := schemas[providerShortName]; ok {
+		return schema, providerShortName
+	}
+
+	return nil, resName
+}
+
 func resourceIdentitySchema(schemas map[string]*tfjson.IdentitySchema, providerShortName, templateFileName string) *tfjson.IdentitySchema {
 	resName := providerShortName + "_" + removeAllExt(templateFileName)
 	if schema, ok := schemas[resName]; ok {
