@@ -2,4 +2,4 @@ kind: FEATURES
 body: 'generate: Add support for unlinked actions'
 time: 2025-08-11T17:41:12.858383-04:00
 custom:
-    Issue: "TBD"
+    Issue: "505"
