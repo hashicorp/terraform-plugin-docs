@@ -15,7 +15,7 @@ require (
 	github.com/rogpeppe/go-internal v1.14.1
 	github.com/yuin/goldmark v1.7.7
 	github.com/yuin/goldmark-meta v1.1.0
-	github.com/zclconf/go-cty v1.16.3
+	github.com/zclconf/go-cty v1.16.4
 	go.abhg.dev/goldmark/frontmatter v0.2.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 	golang.org/x/text v0.28.0
