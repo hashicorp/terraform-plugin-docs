@@ -1,0 +1,5 @@
+kind: FEATURES
+body: 'generate: Support multiple configuration example files in default templates'
+time: 2025-08-19T13:34:00.429551-04:00
+custom:
+    Issue: "508"
