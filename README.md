@@ -117,6 +117,7 @@ When you run `tfplugindocs`, by default from the root directory of a provider co
 * Generate data source template files, if missing
 * Generate function template files, if missing (Requires Terraform v1.8.0+)
 * Generate ephemeral resource template files, if missing (Requires Terraform v1.10.0+)
+* Generate action template files, if missing (Requires Terraform v1.14.0+)
 * Copy all non-template files to the output website directory
 
 > [!NOTE]
@@ -207,10 +208,12 @@ For templates:
 |--------------------------------------------------------------------|-----------------------------------------------|
 | `templates/`                                                       | Root of templated docs                        |
 | `templates/index.md[.tmpl]`                                        | Docs index page (or template)                 |
+| `templates/actions.md[.tmpl]`                                      | Generic action page (or template)             |
+| `templates/actions/<action type name>.md[.tmpl]`                   | Action page (or template)                     |
 | `templates/data-sources.md[.tmpl]`                                 | Generic data source page (or template)        |
 | `templates/data-sources/<data source name>.md[.tmpl]`              | Data source page (or template)                |
 | `templates/ephemeral-resources.md[.tmpl]`                          | Generic ephemeral resource page (or template) |
-| `templates/ephemeral-resources/<ephemeral resource name>.md[.tmpl]` | Ephemeral resource page (or template)         |
+| `templates/ephemeral-resources/<ephemeral resource name>.md[.tmpl]`| Ephemeral resource page (or template)         |
 | `templates/functions.md[.tmpl]`                                    | Generic function page (or template)           |
 | `templates/functions/<function name>.md[.tmpl]`                    | Function page (or template)                   |
 | `templates/resources.md[.tmpl]`                                    | Generic resource page (or template)           |
@@ -227,6 +230,7 @@ For examples:
 |---------------------------------------------------------------------------|--------------------------------------------|
 | `examples/`                                                               | Root of examples                           |
 | `examples/provider/provider.tf`                                           | Provider example config                    |
+| `examples/actions/<action_type>/action.tf`                                | Action example config                      |
 | `examples/data-sources/<data source name>/data-source.tf`                 | Data source example config                 |
 | `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource.tf` | Ephemeral resource example config          |
 | `examples/functions/<function name>/function.tf`                          | Function example config                    |
@@ -249,6 +253,7 @@ Legacy website directory structure:
 | `website/`                                                                 | Root of website docs        |
 | `website/docs/guides`                                                      | Root of guides subdirectory |
 | `website/docs/index.html.markdown`                                         | Docs index page             |
+| `website/docs/actions/<action type name>.html.markdown`                    | Action page                 |
 | `website/docs/d/<data source name>.html.markdown`                          | Data source page            |
 | `website/docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
 | `website/docs/functons/<function name>.html.markdown`                      | Functions page              |
@@ -261,6 +266,7 @@ Docs website directory structure:
 | `docs/`                                                            | Root of website docs        |
 | `docs/guides`                                                      | Root of guides subdirectory |
 | `docs/index.html.markdown`                                         | Docs index page             |
+| `docs/actions/<action type name>.html.markdown`                    | Action page                 |
 | `docs/data-sources/<data source name>.html.markdown`               | Data source page            |
 | `docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
 | `docs/functions/<function name>.html.markdown`                     | Function page               |
@@ -330,6 +336,20 @@ using the following data fields and functions:
 |        `.FunctionArgumentsMarkdown` | string | a Markdown formatted Function arguments definition                                        |
 |                      `.HasVariadic` |  bool  | Does this function have a variadic argument?                                              |
 | `.FunctionVariadicArgumentMarkdown` | string | a Markdown formatted Function variadic argument definition                                |
+
+##### Action Fields
+
+| Field                   | Type   | Description                                                                               |
+|-------------------------|--------|-------------------------------------------------------------------------------------------|
+| `.Name`                 | string | Name of the action (ex. `examplecloud_do_thing`)                                          |
+| `.Type`                 | string | `Action`                                                                                  |
+| `.Description`          | string | Action description                                                                        |
+| `.HasExample`           | bool   | Is there an example file?                                                                 |
+| `.ExampleFile`          | string | Path to the file with the terraform configuration example                                 |
+| `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
+| `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                |
+| `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
+| `.SchemaMarkdown`       | string | a Markdown formatted Action Schema definition                                             |
 
 #### Template Functions
 

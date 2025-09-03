@@ -139,6 +139,13 @@ func (m *migrator) Migrate() error {
 					return fmt.Errorf("unable to copy guides directory %q: %w", path, err)
 				}
 				return filepath.SkipDir
+			case "actions":
+				m.infof("migrating actions directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("actions"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
 			}
 		} else {
 			switch {

@@ -13,7 +13,20 @@ stderr 'matching function for documentation file \(example2.md\) not found, file
 stderr 'missing documentation file for function: example'
 stderr 'matching ephemeral resource for documentation file \(example2.md\) not found, file is extraneous or incorrectly named'
 stderr 'missing documentation file for ephemeral resource: scaffolding_example'
+stderr 'matching action for documentation file \(example2.md\) not found, file is extraneous or incorrectly named'
+stderr 'missing documentation file for action: scaffolding_unlinked_example'
 
+-- docs/actions/example2.md --
+---
+subcategory: "Example"
+page_title: "Example: example_thing"
+description: |-
+  Example description.
+---
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
 -- docs/data-sources/example2.md --
 ---
 subcategory: "Example"
@@ -76,6 +89,30 @@ Type: {{.Type}}
           },
           "description": "Example provider",
           "description_kind": "markdown"
+        }
+      },
+      "action_schemas": {
+        "scaffolding_unlinked_example": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "required_attr": {
+                "type": "string",
+                "description": "Example required attribute",
+                "description_kind": "plain",
+                "required": true
+              },
+              "optional_attr": {
+                "type": "string",
+                "description": "Example optional attribute",
+                "description_kind": "plain",
+                "optional": true
+              }
+            },
+            "description": "Example unlinked action",
+            "description_kind": "plain"
+          },
+          "unlinked": {}
         }
       },
       "resource_schemas": {

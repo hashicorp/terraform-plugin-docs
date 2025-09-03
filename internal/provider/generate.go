@@ -67,6 +67,14 @@ var (
 		"ephemeral-resources/%s.html.markdown",
 		"ephemeral-resources/%s.html.md",
 	}
+	websiteActionFile                 = "actions/%s.md.tmpl"
+	websiteActionFallbackFile         = "actions.md.tmpl"
+	websiteActionFileStaticCandidates = []string{
+		"actions/%s.md",
+		"actions/%s.markdown",
+		"actions/%s.html.markdown",
+		"actions/%s.html.md",
+	}
 	websiteProviderFile                 = "index.md.tmpl"
 	websiteProviderFileStaticCandidates = []string{
 		"index.markdown",
@@ -81,6 +89,7 @@ var (
 		"resources",
 		"functions",
 		"ephemeral-resources",
+		"actions",
 	}
 
 	managedWebsiteFiles = []string{
@@ -418,6 +427,42 @@ func (g *generator) generateMissingEphemeralResourceTemplate(resourceName string
 	return nil
 }
 
+func (g *generator) generateMissingActionTemplate(actionName string) error {
+	templatePath := fmt.Sprintf(websiteActionFile, resourceShortName(actionName, g.providerName))
+	templatePath = filepath.Join(g.TempTemplatesDir(), templatePath)
+	if fileExists(templatePath) {
+		g.infof("action %q template exists, skipping", actionName)
+		return nil
+	}
+
+	fallbackTemplatePath := filepath.Join(g.TempTemplatesDir(), websiteActionFallbackFile)
+	if fileExists(fallbackTemplatePath) {
+		g.infof("action %q fallback template exists, creating template", actionName)
+		err := cp(fallbackTemplatePath, templatePath)
+		if err != nil {
+			return fmt.Errorf("unable to copy fallback template for %q: %w", actionName, err)
+		}
+		return nil
+	}
+
+	for _, candidate := range websiteActionFileStaticCandidates {
+		candidatePath := fmt.Sprintf(candidate, resourceShortName(actionName, g.providerName))
+		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
+		if fileExists(candidatePath) {
+			g.infof("action %q static file exists, skipping", actionName)
+			return nil
+		}
+	}
+
+	g.infof("generating new template for %q", actionName)
+	err := writeFile(templatePath, string(defaultActionTemplate))
+	if err != nil {
+		return fmt.Errorf("unable to write template for %q: %w", actionName, err)
+	}
+
+	return nil
+}
+
 func (g *generator) generateMissingProviderTemplate() error {
 	templatePath := filepath.Join(g.TempTemplatesDir(), websiteProviderFile)
 	if fileExists(templatePath) {
@@ -527,6 +572,27 @@ func (g *generator) generateMissingTemplates(providerSchema *tfjson.ProviderSche
 		}
 	}
 
+	g.infof("generating missing action content")
+
+	actionKeys := make([]string, 0, len(providerSchema.ActionSchemas))
+	for key := range providerSchema.ActionSchemas {
+		actionKeys = append(actionKeys, key)
+	}
+	sort.Strings(actionKeys)
+
+	for _, name := range actionKeys {
+		schema := providerSchema.ActionSchemas[name]
+
+		if g.ignoreDeprecated && schema.Block.Deprecated {
+			continue
+		}
+
+		err := g.generateMissingActionTemplate(name)
+		if err != nil {
+			return fmt.Errorf("unable to generate template for action %q: %w", name, err)
+		}
+	}
+
 	g.infof("generating missing provider content")
 	err := g.generateMissingProviderTemplate()
 	if err != nil {
@@ -588,11 +654,12 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		relDir, relFile := filepath.Split(rel)
 		relDir = filepath.ToSlash(relDir)
 
-		// skip special top-level generic resource, data source, function, and ephemeral resource templates
+		// skip special top-level generic resource, data source, function, ephemeral resource, and action templates
 		if relDir == "" && (relFile == "resources.md.tmpl" ||
 			relFile == "data-sources.md.tmpl" ||
 			relFile == "functions.md.tmpl" ||
-			relFile == "ephemeral-resources.md.tmpl") {
+			relFile == "ephemeral-resources.md.tmpl" ||
+			relFile == "actions.md.tmpl") {
 			return nil
 		}
 
@@ -696,6 +763,23 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				return nil
 			}
 			g.warnf("ephemeral resource entitled %q, or %q does not exist", shortName, resName)
+		case "actions/":
+			actionSchema, resName := actionSchema(providerSchema.ActionSchemas, shortName, relFile)
+			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "actions", resName, "action.tf")
+
+			if actionSchema != nil {
+				tmpl := actionTemplate(tmplData)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Action", exampleFilePath, actionSchema)
+				if err != nil {
+					return fmt.Errorf("unable to render action template %q: %w", rel, err)
+				}
+				_, err = out.WriteString(render)
+				if err != nil {
+					return fmt.Errorf("unable to write rendered string: %w", err)
+				}
+				return nil
+			}
+			g.warnf("action entitled %q, or %q does not exist", shortName, resName)
 		case "": // provider
 			if relFile == "index.md.tmpl" {
 				tmpl := providerTemplate(tmplData)
