@@ -11,6 +11,8 @@ exporting schema from JSON file
 getting provider schema
 running mixed directories check
 detected static docs directory, running checks
+running invalid directories check on docs/actions
+running file checks on docs/actions/unlinked_example.md
 running invalid directories check on docs/data-sources
 running file checks on docs/data-sources/example.md
 running invalid directories check on docs/ephemeral-resources
@@ -35,6 +37,17 @@ description: |-
 
 Example contents.
 
+-- docs/actions/unlinked_example.md --
+---
+subcategory: "Example"
+page_title: "Example: example_thing"
+description: |-
+  Example description.
+---
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
 -- docs/resources/example.md --
 ---
 subcategory: "Example"
@@ -107,6 +120,30 @@ Type: {{.Type}}
           },
           "description": "Example provider",
           "description_kind": "markdown"
+        }
+      },
+      "action_schemas": {
+        "scaffolding_unlinked_example": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "required_attr": {
+                "type": "string",
+                "description": "Example required attribute",
+                "description_kind": "plain",
+                "required": true
+              },
+              "optional_attr": {
+                "type": "string",
+                "description": "Example optional attribute",
+                "description_kind": "plain",
+                "optional": true
+              }
+            },
+            "description": "Example unlinked action",
+            "description_kind": "plain"
+          },
+          "unlinked": {}
         }
       },
       "resource_schemas": {

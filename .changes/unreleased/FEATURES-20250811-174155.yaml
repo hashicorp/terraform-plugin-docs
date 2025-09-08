@@ -1,0 +1,5 @@
+kind: FEATURES
+body: 'validate: Add support for unlinked actions'
+time: 2025-08-11T17:41:55.966547-04:00
+custom:
+    Issue: "505"

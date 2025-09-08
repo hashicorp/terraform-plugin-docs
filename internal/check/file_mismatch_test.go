@@ -93,6 +93,7 @@ func TestFileMismatchCheck(t *testing.T) {
 	testCases := map[string]struct {
 		ResourceFiles fstest.MapFS
 		FunctionFiles fstest.MapFS
+		ActionFiles   fstest.MapFS
 		Options       *FileMismatchOptions
 		ExpectError   bool
 	}{
@@ -139,6 +140,21 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
+		"all found - action": {
+			ActionFiles: fstest.MapFS{
+				"action1.md": {},
+				"action2.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					ActionSchemas: map[string]*tfjson.ActionSchema{
+						"action1": {},
+						"action2": {},
+					},
+				},
+			},
+		},
 		"extra file - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
@@ -168,6 +184,23 @@ func TestFileMismatchCheck(t *testing.T) {
 					Functions: map[string]*tfjson.FunctionSignature{
 						"function1": {},
 						"function2": {},
+					},
+				},
+			},
+			ExpectError: true,
+		},
+		"extra file - action": {
+			ActionFiles: fstest.MapFS{
+				"action1.md": {},
+				"action2.md": {},
+				"action3.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					ActionSchemas: map[string]*tfjson.ActionSchema{
+						"action1": {},
+						"action2": {},
 					},
 				},
 			},
@@ -225,6 +258,24 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
+		"ignore extra file - action": {
+			ActionFiles: fstest.MapFS{
+				"action1.md": {},
+				"action2.md": {},
+				"action3.md": {},
+			},
+			Options: &FileMismatchOptions{
+				IgnoreFileMismatch: []string{"action3"},
+				ProviderShortName:  "test",
+				Schema: &tfjson.ProviderSchema{
+					ActionSchemas: map[string]*tfjson.ActionSchema{
+						"action1": {},
+						"action2": {},
+						"action3": {},
+					},
+				},
+			},
+		},
 		"missing file - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
@@ -270,6 +321,21 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 			ExpectError: true,
 		},
+		"missing file - action": {
+			ActionFiles: fstest.MapFS{
+				"action1.md": {},
+			},
+			Options: &FileMismatchOptions{
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					ActionSchemas: map[string]*tfjson.ActionSchema{
+						"action1": {},
+						"action2": {},
+					},
+				},
+			},
+			ExpectError: true,
+		},
 		"ignore missing file - resource": {
 			ResourceFiles: fstest.MapFS{
 				"resource1.md": {},
@@ -300,6 +366,21 @@ func TestFileMismatchCheck(t *testing.T) {
 				},
 			},
 		},
+		"ignore missing file - action": {
+			ActionFiles: fstest.MapFS{
+				"action1.md": {},
+			},
+			Options: &FileMismatchOptions{
+				IgnoreFileMissing: []string{"action2"},
+				ProviderShortName: "test",
+				Schema: &tfjson.ProviderSchema{
+					ActionSchemas: map[string]*tfjson.ActionSchema{
+						"action1": {},
+						"action2": {},
+					},
+				},
+			},
+		},
 		"no files": {
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
@@ -312,6 +393,10 @@ func TestFileMismatchCheck(t *testing.T) {
 						"function1": {},
 						"function2": {},
 					},
+					ActionSchemas: map[string]*tfjson.ActionSchema{
+						"action1": {},
+						"action2": {},
+					},
 				},
 			},
 		},
@@ -321,6 +406,9 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 			FunctionFiles: fstest.MapFS{
 				"function1.md": {},
+			},
+			ActionFiles: fstest.MapFS{
+				"action1.md": {},
 			},
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
@@ -334,8 +422,10 @@ func TestFileMismatchCheck(t *testing.T) {
 
 			resourceFiles, _ := testCase.ResourceFiles.ReadDir(".")
 			functionFiles, _ := testCase.FunctionFiles.ReadDir(".")
+			actionFiles, _ := testCase.ActionFiles.ReadDir(".")
 			testCase.Options.ResourceEntries = resourceFiles
 			testCase.Options.FunctionEntries = functionFiles
+			testCase.Options.ActionEntries = actionFiles
 			got := NewFileMismatchCheck(testCase.Options).Run()
 
 			if got == nil && testCase.ExpectError {
