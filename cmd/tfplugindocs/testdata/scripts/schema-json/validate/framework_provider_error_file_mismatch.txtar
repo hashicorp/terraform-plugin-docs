@@ -14,7 +14,7 @@ stderr 'missing documentation file for function: example'
 stderr 'matching ephemeral resource for documentation file \(example2.md\) not found, file is extraneous or incorrectly named'
 stderr 'missing documentation file for ephemeral resource: scaffolding_example'
 stderr 'matching action for documentation file \(example2.md\) not found, file is extraneous or incorrectly named'
-stderr 'missing documentation file for action: scaffolding_unlinked_example'
+stderr 'missing documentation file for action: scaffolding_example'
 
 -- docs/actions/example2.md --
 ---
@@ -92,7 +92,7 @@ Type: {{.Type}}
         }
       },
       "action_schemas": {
-        "scaffolding_unlinked_example": {
+        "scaffolding_example": {
           "version": 0,
           "block": {
             "attributes": {
@@ -109,10 +109,9 @@ Type: {{.Type}}
                 "optional": true
               }
             },
-            "description": "Example unlinked action",
+            "description": "Example action",
             "description_kind": "plain"
-          },
-          "unlinked": {}
+          }
         }
       },
       "resource_schemas": {

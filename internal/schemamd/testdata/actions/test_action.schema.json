@@ -1,6 +1,5 @@
 {
     "block": {
-        "unlinked": {},
         "attributes": {
             "required_attr": {
                 "description_kind": "plain",

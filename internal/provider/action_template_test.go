@@ -22,7 +22,7 @@ tffile: {{ tffile .ExampleFile }}
 	expectedString := `
 Printf tffile: {{tffile "action.tf"}}
 tffile: terraform
-action "scaffolding_unlinked_example" "example1" {
+action "scaffolding_example" "example1" {
   config {
     required_attr = "value-1"
   }
@@ -33,7 +33,6 @@ action "scaffolding_unlinked_example" "example1" {
 	tpl := actionTemplate(template)
 
 	schema := tfjson.ActionSchema{
-		Unlinked: &tfjson.UnlinkedSchemaType{},
 		Block: &tfjson.SchemaBlock{
 			Attributes: map[string]*tfjson.SchemaAttribute{
 				"required_attr": {

@@ -1,5 +1,5 @@
 kind: FEATURES
-body: 'migrate: Add support for unlinked actions'
+body: 'migrate: Add support for actions'
 time: 2025-08-11T17:41:41.553344-04:00
 custom:
     Issue: "505"

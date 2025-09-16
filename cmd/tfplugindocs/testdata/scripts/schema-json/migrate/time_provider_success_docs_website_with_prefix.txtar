@@ -16,7 +16,7 @@ cmpenv templates/resources/rotating.md.tmpl exp-templates/resources/rotating.md.
 cmpenv templates/resources/sleep.md.tmpl exp-templates/resources/sleep.md.tmpl
 cmpenv templates/resources/static.md.tmpl exp-templates/resources/static.md.tmpl
 cmpenv templates/ephemeral-resources/ephemeral_static.md.tmpl exp-templates/ephemeral-resources/ephemeral_static.md.tmpl
-cmpenv templates/actions/unlinked_example.md.tmpl exp-templates/actions/unlinked_example.md.tmpl
+cmpenv templates/actions/example.md.tmpl exp-templates/actions/example.md.tmpl
 
 # Check generated example files
 cmpenv examples/example_1.tf examples/example_1.tf
@@ -45,18 +45,18 @@ cmpenv examples/ephemeral-resources/ephemeral_static/example_1.tf exp-examples/e
 cmpenv examples/ephemeral-resources/ephemeral_static/example_2.tf exp-examples/ephemeral-resources/ephemeral_static/example_2.tf
 cmpenv examples/ephemeral-resources/ephemeral_static/import_1.sh exp-examples/ephemeral-resources/ephemeral_static/import_1.sh
 
-cmpenv examples/actions/unlinked_example/example_1.tf exp-examples/actions/unlinked_example/example_1.tf
-cmpenv examples/actions/unlinked_example/example_2.tf exp-examples/actions/unlinked_example/example_2.tf
+cmpenv examples/actions/example/example_1.tf exp-examples/actions/example/example_1.tf
+cmpenv examples/actions/example/example_2.tf exp-examples/actions/example/example_2.tf
 
 -- expected-output.txt --
 migrating website from "$WORK/docs" to "$WORK/templates"
 migrating actions directory: actions
-migrating file "time_unlinked_example.html.markdown"
-extracting YAML frontmatter to "$WORK/templates/actions/unlinked_example.md.tmpl"
-extracting code examples from "time_unlinked_example.html.markdown"
-creating example file "$WORK/examples/actions/unlinked_example/example_1.tf"
-creating example file "$WORK/examples/actions/unlinked_example/example_2.tf"
-finished creating template "$WORK/templates/actions/unlinked_example.md.tmpl"
+migrating file "time_example.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/actions/example.md.tmpl"
+extracting code examples from "time_example.html.markdown"
+creating example file "$WORK/examples/actions/example/example_1.tf"
+creating example file "$WORK/examples/actions/example/example_2.tf"
+finished creating template "$WORK/templates/actions/example.md.tmpl"
 migrating ephemeral resources directory: ephemeral-resources
 migrating file "time_ephemeral_static.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/ephemeral-resources/ephemeral_static.md.tmpl"
@@ -539,10 +539,10 @@ $ terraform import time_static.example 2020-02-12T06:36:13Z
 ```
 
 The `triggers` argument cannot be imported.
--- docs/actions/time_unlinked_example.html.markdown --
+-- docs/actions/time_example.html.markdown --
 ---
 layout: "time"
-page_title: "Time: time_unlinked_example"
+page_title: "Time: time_example"
 description: |-
   Just a fake example.
 ---
@@ -550,7 +550,7 @@ description: |-
 Just a fake example.
 
 ```hcl
-action "scaffolding_unlinked_example" "example1" {
+action "scaffolding_example" "example1" {
   config {
     required_attr = "value-1"
   }
@@ -558,7 +558,7 @@ action "scaffolding_unlinked_example" "example1" {
 ```
 
 ```hcl
-action "scaffolding_unlinked_example" "example2" {
+action "scaffolding_example" "example2" {
   config {
     required_attr = "value-2"
   }
@@ -789,14 +789,14 @@ resource "aws_instance" "server" {
 }
 -- exp-examples/resources/static/import_1.sh --
 $ terraform import time_static.example 2020-02-12T06:36:13Z
--- exp-examples/actions/unlinked_example/example_1.tf --
-action "scaffolding_unlinked_example" "example1" {
+-- exp-examples/actions/example/example_1.tf --
+action "scaffolding_example" "example1" {
   config {
     required_attr = "value-1"
   }
 }
--- exp-examples/actions/unlinked_example/example_2.tf --
-action "scaffolding_unlinked_example" "example2" {
+-- exp-examples/actions/example/example_2.tf --
+action "scaffolding_example" "example2" {
   config {
     required_attr = "value-2"
   }
@@ -1184,9 +1184,9 @@ This resource can be imported using the UTC RFC3339 value, e.g.
 {{codefile "shell" "examples/ephemeral-resources/ephemeral_static/import_1.sh"}}
 
 The `triggers` argument cannot be imported.
--- exp-templates/actions/unlinked_example.md.tmpl --
+-- exp-templates/actions/example.md.tmpl --
 ---
-page_title: "Time: time_unlinked_example"
+page_title: "Time: time_example"
 description: |-
   Just a fake example.
 ---
@@ -1197,6 +1197,6 @@ For example, the {{ .SchemaMarkdown }} template can be used to replace manual sc
 
 Just a fake example.
 
-{{tffile "examples/actions/unlinked_example/example_1.tf"}}
+{{tffile "examples/actions/example/example_1.tf"}}
 
-{{tffile "examples/actions/unlinked_example/example_2.tf"}}
+{{tffile "examples/actions/example/example_2.tf"}}

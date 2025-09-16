@@ -27,10 +27,10 @@ cmp templates/ephemeral-resources/example.markdown docs/ephemeral-resources/exam
 cmp templates/ephemeral-resources/example.html.markdown docs/ephemeral-resources/example.html.markdown
 cmp templates/ephemeral-resources/example.html.md docs/ephemeral-resources/example.html.md
 
-cmp templates/actions/unlinked_example.md docs/actions/unlinked_example.md
-cmp templates/actions/unlinked_example.markdown docs/actions/unlinked_example.markdown
-cmp templates/actions/unlinked_example.html.markdown docs/actions/unlinked_example.html.markdown
-cmp templates/actions/unlinked_example.html.md docs/actions/unlinked_example.html.md
+cmp templates/actions/example.md docs/actions/example.md
+cmp templates/actions/example.markdown docs/actions/example.markdown
+cmp templates/actions/example.html.markdown docs/actions/example.html.markdown
+cmp templates/actions/example.html.md docs/actions/example.html.md
 
 cmp templates/index.md docs/index.md
 cmp templates/index.markdown docs/index.markdown
@@ -51,16 +51,16 @@ function "example" static file exists, skipping
 generating missing ephemeral resource content
 ephemeral resource "scaffolding_example" static file exists, skipping
 generating missing action content
-action "scaffolding_unlinked_example" static file exists, skipping
+action "scaffolding_example" static file exists, skipping
 generating missing provider content
 provider "terraform-provider-scaffolding" static file exists, skipping
 rendering static website
 cleaning rendered website dir
 rendering templated website to static markdown
-copying non-template file: "actions/unlinked_example.html.markdown"
-copying non-template file: "actions/unlinked_example.html.md"
-copying non-template file: "actions/unlinked_example.markdown"
-copying non-template file: "actions/unlinked_example.md"
+copying non-template file: "actions/example.html.markdown"
+copying non-template file: "actions/example.html.md"
+copying non-template file: "actions/example.markdown"
+copying non-template file: "actions/example.md"
 copying non-template file: "data-sources/example.html.markdown"
 copying non-template file: "data-sources/example.html.md"
 copying non-template file: "data-sources/example.markdown"
@@ -81,22 +81,22 @@ copying non-template file: "resources/example.html.markdown"
 copying non-template file: "resources/example.html.md"
 copying non-template file: "resources/example.markdown"
 copying non-template file: "resources/example.md"
--- templates/actions/unlinked_example.md --
+-- templates/actions/example.md --
 # Data Fields
 
 Name: {{.Name}}
 Type: {{.Type}}
--- templates/actions/unlinked_example.markdown --
+-- templates/actions/example.markdown --
 # Data Fields
 
 Name: {{.Name}}
 Type: {{.Type}}
--- templates/actions/unlinked_example.html.markdown --
+-- templates/actions/example.html.markdown --
 # Data Fields
 
 Name: {{.Name}}
 Type: {{.Type}}
--- templates/actions/unlinked_example.html.md --
+-- templates/actions/example.html.md --
 # Data Fields
 
 Name: {{.Name}}
@@ -211,8 +211,8 @@ The document generation tool looks for files in the following locations by defau
 * **provider/provider.tf** example file for the provider index page
 * **data-sources/`full data source name`/data-source.tf** example file for the named data source page
 * **resources/`full resource name`/resource.tf** example file for the named data source page
--- examples/actions/scaffolding_unlinked_example/action.tf --
-action "scaffolding_unlinked_example" "example" {
+-- examples/actions/scaffolding_example/action.tf --
+action "scaffolding_example" "example" {
   config {
     required_attr = "some-value"
   }
@@ -265,7 +265,7 @@ terraform import scaffolding_example.example "id-123"
                 }
             },
             "action_schemas": {
-                "scaffolding_unlinked_example": {
+                "scaffolding_example": {
                     "version": 0,
                     "block": {
                         "attributes": {
@@ -282,10 +282,9 @@ terraform import scaffolding_example.example "id-123"
                                 "optional": true
                             }
                         },
-                        "description": "Example unlinked action",
+                        "description": "Example action",
                         "description_kind": "plain"
-                    },
-                    "unlinked": {}
+                    }
                 }
             },
             "resource_schemas": {

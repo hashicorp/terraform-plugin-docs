@@ -12,7 +12,7 @@ getting provider schema
 running mixed directories check
 detected static docs directory, running checks
 running invalid directories check on docs/actions
-running file checks on docs/actions/unlinked_example.md
+running file checks on docs/actions/example.md
 running invalid directories check on docs/data-sources
 running file checks on docs/data-sources/example.md
 running invalid directories check on docs/ephemeral-resources
@@ -37,7 +37,7 @@ description: |-
 
 Example contents.
 
--- docs/actions/unlinked_example.md --
+-- docs/actions/example.md --
 ---
 subcategory: "Example"
 page_title: "Example: example_thing"
@@ -123,7 +123,7 @@ Type: {{.Type}}
         }
       },
       "action_schemas": {
-        "scaffolding_unlinked_example": {
+        "scaffolding_example": {
           "version": 0,
           "block": {
             "attributes": {
@@ -140,10 +140,9 @@ Type: {{.Type}}
                 "optional": true
               }
             },
-            "description": "Example unlinked action",
+            "description": "Example action",
             "description_kind": "plain"
-          },
-          "unlinked": {}
+          }
         }
       },
       "resource_schemas": {

@@ -161,9 +161,9 @@ func TestRenderAction(t *testing.T) {
 		expectedFile string
 	}{
 		{
-			"test_unlinked_action",
-			"testdata/actions/test_unlinked_action.schema.json",
-			"testdata/actions/test_unlinked_action.md",
+			"test_action",
+			"testdata/actions/test_action.schema.json",
+			"testdata/actions/test_action.md",
 		},
 	} {
 		t.Run(c.name, func(t *testing.T) {

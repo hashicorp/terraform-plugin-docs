@@ -12,7 +12,7 @@ getting provider schema
 running mixed directories check
 detected legacy website directory, running checks
 running invalid directories check on website/docs/actions
-running file checks on website/docs/actions/unlinked_example.html.md
+running file checks on website/docs/actions/example.html.md
 running invalid directories check on website/docs/d
 running file checks on website/docs/d/example.html.md
 running invalid directories check on website/docs/ephemeral-resources
@@ -38,7 +38,7 @@ description: |-
 
 Example contents.
 
--- website/docs/actions/unlinked_example.html.md --
+-- website/docs/actions/example.html.md --
 ---
 subcategory: "Example"
 layout: "example"
@@ -130,7 +130,7 @@ Type: {{.Type}}
         }
       },
       "action_schemas": {
-        "scaffolding_unlinked_example": {
+        "scaffolding_example": {
           "version": 0,
           "block": {
             "attributes": {
@@ -147,10 +147,9 @@ Type: {{.Type}}
                 "optional": true
               }
             },
-            "description": "Example unlinked action",
+            "description": "Example action",
             "description_kind": "plain"
-          },
-          "unlinked": {}
+          }
         }
       },
       "resource_schemas": {
