@@ -38,9 +38,6 @@ func Render(schema *tfjson.Schema, w io.Writer) error {
 
 // RenderAction is a variant of Render for action schemas. Action schemas share the same config block as
 // resource schemas, with the addition of other schema data based on the type of action it is.
-//
-// Currently, the only action type is unlinked, which has no additional information to document, but future
-// actions may have useful information to generate documentation for (example: linked resources).
 func RenderAction(schema *tfjson.ActionSchema, w io.Writer) error {
 	_, err := io.WriteString(w, "## Schema\n\n")
 	if err != nil {
