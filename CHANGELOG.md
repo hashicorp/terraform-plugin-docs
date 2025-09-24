@@ -1,3 +1,11 @@
+## 0.23.0 (September 17, 2025)
+
+FEATURES:
+
+* generate: Add support for actions ([#505](https://github.com/hashicorp/terraform-plugin-docs/issues/505))
+* migrate: Add support for actions ([#505](https://github.com/hashicorp/terraform-plugin-docs/issues/505))
+* validate: Add support for actions ([#505](https://github.com/hashicorp/terraform-plugin-docs/issues/505))
+
 ## 0.22.0 (July 01, 2025)
 
 BREAKING CHANGES:
