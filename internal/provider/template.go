@@ -40,6 +40,66 @@ type (
 	docTemplate string
 )
 
+type ResourceTemplateType struct {
+	Type        string
+	Name        string
+	Description string
+
+	HasExample  bool
+	ExampleFile string
+
+	HasImport  bool
+	ImportFile string
+
+	HasImportIDConfig  bool
+	ImportIDConfigFile string
+
+	HasImportIdentityConfig  bool
+	ImportIdentityConfigFile string
+	IdentitySchemaMarkdown   string
+
+	ProviderName      string
+	ProviderShortName string
+
+	SchemaMarkdown string
+
+	RenderedProviderName string
+}
+
+type ProviderTemplateType struct {
+	Description string
+
+	HasExample  bool
+	ExampleFile string
+
+	ProviderName      string
+	ProviderShortName string
+	SchemaMarkdown    string
+
+	RenderedProviderName string
+}
+
+type FunctionTemplateType struct {
+	Type        string
+	Name        string
+	Description string
+	Summary     string
+
+	HasExample  bool
+	ExampleFile string
+
+	ProviderName      string
+	ProviderShortName string
+
+	FunctionSignatureMarkdown string
+	FunctionArgumentsMarkdown string
+
+	HasVariadic                      bool
+	FunctionVariadicArgumentMarkdown string
+
+	RenderedProviderName string
+}
+
 func newTemplate(providerDir, name, text string) (*template.Template, error) {
 	tmpl := template.New(name)
 	titleCaser := cases.Title(language.Und)
@@ -132,18 +192,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 		return "", nil
 	}
 
-	return renderStringTemplate(providerDir, "providerTemplate", s, struct {
-		Description string
-
-		HasExample  bool
-		ExampleFile string
-
-		ProviderName      string
-		ProviderShortName string
-		SchemaMarkdown    string
-
-		RenderedProviderName string
-	}{
+	return renderStringTemplate(providerDir, "providerTemplate", s, ProviderTemplateType{
 		Description: schema.Block.Description,
 
 		HasExample:  exampleFile != "" && fileExists(exampleFile),
@@ -189,31 +238,7 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		return "", fmt.Errorf("unable to render: an identity import example (%q) was provided for a resource (%q) that does not support resource identity", importIdentityConfigFile, name)
 	}
 
-	return renderStringTemplate(providerDir, "resourceTemplate", s, struct {
-		Type        string
-		Name        string
-		Description string
-
-		HasExample  bool
-		ExampleFile string
-
-		HasImport  bool
-		ImportFile string
-
-		HasImportIDConfig  bool
-		ImportIDConfigFile string
-
-		HasImportIdentityConfig  bool
-		ImportIdentityConfigFile string
-		IdentitySchemaMarkdown   string
-
-		ProviderName      string
-		ProviderShortName string
-
-		SchemaMarkdown string
-
-		RenderedProviderName string
-	}{
+	return renderStringTemplate(providerDir, "resourceTemplate", s, ResourceTemplateType{
 		Type:        typeName,
 		Name:        name,
 		Description: schema.Block.Description,
@@ -261,26 +286,7 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 		return "", nil
 	}
 
-	return renderStringTemplate(providerDir, "resourceTemplate", s, struct {
-		Type        string
-		Name        string
-		Description string
-		Summary     string
-
-		HasExample  bool
-		ExampleFile string
-
-		ProviderName      string
-		ProviderShortName string
-
-		FunctionSignatureMarkdown string
-		FunctionArgumentsMarkdown string
-
-		HasVariadic                      bool
-		FunctionVariadicArgumentMarkdown string
-
-		RenderedProviderName string
-	}{
+	return renderStringTemplate(providerDir, "resourceTemplate", s, FunctionTemplateType{
 		Type:        typeName,
 		Name:        name,
 		Description: signature.Description,
