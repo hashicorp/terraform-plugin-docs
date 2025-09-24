@@ -198,20 +198,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 		return "", nil
 	}
 
-	return renderStringTemplate(providerDir, "providerTemplate", s, struct {
-		Description string
-
-		HasExample   bool
-		HasExamples  bool
-		ExampleFile  string
-		ExampleFiles []string
-
-		ProviderName      string
-		ProviderShortName string
-		SchemaMarkdown    string
-
-		RenderedProviderName string
-	}{
+	return renderStringTemplate(providerDir, "providerTemplate", s, ProviderTemplateType{
 		Description: schema.Block.Description,
 
 		HasExample:   exampleFile != "" && fileExists(exampleFile),
