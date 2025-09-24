@@ -11,6 +11,8 @@ exporting schema from JSON file
 getting provider schema
 running mixed directories check
 detected legacy website directory, running checks
+running invalid directories check on website/docs/actions
+running file checks on website/docs/actions/example.html.md
 running invalid directories check on website/docs/d
 running file checks on website/docs/d/example.html.md
 running invalid directories check on website/docs/ephemeral-resources
@@ -36,6 +38,18 @@ description: |-
 
 Example contents.
 
+-- website/docs/actions/example.html.md --
+---
+subcategory: "Example"
+layout: "example"
+page_title: "Example: example_thing"
+description: |-
+  Example description.
+---
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
 -- website/docs/r/example.html.md --
 ---
 subcategory: "Example"
@@ -113,6 +127,29 @@ Type: {{.Type}}
           },
           "description": "Example provider",
           "description_kind": "markdown"
+        }
+      },
+      "action_schemas": {
+        "scaffolding_example": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "required_attr": {
+                "type": "string",
+                "description": "Example required attribute",
+                "description_kind": "plain",
+                "required": true
+              },
+              "optional_attr": {
+                "type": "string",
+                "description": "Example optional attribute",
+                "description_kind": "plain",
+                "optional": true
+              }
+            },
+            "description": "Example action",
+            "description_kind": "plain"
+          }
         }
       },
       "resource_schemas": {

@@ -27,6 +27,7 @@ generating missing data source content
 data-source "scaffolding_example" fallback template exists, creating template
 generating missing function content
 generating missing ephemeral resource content
+generating missing action content
 generating missing provider content
 provider "terraform-provider-scaffolding" template exists, skipping
 rendering static website
