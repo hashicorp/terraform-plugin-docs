@@ -45,8 +45,10 @@ type ResourceTemplateType struct {
 	Name        string
 	Description string
 
-	HasExample  bool
-	ExampleFile string
+	HasExample   bool
+	HasExamples  bool
+	ExampleFile  string
+	ExampleFiles []string
 
 	HasImport  bool
 	ImportFile string
@@ -69,8 +71,10 @@ type ResourceTemplateType struct {
 type ProviderTemplateType struct {
 	Description string
 
-	HasExample  bool
-	ExampleFile string
+	HasExample   bool
+	HasExamples  bool
+	ExampleFile  string
+	ExampleFiles []string
 
 	ProviderName      string
 	ProviderShortName string
@@ -85,8 +89,10 @@ type FunctionTemplateType struct {
 	Description string
 	Summary     string
 
-	HasExample  bool
-	ExampleFile string
+	HasExample   bool
+	HasExamples  bool
+	ExampleFile  string
+	ExampleFiles []string
 
 	ProviderName      string
 	ProviderShortName string
@@ -180,7 +186,7 @@ func (t docTemplate) Render(providerDir string, out io.Writer) error {
 	return renderTemplate(providerDir, "docTemplate", s, out, nil)
 }
 
-func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, schema *tfjson.Schema) (string, error) {
+func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, exampleFiles []string, schema *tfjson.Schema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -195,8 +201,10 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 	return renderStringTemplate(providerDir, "providerTemplate", s, ProviderTemplateType{
 		Description: schema.Block.Description,
 
-		HasExample:  exampleFile != "" && fileExists(exampleFile),
-		ExampleFile: exampleFile,
+		HasExample:   exampleFile != "" && fileExists(exampleFile),
+		HasExamples:  len(exampleFiles) > 0,
+		ExampleFile:  exampleFile,
+		ExampleFiles: exampleFiles,
 
 		ProviderName:      providerName,
 		ProviderShortName: providerShortName(renderedProviderName),
@@ -207,7 +215,7 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 	})
 }
 
-func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile, importIDConfigFile, importIdentityConfigFile, importCmdFile string, schema *tfjson.Schema, identitySchema *tfjson.IdentitySchema) (string, error) {
+func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, importIDConfigFile, importIdentityConfigFile, importCmdFile string, schema *tfjson.Schema, identitySchema *tfjson.IdentitySchema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -243,8 +251,10 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		Name:        name,
 		Description: schema.Block.Description,
 
-		HasExample:  exampleFile != "" && fileExists(exampleFile),
-		ExampleFile: exampleFile,
+		HasExample:   exampleFile != "" && fileExists(exampleFile),
+		HasExamples:  len(exampleFiles) > 0,
+		ExampleFile:  exampleFile,
+		ExampleFiles: exampleFiles,
 
 		HasImport:  importCmdFile != "" && fileExists(importCmdFile),
 		ImportFile: importCmdFile,
@@ -265,7 +275,7 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 	})
 }
 
-func (t functionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, signature *tfjson.FunctionSignature) (string, error) {
+func (t functionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, signature *tfjson.FunctionSignature) (string, error) {
 	funcSig, err := functionmd.RenderSignature(name, signature)
 	if err != nil {
 		return "", fmt.Errorf("unable to render function signature: %w", err)
@@ -292,8 +302,10 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 		Description: signature.Description,
 		Summary:     signature.Summary,
 
-		HasExample:  exampleFile != "" && fileExists(exampleFile),
-		ExampleFile: exampleFile,
+		HasExample:   exampleFile != "" && fileExists(exampleFile),
+		HasExamples:  len(exampleFiles) > 0,
+		ExampleFile:  exampleFile,
+		ExampleFiles: exampleFiles,
 
 		ProviderName:      providerName,
 		ProviderShortName: providerShortName(renderedProviderName),
@@ -320,10 +332,13 @@ description: |-
 
 {{ .Description | trimspace }}
 
-{{ if .HasExample -}}
+{{ if .HasExamples -}}
 ## Example Usage
 
-{{tffile .ExampleFile }}
+{{- range .ExampleFiles }}
+
+{{ tffile . }}
+{{- end }}
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
@@ -367,10 +382,13 @@ description: |-
 
 {{ .Description | trimspace }}
 
-{{ if .HasExample -}}
+{{ if .HasExamples -}}
 ## Example Usage
 
-{{tffile .ExampleFile }}
+{{- range .ExampleFiles }}
+
+{{ tffile . }}
+{{- end }}
 {{- end }}
 
 ## Signature
@@ -396,10 +414,13 @@ description: |-
 
 {{ .Description | trimspace }}
 
-{{ if .HasExample -}}
+{{ if .HasExamples -}}
 ## Example Usage
 
-{{tffile .ExampleFile }}
+{{- range .ExampleFiles }}
+
+{{ tffile . }}
+{{- end }}
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
