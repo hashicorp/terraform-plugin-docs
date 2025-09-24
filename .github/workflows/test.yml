@@ -1,7 +1,13 @@
 name: test
 
 on:
-  push:
+  pull_request:
+    paths:
+      - .github/workflows/test.yml
+      - .golangci.yml
+      - go.mod
+      - '**.go'
+      - '**.txtar'
 
 jobs:
   test:
