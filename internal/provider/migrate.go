@@ -146,6 +146,13 @@ func (m *migrator) Migrate() error {
 					return err
 				}
 				return filepath.SkipDir
+			case "list-resources":
+				m.infof("migrating list resources directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("list-resources"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
 			}
 		} else {
 			switch {

@@ -8,6 +8,29 @@
           "description_kind": "plain"
         }
       },
+      "list_resource_schemas": {
+        "null_list_resource": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "required_attr": {
+                "type": "string",
+                "description": "Required attribute",
+                "description_kind": "plain",
+                "required": true
+              },
+              "optional_attr": {
+                "type": "string",
+                "description": "Optional attribute",
+                "description_kind": "plain",
+                "optional": true
+              }
+            },
+            "description": "Example list resource",
+            "description_kind": "plain"
+          }
+        }
+      },
       "action_schemas": {
         "null_fake_action": {
           "version": 0,

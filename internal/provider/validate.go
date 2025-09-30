@@ -26,8 +26,8 @@ const (
 	FileExtensionMarkdown     = `.markdown`
 	FileExtensionMd           = `.md`
 
-	DocumentationGlobPattern    = `{docs/index.*,docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,resources,functions}/**/*,website/docs/**/*}`
-	DocumentationDirGlobPattern = `{docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,resources,functions}{,/*},website/docs/**/*}`
+	DocumentationGlobPattern    = `{docs/index.*,docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,list-resources,resources,functions}/**/*,website/docs/**/*}`
+	DocumentationDirGlobPattern = `{docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,list-resources,resources,functions}{,/*},website/docs/**/*}`
 )
 
 var ValidLegacyFileExtensions = []string{
@@ -318,6 +318,10 @@ func (v *validator) validateStaticDocs() error {
 		actionFiles, _ := fs.ReadDir(v.providerFS, dir+"/actions")
 		mismatchOpt.ActionEntries = actionFiles
 	}
+	if dirExists(v.providerFS, dir+"/list-resources") {
+		listResourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/list-resources")
+		mismatchOpt.ListResourceEntries = listResourceFiles
+	}
 
 	v.logger.infof("running file mismatch check")
 	if err := check.NewFileMismatchCheck(mismatchOpt).Run(); err != nil {
@@ -408,6 +412,10 @@ func (v *validator) validateLegacyWebsite() error {
 	if dirExists(v.providerFS, dir+"/actions") {
 		actionFiles, _ := fs.ReadDir(v.providerFS, dir+"/actions")
 		mismatchOpt.ActionEntries = actionFiles
+	}
+	if dirExists(v.providerFS, dir+"/list-resources") {
+		listResourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/list-resources")
+		mismatchOpt.ListResourceEntries = listResourceFiles
 	}
 
 	v.logger.infof("running file mismatch check")

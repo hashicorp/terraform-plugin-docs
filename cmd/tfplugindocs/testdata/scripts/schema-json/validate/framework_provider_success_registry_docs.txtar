@@ -22,6 +22,8 @@ running file checks on docs/functions/example.md
 running invalid directories check on docs/guides
 running file checks on docs/guides/example.md
 running file checks on docs/index.md
+running invalid directories check on docs/list-resources
+running file checks on docs/list-resources/example.md
 running invalid directories check on docs/resources
 running file checks on docs/resources/example.md
 running file mismatch check
@@ -38,6 +40,17 @@ description: |-
 Example contents.
 
 -- docs/actions/example.md --
+---
+subcategory: "Example"
+page_title: "Example: example_thing"
+description: |-
+  Example description.
+---
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- docs/list-resources/example.md --
 ---
 subcategory: "Example"
 page_title: "Example: example_thing"
@@ -121,6 +134,29 @@ Type: {{.Type}}
           "description": "Example provider",
           "description_kind": "markdown"
         }
+      },
+      "list_resource_schemas": {
+        "scaffolding_example": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "required_attr": {
+                "type": "string",
+                "description": "Example required attribute",
+                "description_kind": "plain",
+                "required": true
+              },
+              "optional_attr": {
+                "type": "string",
+                "description": "Example optional attribute",
+                "description_kind": "plain",
+                "optional": true
+                }
+              },
+              "description": "Example list resource",
+              "description_kind": "plain"
+            }
+         }
       },
       "action_schemas": {
         "scaffolding_example": {
