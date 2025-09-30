@@ -29,6 +29,7 @@ generating new template for function "no-variadic"
 generating missing ephemeral resource content
 generating new template for "scaffolding_example"
 generating missing action content
+generating new template for "scaffolding_example"
 generating missing list resource content
 generating new template for "scaffolding_example"
 generating missing provider content
@@ -361,7 +362,7 @@ action "scaffolding_example" "example" {
     required_attr = "some-value"
   }
 }
--- examples/list-resources/scaffolding_example/list.tfquery.hcl --
+-- examples/list-resources/scaffolding_example/list-resource.tfquery.hcl --
 list "scaffolding_example" "example" {
   provider = scaffolding
 

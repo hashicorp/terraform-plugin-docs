@@ -45,7 +45,7 @@ rendering "functions/example.md.tmpl"
 rendering "index.md.tmpl"
 rendering "list-resources/example.md.tmpl"
 rendering "resources/example.md.tmpl"
--- expected-unlinked-action.md --
+-- expected-action.md --
 # Data Fields
 
 Name: scaffolding_example

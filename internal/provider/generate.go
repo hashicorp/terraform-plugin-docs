@@ -886,10 +886,16 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		case "list-resources/":
 			resSchema, resName := resourceSchema(providerSchema.ListResourceSchemas, shortName, relFile)
 			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "list-resources", resName, "list.tfquery.hcl")
+			exampleFilesPattern := filepath.Join(g.ProviderExamplesDir(), "list-resources", resName, "list-resource*.tfquery.hcl")
+			exampleFiles, err := filepath.Glob(exampleFilesPattern)
+
+			if err != nil {
+				return fmt.Errorf("unable to glob example files with pattern %q: %w", exampleFilesPattern, err)
+			}
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "List Resource", exampleFilePath, "", "", "", resSchema, nil)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "List Resource", exampleFilePath, exampleFiles, "", "", "", resSchema, nil)
 				if err != nil {
 					return fmt.Errorf("unable to render list resource template %q: %w", rel, err)
 				}
