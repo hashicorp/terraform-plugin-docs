@@ -248,7 +248,7 @@ action "scaffolding_example" "example" {
     required_attr = "some-value"
   }
 }
--- examples/list-resources/scaffolding_example/list-resource.tf --
+-- examples/list-resources/scaffolding_example/list-resource.tfquery.hcl --
 list "scaffolding_example" "example" {
   provider = scaffolding
 

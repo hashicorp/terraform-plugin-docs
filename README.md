@@ -237,7 +237,7 @@ For examples:
 | `examples/data-sources/<data source name>/data-source<*>.tf`                 | Data source example config(s)              |
 | `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource<*>.tf` | Ephemeral resource example config(s)       |
 | `examples/functions/<function name>/function<*>.tf`                          | Function example config(s)                 |
-| `examples/list-resources/<list resource>/list-resource.tf`                   | List resource example config               |
+| `examples/list-resources/<list resource>/list-resource<*>.tfquery.hcl`       | List resource example config(s)            |
 | `examples/resources/<resource name>/resource<*>.tf`                          | Resource example config(s)                 |
 | `examples/resources/<resource name>/import.sh`                               | Resource example import command            |
 | `examples/resources/<resource name>/import-by-string-id.tf`                  | Resource example import by id config       |
@@ -365,17 +365,19 @@ using the following data fields and functions:
 
 ##### List Resource Fields
 
-| Field                   | Type   | Description                                                                               |
-|-------------------------|--------|-------------------------------------------------------------------------------------------|
-| `.Name`                 | string | Name of the list resource (ex. `examplecloud_thing`)                                      |
-| `.Type`                 | string | `List Resource`                                                                           |
-| `.Description`          | string | List resource description                                                                 |
-| `.HasExample`           | bool   | Is there an example file?                                                                 |
-| `.ExampleFile`          | string | Path to the file with the terraform configuration example                                 |
-| `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
-| `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                |
-| `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
-| `.SchemaMarkdown`       | string | a Markdown formatted list resource Schema definition                                      |
+| Field                   | Type   | Description                                                                                                                                    |
+|-------------------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.Name`                 | string | Name of the list resource (ex. `examplecloud_thing`)                                                                                           |
+| `.Type`                 | string | `List Resource`                                                                                                                                |
+| `.Description`          | string | List resource description                                                                                                                      |
+| `.HasExample`           | bool   | (Legacy) Is there an example file?                                                                                                             |
+| `.HasExamples`          | bool   | Are there example files? Always true if HasExample is true.                                                                                    |
+| `.ExampleFile`          | string | (Legacy) Path to the file with the terraform configuration example                                                                             |
+| `.ExampleFiles`         | string | Paths to the files with terraform configuration examples. Includes ExampleFile. The file extension for ExampleFiles should be `*.tfquery.hcl`. |
+| `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                                                                      |
+| `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                                                                     |
+| `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName`                                                      |
+| `.SchemaMarkdown`       | string | a Markdown formatted list resource Schema definition                                                                                           |
 
 #### Template Functions
 

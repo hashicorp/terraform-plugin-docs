@@ -885,13 +885,15 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 			g.warnf("action entitled %q, or %q does not exist", shortName, resName)
 		case "list-resources/":
 			resSchema, resName := resourceSchema(providerSchema.ListResourceSchemas, shortName, relFile)
-			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "list-resources", resName, "list.tfquery.hcl")
+			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "list-resources", resName, "list-resource.tfquery.hcl")
 			exampleFilesPattern := filepath.Join(g.ProviderExamplesDir(), "list-resources", resName, "list-resource*.tfquery.hcl")
 			exampleFiles, err := filepath.Glob(exampleFilesPattern)
 
 			if err != nil {
 				return fmt.Errorf("unable to glob example files with pattern %q: %w", exampleFilesPattern, err)
 			}
+
+			slices.Sort(exampleFiles)
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)

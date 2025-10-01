@@ -49,7 +49,7 @@ cmpenv examples/ephemeral-resources/ephemeral_static/import_1.sh exp-examples/ep
 cmpenv examples/actions/example/example_1.tf exp-examples/actions/example/example_1.tf
 cmpenv examples/actions/example/example_2.tf exp-examples/actions/example/example_2.tf
 
-cmpenv examples/list-resources/example/example_1.tf exp-examples/list-resources/example/example_1.tf
+cmpenv examples/list-resources/example/example_1.tfquery.hcl exp-examples/list-resources/example/example_1.tfquery.hcl
 
 -- expected-output.txt --
 migrating website from "$WORK/docs" to "$WORK/templates"
@@ -85,7 +85,7 @@ migrating list resources directory: list-resources
 migrating file "example.html.markdown"
 extracting YAML frontmatter to "$WORK/templates/list-resources/example.md.tmpl"
 extracting code examples from "example.html.markdown"
-creating example file "$WORK/examples/list-resources/example/example_1.tf"
+creating example file "$WORK/examples/list-resources/example/example_1.tfquery.hcl"
 finished creating template "$WORK/templates/list-resources/example.md.tmpl"
 migrating resources directory: resources
 migrating file "time_offset.html.markdown"
@@ -829,7 +829,7 @@ action "scaffolding_example" "example2" {
     required_attr = "value-2"
   }
 }
--- exp-examples/list-resources/example/example_1.tf --
+-- exp-examples/list-resources/example/example_1.tfquery.hcl --
 list "scaffolding_example" "example" {
   provider = scaffolding
 
@@ -1249,4 +1249,4 @@ For example, the {{ .SchemaMarkdown }} template can be used to replace manual sc
 
 Just a fake example.
 
-{{tffile "examples/list-resources/example/example_1.tf"}}
+{{tffile "examples/list-resources/example/example_1.tfquery.hcl"}}

@@ -102,7 +102,7 @@ Name: scaffolding_example
 Type: List Resource
 Description: Example list resource
 HasExample: true
-ExampleFile: $WORK/examples/list-resources/scaffolding_example/list.tfquery.hcl
+ExampleFile: $WORK/examples/list-resources/scaffolding_example/list-resource.tfquery.hcl
 ProviderName: terraform-provider-scaffolding
 ProviderShortName: Scaffolding
 RenderedProviderName: Scaffolding
@@ -134,7 +134,7 @@ upper: LIST RESOURCE
 printf tffile:
 ## Example Usage
 
-{{tffile "$WORK/examples/list-resources/scaffolding_example/list.tfquery.hcl"}}
+{{tffile "$WORK/examples/list-resources/scaffolding_example/list-resource.tfquery.hcl"}}
 
 tffile:
 ## Example Usage
@@ -782,7 +782,7 @@ action "scaffolding_example" "example" {
     required_attr = "some-value"
   }
 }
--- examples/list-resources/scaffolding_example/list.tfquery.hcl --
+-- examples/list-resources/scaffolding_example/list-resource.tfquery.hcl --
 list "scaffolding_example" "example" {
   provider = scaffolding
 

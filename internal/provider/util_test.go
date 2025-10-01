@@ -113,6 +113,9 @@ func Test_extractSchemaFromFile(t *testing.T) {
 	if providerSchema.ActionSchemas["null_fake_action"] == nil {
 		t.Fatalf("null_fake_action not found")
 	}
+	if providerSchema.ListResourceSchemas["null_list_resource"] == nil {
+		t.Fatalf("null_list_resource not found")
+	}
 	if providerSchema.ResourceSchemas["null_resource"].Block.Attributes["id"] == nil {
 		t.Fatalf("null_resoruce id attribute not found")
 	}
@@ -124,5 +127,8 @@ func Test_extractSchemaFromFile(t *testing.T) {
 	}
 	if providerSchema.ActionSchemas["null_fake_action"].Block.Attributes["required_attr"] == nil {
 		t.Fatalf("null_fake_action required_attr attribute not found")
+	}
+	if providerSchema.ListResourceSchemas["null_list_resource"].Block.Attributes["required_attr"] == nil {
+		t.Fatalf("null_list_resource required_attr attribute not found")
 	}
 }
