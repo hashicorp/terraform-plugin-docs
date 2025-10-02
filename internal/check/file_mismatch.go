@@ -32,6 +32,8 @@ type FileMismatchOptions struct {
 
 	ActionEntries []os.DirEntry
 
+	ListResourceEntries []os.DirEntry
+
 	Schema *tfjson.ProviderSchema
 }
 
@@ -85,6 +87,11 @@ func (check *FileMismatchCheck) Run() error {
 
 	if check.Options.ActionEntries != nil {
 		err := check.ActionFileMismatchCheck(check.Options.ActionEntries, "action", check.Options.Schema.ActionSchemas)
+		result = errors.Join(result, err)
+	}
+
+	if check.Options.ListResourceEntries != nil {
+		err := check.ResourceFileMismatchCheck(check.Options.ListResourceEntries, "list resource", check.Options.Schema.ListResourceSchemas)
 		result = errors.Join(result, err)
 	}
 

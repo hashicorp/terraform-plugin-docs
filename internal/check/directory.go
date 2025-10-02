@@ -20,6 +20,7 @@ const (
 	LegacyResourcesDirectory          = `r`
 	LegacyFunctionsDirectory          = `functions`
 	LegacyActionsDirectory            = `actions`
+	LegacyListResourcesDirectory      = "list-resources"
 
 	RegistryIndexDirectory              = `docs`
 	RegistryDataSourcesDirectory        = `data-sources`
@@ -28,6 +29,7 @@ const (
 	RegistryResourcesDirectory          = `resources`
 	RegistryFunctionsDirectory          = `functions`
 	RegistryActionsDirectory            = `actions`
+	RegistryListResourcesDirectory      = "list-resources"
 
 	// Terraform Registry Storage Limits
 	// https://www.terraform.io/docs/registry/providers/docs.html#storage-limits
@@ -44,6 +46,7 @@ var ValidLegacyDirectories = []string{
 	LegacyIndexDirectory + "/" + LegacyResourcesDirectory,
 	LegacyIndexDirectory + "/" + LegacyFunctionsDirectory,
 	LegacyIndexDirectory + "/" + LegacyActionsDirectory,
+	LegacyIndexDirectory + "/" + LegacyListResourcesDirectory,
 }
 
 var ValidRegistryDirectories = []string{
@@ -54,6 +57,7 @@ var ValidRegistryDirectories = []string{
 	RegistryIndexDirectory + "/" + RegistryResourcesDirectory,
 	RegistryIndexDirectory + "/" + RegistryFunctionsDirectory,
 	RegistryIndexDirectory + "/" + RegistryActionsDirectory,
+	RegistryIndexDirectory + "/" + RegistryListResourcesDirectory,
 }
 
 var ValidCdktfLanguages = []string{
@@ -71,6 +75,7 @@ var ValidLegacySubdirectories = []string{
 	LegacyGuidesDirectory,
 	LegacyResourcesDirectory,
 	LegacyActionsDirectory,
+	LegacyListResourcesDirectory,
 }
 
 var ValidRegistrySubdirectories = []string{
@@ -80,6 +85,7 @@ var ValidRegistrySubdirectories = []string{
 	RegistryGuidesDirectory,
 	RegistryResourcesDirectory,
 	RegistryActionsDirectory,
+	RegistryListResourcesDirectory,
 }
 
 func InvalidDirectoriesCheck(dirPath string) error {

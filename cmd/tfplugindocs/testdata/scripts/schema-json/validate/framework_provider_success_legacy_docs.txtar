@@ -22,6 +22,8 @@ running file checks on website/docs/functions/example.html.md
 running invalid directories check on website/docs/guides
 running file checks on website/docs/guides/example.html.md
 running file checks on website/docs/index.html.md
+running invalid directories check on website/docs/list-resources
+running file checks on website/docs/list-resources/example.html.md
 running invalid directories check on website/docs/r
 running file checks on website/docs/r/example.html.md
 running file mismatch check
@@ -39,6 +41,18 @@ description: |-
 Example contents.
 
 -- website/docs/actions/example.html.md --
+---
+subcategory: "Example"
+layout: "example"
+page_title: "Example: example_thing"
+description: |-
+  Example description.
+---
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- website/docs/list-resources/example.html.md --
 ---
 subcategory: "Example"
 layout: "example"
@@ -128,6 +142,29 @@ Type: {{.Type}}
           "description": "Example provider",
           "description_kind": "markdown"
         }
+      },
+      "list_resource_schemas": {
+        "scaffolding_example": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "required_attr": {
+                "type": "string",
+                "description": "Example required attribute",
+                "description_kind": "plain",
+                "required": true
+              },
+              "optional_attr": {
+                "type": "string",
+                "description": "Example optional attribute",
+                "description_kind": "plain",
+                "optional": true
+                }
+              },
+              "description": "Example list resource",
+              "description_kind": "plain"
+            }
+         }
       },
       "action_schemas": {
         "scaffolding_example": {
