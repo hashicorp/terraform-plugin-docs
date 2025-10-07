@@ -146,6 +146,13 @@ func (m *migrator) Migrate() error {
 					return err
 				}
 				return filepath.SkipDir
+			case "list-resources":
+				m.infof("migrating list resources directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("list-resources"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
 			}
 		} else {
 			switch {
@@ -306,8 +313,13 @@ func (m *migrator) ExtractCodeExamples(content []byte, newRelDir string, templat
 			lang := string(fencedNode.Info.Text(content)[:])
 			switch lang {
 			case "hcl", "terraform":
+
 				exampleCount++
 				ext = ".tf"
+				if strings.Contains(newRelDir, "list-resources") {
+					//m.infof("### DEBUG ### this is a list resource: %s", newRelDir)
+					ext = ".tfquery.hcl"
+				}
 				exampleName = "example_" + strconv.Itoa(exampleCount) + ext
 				examplePath = filepath.Join(m.examplesDir, newRelDir, exampleName)
 				template = fmt.Sprintf("{{tffile \"%s\"}}", examplePath)

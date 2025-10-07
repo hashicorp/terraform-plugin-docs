@@ -118,6 +118,7 @@ When you run `tfplugindocs`, by default from the root directory of a provider co
 * Generate function template files, if missing (Requires Terraform v1.8.0+)
 * Generate ephemeral resource template files, if missing (Requires Terraform v1.10.0+)
 * Generate action template files, if missing (Requires Terraform v1.14.0+)
+* Generate list resource templeate files, if missing (Requires Terraform v1.14.0+)
 * Copy all non-template files to the output website directory
 
 > [!NOTE]
@@ -204,20 +205,22 @@ For templates:
 
 > **NOTE:** In the following conventional paths for templates, `<data source name>`, `<resource name>`, and `<function name>` do not include the provider prefix.
 
-| Path                                                               | Description                                   |
-|--------------------------------------------------------------------|-----------------------------------------------|
-| `templates/`                                                       | Root of templated docs                        |
-| `templates/index.md[.tmpl]`                                        | Docs index page (or template)                 |
-| `templates/actions.md[.tmpl]`                                      | Generic action page (or template)             |
-| `templates/actions/<action type name>.md[.tmpl]`                   | Action page (or template)                     |
-| `templates/data-sources.md[.tmpl]`                                 | Generic data source page (or template)        |
-| `templates/data-sources/<data source name>.md[.tmpl]`              | Data source page (or template)                |
-| `templates/ephemeral-resources.md[.tmpl]`                          | Generic ephemeral resource page (or template) |
-| `templates/ephemeral-resources/<ephemeral resource name>.md[.tmpl]`| Ephemeral resource page (or template)         |
-| `templates/functions.md[.tmpl]`                                    | Generic function page (or template)           |
-| `templates/functions/<function name>.md[.tmpl]`                    | Function page (or template)                   |
-| `templates/resources.md[.tmpl]`                                    | Generic resource page (or template)           |
-| `templates/resources/<resource name>.md[.tmpl]`                    | Resource page (or template)                   |
+| Path                                                                | Description                                   |
+|---------------------------------------------------------------------|-----------------------------------------------|
+| `templates/`                                                        | Root of templated docs                        |
+| `templates/index.md[.tmpl]`                                         | Docs index page (or template)                 |
+| `templates/actions.md[.tmpl]`                                       | Generic action page (or template)             |
+| `templates/actions/<action type name>.md[.tmpl]`                    | Action page (or template)                     |
+| `templates/data-sources.md[.tmpl]`                                  | Generic data source page (or template)        |
+| `templates/data-sources/<data source name>.md[.tmpl]`               | Data source page (or template)                |
+| `templates/ephemeral-resources.md[.tmpl]`                           | Generic ephemeral resource page (or template) |
+| `templates/ephemeral-resources/<ephemeral resource name>.md[.tmpl]` | Ephemeral resource page (or template)         |
+| `templates/functions.md[.tmpl]`                                     | Generic function page (or template)           |
+| `templates/functions/<function name>.md[.tmpl]`                     | Function page (or template)                   |
+| `templates/list-resources.md[.tmpl]`                                | Generic list resource page (or template)      |
+| `templates/list-resources/<list resource name>.md[.tmpl]`           | List resource page (or template)              |
+| `templates/resources.md[.tmpl]`                                     | Generic resource page (or template)           |
+| `templates/resources/<resource name>.md[.tmpl]`                     | Resource page (or template)                   |
 
 Note: the `.tmpl` extension is necessary, for the file to be correctly handled as a template.
 
@@ -234,6 +237,7 @@ For examples:
 | `examples/data-sources/<data source name>/data-source<*>.tf`                 | Data source example config(s)              |
 | `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource<*>.tf` | Ephemeral resource example config(s)       |
 | `examples/functions/<function name>/function<*>.tf`                          | Function example config(s)                 |
+| `examples/list-resources/<list resource>/list-resource<*>.tfquery.hcl`       | List resource example config(s)            |
 | `examples/resources/<resource name>/resource<*>.tf`                          | Resource example config(s)                 |
 | `examples/resources/<resource name>/import.sh`                               | Resource example import command            |
 | `examples/resources/<resource name>/import-by-string-id.tf`                  | Resource example import by id config       |
@@ -257,6 +261,7 @@ Legacy website directory structure:
 | `website/docs/d/<data source name>.html.markdown`                          | Data source page            |
 | `website/docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
 | `website/docs/functons/<function name>.html.markdown`                      | Functions page              |
+| `website/docs/list-resources/<list resource name>.html.markdown`           | List resource page          |
 | `website/docs/r/<resource name>.html.markdown`                             | Resource page               |
 
 Docs website directory structure:
@@ -270,6 +275,7 @@ Docs website directory structure:
 | `docs/data-sources/<data source name>.html.markdown`               | Data source page            |
 | `docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
 | `docs/functions/<function name>.html.markdown`                     | Function page               |
+| `docs/list-resources/<list resource name>.html.markdown`           | List resource page          |
 | `docs/resources/<resource name>.html.markdown`                     | Resource page               |
 
 Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`,
@@ -358,6 +364,22 @@ using the following data fields and functions:
 | `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
 | `.SchemaMarkdown`       | string | a Markdown formatted Action Schema definition                                             |
+
+##### List Resource Fields
+
+| Field                   | Type   | Description                                                                                                                                    |
+|-------------------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.Name`                 | string | Name of the list resource (ex. `examplecloud_thing`)                                                                                           |
+| `.Type`                 | string | `List Resource`                                                                                                                                |
+| `.Description`          | string | List resource description                                                                                                                      |
+| `.HasExample`           | bool   | (Legacy) Is there an example file?                                                                                                             |
+| `.HasExamples`          | bool   | Are there example files? Always true if HasExample is true.                                                                                    |
+| `.ExampleFile`          | string | (Legacy) Path to the file with the terraform configuration example                                                                             |
+| `.ExampleFiles`         | string | Paths to the files with terraform configuration examples. Includes ExampleFile. The file extension for ExampleFiles should be `*.tfquery.hcl`. |
+| `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                                                                      |
+| `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                                                                     |
+| `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName`                                                      |
+| `.SchemaMarkdown`       | string | a Markdown formatted list resource Schema definition                                                                                           |
 
 #### Template Functions
 
