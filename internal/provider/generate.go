@@ -868,11 +868,20 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 			g.warnf("ephemeral resource entitled %q, or %q does not exist", shortName, resName)
 		case "actions/":
 			actionSchema, resName := actionSchema(providerSchema.ActionSchemas, shortName, relFile)
-			exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "actions", resName, "action.tf")
 
 			if actionSchema != nil {
+				exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "actions", resName, "action.tf")
+				exampleFilesPattern := filepath.Join(g.ProviderExamplesDir(), "actions", resName, "action*.tf")
+				exampleFiles, err := filepath.Glob(exampleFilesPattern)
+
+				if err != nil {
+					return fmt.Errorf("unable to glob example files with pattern %q: %w", exampleFilesPattern, err)
+				}
+
+				slices.Sort(exampleFiles)
+
 				tmpl := actionTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Action", exampleFilePath, actionSchema)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Action", exampleFilePath, exampleFiles, actionSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render action template %q: %w", rel, err)
 				}

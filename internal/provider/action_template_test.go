@@ -49,7 +49,7 @@ action "scaffolding_example" "example1" {
 		},
 	}
 
-	result, err := tpl.Render("testdata/test-action-dir", "testTemplate", "test-action", "test-action", "action", "action.tf", &schema)
+	result, err := tpl.Render("testdata/test-action-dir", "testTemplate", "test-action", "test-action", "action", "action.tf", []string{"action.tf"}, &schema)
 	if err != nil {
 		t.Error(err)
 	}

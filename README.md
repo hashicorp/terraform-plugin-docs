@@ -233,7 +233,7 @@ For examples:
 |------------------------------------------------------------------------------|--------------------------------------------|
 | `examples/`                                                                  | Root of examples                           |
 | `examples/provider/provider<*>.tf`                                           | Provider example config(s)                 |
-| `examples/actions/<action_type>/action.tf`                                   | Action example config                      |
+| `examples/actions/<action_type>/action<*>.tf`                                | Action example config(s)                   |
 | `examples/data-sources/<data source name>/data-source<*>.tf`                 | Data source example config(s)              |
 | `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource<*>.tf` | Ephemeral resource example config(s)       |
 | `examples/functions/<function name>/function<*>.tf`                          | Function example config(s)                 |
@@ -356,8 +356,10 @@ using the following data fields and functions:
 | `.Name`                 | string | Name of the action (ex. `examplecloud_do_thing`)                                          |
 | `.Type`                 | string | `Action`                                                                                  |
 | `.Description`          | string | Action description                                                                        |
-| `.HasExample`           | bool   | Is there an example file?                                                                 |
-| `.ExampleFile`          | string | Path to the file with the terraform configuration example                                 |
+| `.HasExample`           | bool   | (Legacy) Is there an example file?                                                        |
+| `.HasExamples`          | bool   | Are there example files? Always true if HasExample is true.                               |
+| `.ExampleFile`          | string | (Legacy) Path to the file with the Terraform configuration example.                       |
+| `.ExampleFiles`         | string | Paths to the files with Terraform configuration examples. Includes ExampleFile.           |
 | `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
 | `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |
