@@ -1,3 +1,10 @@
+## 0.24.0 (October 13, 2025)
+
+FEATURES:
+
+* generate: Support multiple configuration example files in default templates ([#508](https://github.com/hashicorp/terraform-plugin-docs/issues/508))
+* generate/migrate/validate: Add support for list resources ([#528](https://github.com/hashicorp/terraform-plugin-docs/issues/528))
+
 ## 0.23.0 (September 17, 2025)
 
 FEATURES:
