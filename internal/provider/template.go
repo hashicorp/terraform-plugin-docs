@@ -106,9 +106,13 @@ type FunctionTemplateType struct {
 	RenderedProviderName string
 }
 
-func newTemplate(providerDir, name, text string) (*template.Template, error) {
+func newTemplate(providerDir, name, text, syntax string) (*template.Template, error) {
 	tmpl := template.New(name)
 	titleCaser := cases.Title(language.Und)
+
+	if syntax == "" {
+		syntax = "terraform"
+	}
 
 	tmpl.Funcs(map[string]interface{}{
 		"codefile":      codeFile(providerDir),
@@ -116,7 +120,7 @@ func newTemplate(providerDir, name, text string) (*template.Template, error) {
 		"plainmarkdown": mdplain.PlainMarkdown,
 		"prefixlines":   tmplfuncs.PrefixLines,
 		"split":         strings.Split,
-		"tffile":        terraformCodeFile(providerDir),
+		"tffile":        terraformCodeFile(providerDir, syntax),
 		"title":         titleCaser.String,
 		"trimspace":     strings.TrimSpace,
 		"upper":         strings.ToUpper,
@@ -141,10 +145,10 @@ func codeFile(providerDir string) func(string, string) (string, error) {
 	}
 }
 
-func terraformCodeFile(providerDir string) func(string, ...string) (string, error) {
+func terraformCodeFile(providerDir, defaultSyntax string) func(string, ...string) (string, error) {
 	// TODO: omit comment handling
 	return func(file string, format ...string) (string, error) {
-		syntaxFormat := "terraform"
+		syntaxFormat := defaultSyntax
 		if len(format) > 0 && format[0] != "" {
 			syntaxFormat = format[0]
 		}
@@ -157,8 +161,8 @@ func terraformCodeFile(providerDir string) func(string, ...string) (string, erro
 	}
 }
 
-func renderTemplate(providerDir, name string, text string, out io.Writer, data interface{}) error {
-	tmpl, err := newTemplate(providerDir, name, text)
+func renderTemplate(providerDir, name string, text string, out io.Writer, data interface{}, syntax string) error {
+	tmpl, err := newTemplate(providerDir, name, text, syntax)
 	if err != nil {
 		return err
 	}
@@ -171,10 +175,10 @@ func renderTemplate(providerDir, name string, text string, out io.Writer, data i
 	return nil
 }
 
-func renderStringTemplate(providerDir, name, text string, data interface{}) (string, error) {
+func renderStringTemplate(providerDir, name, text string, data interface{}, syntax string) (string, error) {
 	var buf bytes.Buffer
 
-	err := renderTemplate(providerDir, name, text, &buf, data)
+	err := renderTemplate(providerDir, name, text, &buf, data, syntax)
 	if err != nil {
 		return "", err
 	}
@@ -182,16 +186,16 @@ func renderStringTemplate(providerDir, name, text string, data interface{}) (str
 	return buf.String(), nil
 }
 
-func (t docTemplate) Render(providerDir string, out io.Writer) error {
+func (t docTemplate) Render(providerDir string, out io.Writer, syntax string) error {
 	s := string(t)
 	if s == "" {
 		return nil
 	}
 
-	return renderTemplate(providerDir, "docTemplate", s, out, nil)
+	return renderTemplate(providerDir, "docTemplate", s, out, nil, syntax)
 }
 
-func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, exampleFiles []string, schema *tfjson.Schema) (string, error) {
+func (t providerTemplate) Render(providerDir, providerName, renderedProviderName, exampleFile string, exampleFiles []string, schema *tfjson.Schema, syntax string) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -217,10 +221,10 @@ func (t providerTemplate) Render(providerDir, providerName, renderedProviderName
 		SchemaMarkdown: schemaComment + "\n" + schemaBuffer.String(),
 
 		RenderedProviderName: renderedProviderName,
-	})
+	}, syntax)
 }
 
-func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, importIDConfigFile, importIdentityConfigFile, importCmdFile string, schema *tfjson.Schema, identitySchema *tfjson.IdentitySchema) (string, error) {
+func (t resourceTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, importIDConfigFile, importIdentityConfigFile, importCmdFile string, schema *tfjson.Schema, identitySchema *tfjson.IdentitySchema, syntax string) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.Render(schema, schemaBuffer)
 	if err != nil {
@@ -277,10 +281,10 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		SchemaMarkdown: schemaComment + "\n" + schemaBuffer.String(),
 
 		RenderedProviderName: renderedProviderName,
-	})
+	}, syntax)
 }
 
-func (t functionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, signature *tfjson.FunctionSignature) (string, error) {
+func (t functionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, signature *tfjson.FunctionSignature, syntax string) (string, error) {
 	funcSig, err := functionmd.RenderSignature(name, signature)
 	if err != nil {
 		return "", fmt.Errorf("unable to render function signature: %w", err)
@@ -322,7 +326,7 @@ func (t functionTemplate) Render(providerDir, name, providerName, renderedProvid
 		FunctionVariadicArgumentMarkdown: variadicComment + "\n" + funcVarArg,
 
 		RenderedProviderName: renderedProviderName,
-	})
+	}, syntax)
 }
 
 const defaultResourceTemplate resourceTemplate = `---

@@ -23,6 +23,7 @@ type validateCmd struct {
 	flagProviderDir                      string
 	flagProvidersSchema                  string
 	tfVersion                            string
+	flagSyntax                           string
 }
 
 func (cmd *validateCmd) Synopsis() string {
@@ -77,6 +78,7 @@ func (cmd *validateCmd) Flags() *flag.FlagSet {
 	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory; this will default to the current working directory if not set")
 	fs.StringVar(&cmd.flagProvidersSchema, "providers-schema", "", "path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI")
 	fs.StringVar(&cmd.tfVersion, "tf-version", "", "terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform")
+	fs.StringVar(&cmd.flagSyntax, "syntax", "terraform", "default syntax highlighting format for code blocks (e.g., terraform, hcl)")
 	return fs
 }
 

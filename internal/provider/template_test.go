@@ -53,7 +53,7 @@ provider "scaffolding" {
 		MultiLineTest: `This text used
 multiple lines`,
 		Code: "provider.tf",
-	})
+	}, "terraform")
 
 	if err != nil {
 		t.Error(err)
@@ -93,7 +93,7 @@ provider "scaffolding" {
 		},
 	}
 
-	result, err := tpl.Render("testdata/test-provider-dir", "testTemplate", "test-provider", "test-provider", "Resource", "provider.tf", []string{"provider.tf"}, "", "", "", &schema, nil)
+	result, err := tpl.Render("testdata/test-provider-dir", "testTemplate", "test-provider", "test-provider", "Resource", "provider.tf", []string{"provider.tf"}, "", "", "", &schema, nil, "terraform")
 	if err != nil {
 		t.Error(err)
 	}
@@ -133,7 +133,7 @@ provider "scaffolding" {
 		},
 	}
 
-	result, err := tpl.Render("testdata/test-provider-dir", "testTemplate", "test-provider", "provider.tf", []string{"provider.tf"}, &schema)
+	result, err := tpl.Render("testdata/test-provider-dir", "testTemplate", "test-provider", "provider.tf", []string{"provider.tf"}, &schema, "terraform")
 	if err != nil {
 		t.Error(err)
 	}

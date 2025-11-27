@@ -18,6 +18,7 @@ type migrateCmd struct {
 	flagTemplatesDir string
 	flagExamplesDir  string
 	flagProviderName string
+	flagSyntax       string
 }
 
 func (cmd *migrateCmd) Synopsis() string {
@@ -69,6 +70,7 @@ func (cmd *migrateCmd) Flags() *flag.FlagSet {
 	fs.StringVar(&cmd.flagTemplatesDir, "templates-dir", "templates", "new website templates directory based on provider-dir; files will be migrated to this directory")
 	fs.StringVar(&cmd.flagExamplesDir, "examples-dir", "examples", "examples directory based on provider-dir; extracted code examples will be migrated to this directory")
 	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)")
+	fs.StringVar(&cmd.flagSyntax, "syntax", "terraform", "default syntax highlighting format for code blocks (e.g., terraform, hcl)")
 
 	return fs
 }
@@ -91,6 +93,7 @@ func (cmd *migrateCmd) runInternal() error {
 		cmd.flagTemplatesDir,
 		cmd.flagExamplesDir,
 		cmd.flagProviderName,
+		cmd.flagSyntax,
 	)
 	if err != nil {
 		return fmt.Errorf("unable to migrate website: %w", err)
