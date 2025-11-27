@@ -141,14 +141,19 @@ func codeFile(providerDir string) func(string, string) (string, error) {
 	}
 }
 
-func terraformCodeFile(providerDir string) func(string) (string, error) {
+func terraformCodeFile(providerDir string) func(string, ...string) (string, error) {
 	// TODO: omit comment handling
-	return func(file string) (string, error) {
-		if filepath.IsAbs(file) {
-			return tmplfuncs.CodeFile("terraform", file)
+	return func(file string, format ...string) (string, error) {
+		syntaxFormat := "terraform"
+		if len(format) > 0 && format[0] != "" {
+			syntaxFormat = format[0]
 		}
 
-		return tmplfuncs.CodeFile("terraform", filepath.Join(providerDir, file))
+		if filepath.IsAbs(file) {
+			return tmplfuncs.CodeFile(syntaxFormat, file)
+		}
+
+		return tmplfuncs.CodeFile(syntaxFormat, filepath.Join(providerDir, file))
 	}
 }
 
