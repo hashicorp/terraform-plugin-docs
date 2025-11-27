@@ -70,6 +70,7 @@ Usage: tfplugindocs generate [<args>]
     --providers-schema <ARG>         path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI
     --rendered-provider-name <ARG>   provider name, as generated in documentation (ex. page titles, ...); defaults to the --provider-name
     --rendered-website-dir <ARG>     output directory based on provider-dir                                                                                             (default: "docs")
+    --syntax <ARG>                   default syntax highlighting format for code blocks (e.g., terraform, hcl)                                                          (default: "terraform")
     --tf-version <ARG>               terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform
     --website-source-dir <ARG>       templates directory based on provider-dir                                                                                          (default: "templates")
     --website-temp-dir <ARG>         temporary directory (used during generation)
@@ -89,6 +90,7 @@ Usage: tfplugindocs validate [<args>]
     --provider-dir <ARG>                          relative or absolute path to the root provider code directory; this will default to the current working directory if not set
     --provider-name <ARG>                         provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)
     --providers-schema <ARG>                      path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI
+    --syntax <ARG>                                default syntax highlighting format for code blocks (e.g., terraform, hcl)                                                (default: "terraform")
     --tf-version <ARG>                            terraform binary version to download. If not provided, will look for a terraform binary in the local environment. If not found in the environment, will download the latest version of Terraform
 ```
 
@@ -101,8 +103,9 @@ Usage: tfplugindocs migrate [<args>]
 
     --examples-dir <ARG>             examples directory based on provider-dir                                                                                           (default: "examples")
     --provider-dir <ARG>             relative or absolute path to the root provider code directory when running the command outside the root provider code directory
-    --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
     --provider-name <ARG>            provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)
+    --syntax <ARG>                   default syntax highlighting format for code blocks (e.g., terraform, hcl)                                                          (default: "terraform")
+    --templates-dir <ARG>            new website templates directory based on provider-dir; files will be migrated to this directory                                    (default: "templates")
 ```
 
 ### How it Works
@@ -383,18 +386,77 @@ using the following data fields and functions:
 
 #### Template Functions
 
-| Function        | Description                                                                                       |
-|-----------------|---------------------------------------------------------------------------------------------------|
-| `codefile`      | Create a Markdown code block with the content of a file. Path is relative to the repository root. |
-| `lower`         | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToLower).                            |
-| `plainmarkdown` | Render Markdown content as plaintext.                                                             |
-| `prefixlines`   | Add a prefix to all (newline-separated) lines in a string.                                        |
-| `printf`        | Equivalent to [`fmt.Printf`](https://pkg.go.dev/fmt#Printf).                                      |
-| `split`         | Split string into sub-strings, by a given separator (ex. `split .Name "_"`).                      |
-| `title`         | Equivalent to [`cases.Title`](https://pkg.go.dev/golang.org/x/text/cases#Title).                  |
-| `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
-| `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
-| `upper`         | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                            |
+| Function        | Description                                                                                                                                   |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `codefile`      | Create a Markdown code block with the content of a file. Path is relative to the repository root.                                             |
+| `lower`         | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToLower).                                                                        |
+| `plainmarkdown` | Render Markdown content as plaintext.                                                                                                         |
+| `prefixlines`   | Add a prefix to all (newline-separated) lines in a string.                                                                                    |
+| `printf`        | Equivalent to [`fmt.Printf`](https://pkg.go.dev/fmt#Printf).                                                                                  |
+| `split`         | Split string into sub-strings, by a given separator (ex. `split .Name "_"`).                                                                  |
+| `title`         | Equivalent to [`cases.Title`](https://pkg.go.dev/golang.org/x/text/cases#Title).                                                              |
+| `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`). Supports optional syntax highlighting format parameter. |
+| `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                                                                    |
+| `upper`         | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                                                                        |
+
+##### Code Block Syntax Formatting
+
+The `tffile` function and `codefile` function support syntax highlighting for code blocks. The syntax format can be controlled in several ways:
+
+1. **Command-line flag (default syntax)**: Use the `--syntax` flag when running `generate`, `validate`, or `migrate` commands to set the default syntax highlighting format for all code blocks:
+
+   ```shell
+   tfplugindocs generate --syntax hcl
+   ```
+
+   The default value is `"terraform"` if not specified.
+
+2. **Template literal override**: Override the default syntax for a specific code block by passing a literal string as the second parameter to `tffile`:
+
+   ```go
+   {{ tffile . }}
+   {{ tffile . "hcl" }}
+   {{ tffile . "terraform" }}
+   {{ tffile . "mySyntax" }}
+   ```
+
+3. **Template variable override**: Use a template variable to dynamically set the syntax format:
+
+   ```go
+   {{ $format := .Format }}
+   {{ tffile . $format }}
+   ```
+
+   Or more concisely:
+
+   ```go
+   {{ tffile . .Format }}
+   ```
+
+**Examples:**
+
+Using the default syntax (from `--syntax` flag):
+```markdown
+{{ tffile .ExampleFile }}
+```
+
+Overriding with a specific syntax:
+```markdown
+{{ tffile .ExampleFile "hcl" }}
+```
+
+Using multiple syntaxes in the same template:
+```markdown
+Default: {{ tffile .ExampleFile }}
+HCL: {{ tffile .ExampleFile "hcl" }}
+Custom: {{ tffile .ExampleFile "custom" }}
+```
+
+Using a template variable:
+```markdown
+{{ $format := "hcl" }}
+{{ tffile .ExampleFile $format }}
+```
 
 ## Disclaimer
 
