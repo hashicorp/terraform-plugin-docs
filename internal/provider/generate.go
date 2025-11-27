@@ -109,6 +109,7 @@ var (
 type generator struct {
 	ignoreDeprecated bool
 	tfVersion        string
+	syntax           string
 
 	// providerDir is the absolute path to the root provider directory
 	providerDir string
@@ -132,7 +133,7 @@ func (g *generator) warnf(format string, a ...interface{}) {
 	g.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool) error {
+func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, renderedProviderName, renderedWebsiteDir, examplesDir, websiteTmpDir, templatesDir, tfVersion string, ignoreDeprecated bool, syntax string) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -163,9 +164,14 @@ func Generate(ui cli.Ui, providerDir, providerName, providersSchemaPath, rendere
 		return fmt.Errorf("expected %q to be a directory", providerDir)
 	}
 
+	if syntax == "" {
+		syntax = "terraform"
+	}
+
 	g := &generator{
 		ignoreDeprecated: ignoreDeprecated,
 		tfVersion:        tfVersion,
+		syntax:           syntax,
 
 		providerDir:          providerDir,
 		providerName:         providerName,
@@ -772,7 +778,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				slices.Sort(exampleFiles)
 
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Data Source", exampleFilePath, exampleFiles, "", "", "", resSchema, nil)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Data Source", exampleFilePath, exampleFiles, "", "", "", resSchema, nil, g.syntax)
 				if err != nil {
 					return fmt.Errorf("unable to render data source template %q: %w", rel, err)
 				}
@@ -803,7 +809,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				importIdentityConfigFilePath := filepath.Join(g.ProviderExamplesDir(), "resources", resName, "import-by-identity.tf")
 
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Resource", exampleFilePath, exampleFiles, importIDConfigFilePath, importIdentityConfigFilePath, importFilePath, resSchema, resIdentitySchema)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Resource", exampleFilePath, exampleFiles, importIDConfigFilePath, importIdentityConfigFilePath, importFilePath, resSchema, resIdentitySchema, g.syntax)
 				if err != nil {
 					return fmt.Errorf("unable to render resource template %q: %w", rel, err)
 				}
@@ -828,7 +834,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				slices.Sort(exampleFiles)
 
 				tmpl := functionTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, funcName, g.providerName, g.renderedProviderName, "function", exampleFilePath, exampleFiles, signature)
+				render, err := tmpl.Render(g.providerDir, funcName, g.providerName, g.renderedProviderName, "function", exampleFilePath, exampleFiles, signature, g.syntax)
 				if err != nil {
 					return fmt.Errorf("unable to render function template %q: %w", rel, err)
 				}
@@ -855,7 +861,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				slices.Sort(exampleFiles)
 
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Ephemeral Resource", exampleFilePath, exampleFiles, "", "", "", resSchema, nil)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Ephemeral Resource", exampleFilePath, exampleFiles, "", "", "", resSchema, nil, g.syntax)
 				if err != nil {
 					return fmt.Errorf("unable to render ephemeral resource template %q: %w", rel, err)
 				}
@@ -881,7 +887,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				slices.Sort(exampleFiles)
 
 				tmpl := actionTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Action", exampleFilePath, exampleFiles, actionSchema)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Action", exampleFilePath, exampleFiles, actionSchema, g.syntax)
 				if err != nil {
 					return fmt.Errorf("unable to render action template %q: %w", rel, err)
 				}
@@ -906,7 +912,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 
 			if resSchema != nil {
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "List Resource", exampleFilePath, exampleFiles, "", "", "", resSchema, nil)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "List Resource", exampleFilePath, exampleFiles, "", "", "", resSchema, nil, g.syntax)
 				if err != nil {
 					return fmt.Errorf("unable to render list resource template %q: %w", rel, err)
 				}
@@ -930,7 +936,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				slices.Sort(exampleFiles)
 
 				tmpl := providerTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, g.providerName, g.renderedProviderName, exampleFilePath, exampleFiles, providerSchema.ConfigSchema)
+				render, err := tmpl.Render(g.providerDir, g.providerName, g.renderedProviderName, exampleFilePath, exampleFiles, providerSchema.ConfigSchema, g.syntax)
 				if err != nil {
 					return fmt.Errorf("unable to render provider template %q: %w", rel, err)
 				}
@@ -943,7 +949,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		}
 
 		tmpl := docTemplate(tmplData)
-		err = tmpl.Render(g.providerDir, out)
+		err = tmpl.Render(g.providerDir, out, g.syntax)
 		if err != nil {
 			return fmt.Errorf("unable to render template %q: %w", rel, err)
 		}

@@ -28,6 +28,7 @@ type migrator struct {
 	examplesDir  string
 
 	providerName string
+	syntax       string
 
 	ui cli.Ui
 }
@@ -40,7 +41,7 @@ func (m *migrator) warnf(format string, a ...interface{}) {
 	m.ui.Warn(fmt.Sprintf(format, a...))
 }
 
-func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir string, providerName string) error {
+func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir string, providerName string, syntax string) error {
 	// Ensure provider directory is resolved absolute path
 	if providerDir == "" {
 		wd, err := os.Getwd()
@@ -82,12 +83,17 @@ func Migrate(ui cli.Ui, providerDir string, templatesDir string, examplesDir str
 		return err
 	}
 
+	if syntax == "" {
+		syntax = "terraform"
+	}
+
 	m := &migrator{
 		providerDir:  providerDir,
 		templatesDir: templatesDir,
 		examplesDir:  examplesDir,
 		websiteDir:   websiteDir,
 		providerName: providerName,
+		syntax:       syntax,
 		ui:           ui,
 	}
 
