@@ -6,12 +6,18 @@ package schemamd
 import (
 	"fmt"
 	"io"
+	"regexp"
 	"slices"
 	"sort"
 	"strings"
 
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/zclconf/go-cty/cty"
+)
+
+var (
+	// multipleNewlinesRegexRender matches multiple consecutive newlines (2 or more)
+	multipleNewlinesRegexRender = regexp.MustCompile(`\n\n+`)
 )
 
 // Render writes a Markdown formatted Schema definition to the specified writer.
@@ -154,6 +160,8 @@ func writeIdentityAttribute(w io.Writer, name string, attr *tfjson.IdentityAttri
 
 	desc := strings.TrimSpace(attr.Description)
 	if desc != "" {
+		// Collapse multiple newlines while keeping list formatting intact.
+		desc = multipleNewlinesRegexRender.ReplaceAllString(desc, "  \n")
 		_, err = io.WriteString(w, " "+desc)
 		if err != nil {
 			return err
