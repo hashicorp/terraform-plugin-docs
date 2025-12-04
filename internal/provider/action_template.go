@@ -32,7 +32,7 @@ type ActionTemplateType struct {
 	RenderedProviderName string
 }
 
-func (t actionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, schema *tfjson.ActionSchema) (string, error) {
+func (t actionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, schema *tfjson.ActionSchema, syntax string) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.RenderAction(schema, schemaBuffer)
 	if err != nil {
@@ -60,7 +60,7 @@ func (t actionTemplate) Render(providerDir, name, providerName, renderedProvider
 		SchemaMarkdown: actionSchemaComment + "\n" + schemaBuffer.String(),
 
 		RenderedProviderName: renderedProviderName,
-	})
+	}, syntax)
 }
 
 const defaultActionTemplate actionTemplate = `---
