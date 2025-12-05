@@ -1,4 +1,4 @@
-# Copyright (c) HashiCorp, Inc.
+# Copyright IBM Corp. 2020, 2025
 # SPDX-License-Identifier: MPL-2.0
 
 # Successful run of tfplugindocs on a stripped-down version of the Null provider with pre-exiting templates, examples,
@@ -1137,7 +1137,7 @@ gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 -- internal/planmodifiers/attribute.go --
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package planmodifiers
@@ -1246,7 +1246,7 @@ func (r requiresReplaceIfValuesNotNullModifier) MarkdownDescription(ctx context.
 	return "If the value of this attribute changes, Terraform will destroy and recreate the resource."
 }
 -- internal/provider/data_source.go --
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -1343,7 +1343,7 @@ type nullDataSourceModelV0 struct {
 	ID                 types.String `tfsdk:"id"`
 }
 -- internal/provider/data_source_test.go --
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -1398,7 +1398,7 @@ data "null_data_source" "test" {
   }
 }`
 -- internal/provider/provider.go --
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -1442,7 +1442,7 @@ func (p *nullProvider) Resources(ctx context.Context) []func() resource.Resource
 func (p *nullProvider) Schema(context.Context, provider.SchemaRequest, *provider.SchemaResponse) {
 }
 -- internal/provider/provider_test.go --
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -1520,7 +1520,7 @@ func testStringValue(sPtr *string) string {
 	return *sPtr
 }
 -- internal/provider/resource.go --
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -1620,7 +1620,7 @@ type nullModelV0 struct {
 	ID       types.String `tfsdk:"id"`
 }
 -- internal/provider/resource_test.go --
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -2375,7 +2375,7 @@ resource "null_resource" "test" {
 }
 `
 -- main.go --
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package main
