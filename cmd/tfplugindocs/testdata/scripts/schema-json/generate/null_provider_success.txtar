@@ -1,4 +1,4 @@
-# Copyright (c) HashiCorp, Inc.
+# Copyright IBM Corp. 2020, 2025
 # SPDX-License-Identifier: MPL-2.0
 
 # Successful run of tfplugindocs on a stripped-down version of the Null provider with pre-exiting templates, examples,
