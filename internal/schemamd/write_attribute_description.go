@@ -6,9 +6,15 @@ package schemamd
 import (
 	"fmt"
 	"io"
+	"regexp"
 	"strings"
 
 	tfjson "github.com/hashicorp/terraform-json"
+)
+
+var (
+	// multipleNewlinesRegex matches multiple consecutive newlines (2 or more)
+	multipleNewlinesRegex = regexp.MustCompile(`\n\n+`)
 )
 
 func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, includeRW bool) error {
@@ -72,6 +78,8 @@ func WriteAttributeDescription(w io.Writer, att *tfjson.SchemaAttribute, include
 
 	desc := strings.TrimSpace(att.Description)
 	if desc != "" {
+		// Collapse multiple newlines while keeping list formatting intact.
+		desc = multipleNewlinesRegex.ReplaceAllString(desc, "  \n")
 		_, err = io.WriteString(w, " "+desc)
 		if err != nil {
 			return err
