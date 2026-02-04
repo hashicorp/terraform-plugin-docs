@@ -19,6 +19,7 @@ type generateCmd struct {
 	flagProviderName         string
 	flagRenderedProviderName string
 
+	flagBlocksSection      bool
 	flagProviderDir        string
 	flagProvidersSchema    string
 	flagRenderedWebsiteDir string
@@ -72,6 +73,7 @@ func (cmd *generateCmd) Help() string {
 
 func (cmd *generateCmd) Flags() *flag.FlagSet {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
+	fs.BoolVar(&cmd.flagBlocksSection, "blocks-section", false, "render blocks in a separate section instead of including them with attributes in the required and optional sections.")
 	fs.StringVar(&cmd.flagProviderName, "provider-name", "", "provider name, as used in Terraform configurations; defaults to the --provider-dir short name (after removing `terraform-provider-` prefix)")
 	fs.StringVar(&cmd.flagProviderDir, "provider-dir", "", "relative or absolute path to the root provider code directory when running the command outside the root provider code directory")
 	fs.StringVar(&cmd.flagProvidersSchema, "providers-schema", "", "path to the providers schema JSON file, which contains the output of the terraform providers schema -json command. Setting this flag will skip building the provider and calling Terraform CLI")
@@ -109,6 +111,7 @@ func (cmd *generateCmd) runInternal() error {
 		cmd.flagWebsiteSourceDir,
 		cmd.tfVersion,
 		cmd.flagIgnoreDeprecated,
+		cmd.flagBlocksSection,
 	)
 	if err != nil {
 		return fmt.Errorf("unable to generate website: %w", err)
