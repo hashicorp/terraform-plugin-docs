@@ -162,6 +162,32 @@ func TestWriteAttributeDescription(t *testing.T) {
 				Description:   "\n\t This is an attribute.\n\t ",
 			},
 		},
+
+		// multiple consecutive newlines (issue #531)
+		{
+			"(String, Required) First paragraph.  \nSecond paragraph with more details.",
+			&tfjson.SchemaAttribute{
+				AttributeType: cty.String,
+				Required:      true,
+				Description:   "First paragraph.\n\nSecond paragraph with more details.",
+			},
+		},
+		{
+			"(String, Optional) Line one.  \nLine two.  \nLine three.",
+			&tfjson.SchemaAttribute{
+				AttributeType: cty.String,
+				Optional:      true,
+				Description:   "Line one.\n\nLine two.\n\nLine three.",
+			},
+		},
+		{
+			"(String, Optional) Line one.  \nLine two with more text.",
+			&tfjson.SchemaAttribute{
+				AttributeType: cty.String,
+				Optional:      true,
+				Description:   "Line one.\n\n\nLine two with more text.",
+			},
+		},
 	} {
 		t.Run(c.expected, func(t *testing.T) {
 			t.Parallel()

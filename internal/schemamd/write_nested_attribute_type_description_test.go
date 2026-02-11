@@ -108,6 +108,42 @@ func TestWriteNestedAttributeTypeDescription(t *testing.T) {
 				},
 			},
 		},
+
+		// multiple consecutive newlines (issue #531)
+		{
+			"(Attributes, Optional) First paragraph.  \nSecond paragraph with more details.",
+			&tfjson.SchemaAttribute{
+				Description: "First paragraph.\n\nSecond paragraph with more details.",
+				AttributeNestedType: &tfjson.SchemaNestedAttributeType{
+					NestingMode: tfjson.SchemaNestingModeSingle,
+					Attributes: map[string]*tfjson.SchemaAttribute{
+						"foo": {
+							AttributeType: cty.String,
+							Required:      true,
+						},
+					},
+				},
+				Optional: true,
+			},
+		},
+		{
+			"(Attributes List, Min: 2, Max: 3) Line one.  \nLine two.  \nLine three.",
+			&tfjson.SchemaAttribute{
+				Description: "Line one.\n\nLine two.\n\nLine three.",
+				AttributeNestedType: &tfjson.SchemaNestedAttributeType{
+					NestingMode: tfjson.SchemaNestingModeList,
+					Attributes: map[string]*tfjson.SchemaAttribute{
+						"foo": {
+							AttributeType: cty.String,
+							Required:      true,
+						},
+					},
+					MinItems: 2,
+					MaxItems: 3,
+				},
+				Required: true,
+			},
+		},
 	} {
 		t.Run(c.expected, func(t *testing.T) {
 			t.Parallel()
