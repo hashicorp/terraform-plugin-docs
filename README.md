@@ -455,7 +455,7 @@ echo "placeholder comment" | txtar . >../cmd/tfplugindocs/testdata/scripts/provi
 Once a new text archive is created, the comment header can be replaced with [test script commands](https://pkg.go.dev/github.com/rogpeppe/go-internal/testscript)
 like `env`, `cmp`, `exec`, etc. These commands control what actually is run during the test along with the assertions, for example:
 ```bash
-# Copyright (c) HashiCorp, Inc.
+# Copyright IBM Corp. 2020, 2026
 # SPDX-License-Identifier: MPL-2.0
 
 # Successful run of tfplugindocs on a Framework provider with examples but no templates or pre-existing docs.
