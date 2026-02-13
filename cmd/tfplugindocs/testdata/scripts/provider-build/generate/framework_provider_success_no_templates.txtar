@@ -127,8 +127,6 @@ resource "scaffolding_example" "example" {
 
 ## Import
 
-Import is supported using the following syntax:
-
 In Terraform v1.12.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/import) can be used with the `identity` attribute, for example:
 
 ```terraform
