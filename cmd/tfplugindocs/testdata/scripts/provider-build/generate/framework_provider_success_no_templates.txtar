@@ -1,4 +1,4 @@
-# Copyright IBM Corp. 2020, 2025
+# Copyright IBM Corp. 2020, 2026
 # SPDX-License-Identifier: MPL-2.0
 
 # Successful run of tfplugindocs on a Framework provider with examples but no templates or pre-exiting docs.
@@ -223,7 +223,7 @@ resource "scaffolding_example" "example" {
   configurable_attribute = "some-value"
 }
 -- internal/provider/example_data_source.go --
-// Copyright IBM Corp. 2020, 2025
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -329,7 +329,7 @@ func (d *ExampleDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 -- internal/provider/example_resource.go --
-// Copyright IBM Corp. 2020, 2025
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -552,7 +552,7 @@ func (r *ExampleResource) ImportState(ctx context.Context, req resource.ImportSt
 	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("name"), req, resp)
 }
 -- internal/provider/provider.go --
-// Copyright IBM Corp. 2020, 2025
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
@@ -639,7 +639,7 @@ func New(version string) func() provider.Provider {
 	}
 }
 -- main.go --
-// Copyright IBM Corp. 2020, 2025
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package main
