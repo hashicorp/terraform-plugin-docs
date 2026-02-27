@@ -62,7 +62,7 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 		"invalid mixed directories - registry state store": {
 			ProviderFS: fstest.MapFS{
 				"docs/state-stores/invalid.md": {},
-				"website/docs/index.md":         {},
+				"website/docs/index.md":        {},
 			},
 			ExpectError: true,
 		},
@@ -118,7 +118,7 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 		"invalid mixed directories - legacy state store": {
 			ProviderFS: fstest.MapFS{
 				"website/docs/state-stores/invalid.html.markdown": {},
-				"docs/resources/thing.md":                          {},
+				"docs/resources/thing.md":                         {},
 			},
 			ExpectError: true,
 		},
