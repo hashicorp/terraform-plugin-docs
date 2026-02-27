@@ -104,6 +104,19 @@
           }
         }
       },
+      "state_store_schemas": {
+        "null_state_store": {
+          "version": 0,
+          "block": {
+            "attributes": {
+              "id": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          }
+        }
+      },
       "data_source_schemas": {
         "null_data_source": {
           "version": 0,

@@ -116,6 +116,9 @@ func Test_extractSchemaFromFile(t *testing.T) {
 	if providerSchema.ListResourceSchemas["null_list_resource"] == nil {
 		t.Fatalf("null_list_resource not found")
 	}
+	if providerSchema.StateStoreSchemas["null_state_store"] == nil {
+		t.Fatalf("null_state_store not found")
+	}
 	if providerSchema.ResourceSchemas["null_resource"].Block.Attributes["id"] == nil {
 		t.Fatalf("null_resoruce id attribute not found")
 	}
@@ -130,5 +133,8 @@ func Test_extractSchemaFromFile(t *testing.T) {
 	}
 	if providerSchema.ListResourceSchemas["null_list_resource"].Block.Attributes["required_attr"] == nil {
 		t.Fatalf("null_list_resource required_attr attribute not found")
+	}
+	if providerSchema.StateStoreSchemas["null_state_store"].Block.Attributes["id"] == nil {
+		t.Fatalf("null_state_store id attribute not found")
 	}
 }
