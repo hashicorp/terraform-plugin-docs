@@ -32,6 +32,7 @@ generating missing action content
 generating new template for "scaffolding_example"
 generating missing list resource content
 generating new template for "scaffolding_example"
+generating missing state store content
 generating missing provider content
 generating new template for "terraform-provider-scaffolding"
 rendering static website
