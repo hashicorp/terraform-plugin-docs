@@ -153,6 +153,13 @@ func (m *migrator) Migrate() error {
 					return err
 				}
 				return filepath.SkipDir
+			case "state-stores":
+				m.infof("migrating state stores directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("state-stores"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
 			}
 		} else {
 			switch {

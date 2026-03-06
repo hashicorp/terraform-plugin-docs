@@ -34,6 +34,8 @@ type FileMismatchOptions struct {
 
 	ListResourceEntries []os.DirEntry
 
+	StateStoreEntries []os.DirEntry
+
 	Schema *tfjson.ProviderSchema
 }
 
@@ -92,6 +94,11 @@ func (check *FileMismatchCheck) Run() error {
 
 	if check.Options.ListResourceEntries != nil {
 		err := check.ResourceFileMismatchCheck(check.Options.ListResourceEntries, "list resource", check.Options.Schema.ListResourceSchemas)
+		result = errors.Join(result, err)
+	}
+
+	if check.Options.StateStoreEntries != nil {
+		err := check.ResourceFileMismatchCheck(check.Options.StateStoreEntries, "state store", check.Options.Schema.StateStoreSchemas)
 		result = errors.Join(result, err)
 	}
 

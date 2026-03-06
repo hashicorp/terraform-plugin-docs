@@ -11,7 +11,7 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-var DocumentationGlobPattern = `{docs/index.*,docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,list-resources,resources,functions}/**/*,website/docs/**/*}`
+var DocumentationGlobPattern = `{docs/index.*,docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,list-resources,resources,functions,state-stores}/**/*,website/docs/**/*}`
 
 func TestMixedDirectoriesCheck(t *testing.T) {
 	t.Parallel()
@@ -56,6 +56,13 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 			ProviderFS: fstest.MapFS{
 				"docs/list-resources/invalid.md": {},
 				"website/docs/index.md":          {},
+			},
+			ExpectError: true,
+		},
+		"invalid mixed directories - registry state store": {
+			ProviderFS: fstest.MapFS{
+				"docs/state-stores/invalid.md": {},
+				"website/docs/index.md":        {},
 			},
 			ExpectError: true,
 		},
@@ -105,6 +112,13 @@ func TestMixedDirectoriesCheck(t *testing.T) {
 			ProviderFS: fstest.MapFS{
 				"website/docs/list-resources/invalid.html.markdown": {},
 				"docs/resources/thing.md":                           {},
+			},
+			ExpectError: true,
+		},
+		"invalid mixed directories - legacy state store": {
+			ProviderFS: fstest.MapFS{
+				"website/docs/state-stores/invalid.html.markdown": {},
+				"docs/resources/thing.md":                         {},
 			},
 			ExpectError: true,
 		},

@@ -37,6 +37,11 @@ cmp templates/list-resources/example.markdown docs/list-resources/example.markdo
 cmp templates/list-resources/example.html.markdown docs/list-resources/example.html.markdown
 cmp templates/list-resources/example.html.md docs/list-resources/example.html.md
 
+cmp templates/state-stores/example.md docs/state-stores/example.md
+cmp templates/state-stores/example.markdown docs/state-stores/example.markdown
+cmp templates/state-stores/example.html.markdown docs/state-stores/example.html.markdown
+cmp templates/state-stores/example.html.md docs/state-stores/example.html.md
+
 cmp templates/index.md docs/index.md
 cmp templates/index.markdown docs/index.markdown
 cmp templates/index.html.markdown docs/index.html.markdown
@@ -59,6 +64,8 @@ generating missing action content
 action "scaffolding_example" static file exists, skipping
 generating missing list resource content
 list resource "scaffolding_example" static file exists, skipping
+generating missing state store content
+state store "scaffolding_example" static file exists, skipping
 generating missing provider content
 provider "terraform-provider-scaffolding" static file exists, skipping
 rendering static website
@@ -92,6 +99,10 @@ copying non-template file: "resources/example.html.markdown"
 copying non-template file: "resources/example.html.md"
 copying non-template file: "resources/example.markdown"
 copying non-template file: "resources/example.md"
+copying non-template file: "state-stores/example.html.markdown"
+copying non-template file: "state-stores/example.html.md"
+copying non-template file: "state-stores/example.markdown"
+copying non-template file: "state-stores/example.md"
 -- templates/actions/example.md --
 # Data Fields
 
@@ -128,6 +139,26 @@ Type: {{.Type}}
 Name: {{.Name}}
 Type: {{.Type}}
 -- templates/list-resources/example.html.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/state-stores/example.md --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/state-stores/example.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/state-stores/example.html.markdown --
+# Data Fields
+
+Name: {{.Name}}
+Type: {{.Type}}
+-- templates/state-stores/example.html.md --
 # Data Fields
 
 Name: {{.Name}}
@@ -256,6 +287,18 @@ list "scaffolding_example" "example" {
     required_attr = "some-value"
   }
 }
+-- examples/state-stores/scaffolding_example/state-store.tf --
+terraform {
+  required_providers {
+    scaffolding = {
+      source = "registry.terraform.io/hashicorp/scaffolding"
+    }
+  }
+  state_store "scaffolding_example" {
+    configurable_attribute = "some-value"
+    provider "scaffolding" {}
+  }
+}
 -- examples/data-sources/scaffolding_example/data-source.tf --
 data "scaffolding_example" "example" {
   configurable_attribute = "some-value"
@@ -323,6 +366,30 @@ terraform import scaffolding_example.example "id-123"
                         },
                         "description": "Example list resource",
                         "description_kind": "plain"
+                    }
+                }
+            },
+            "state_store_schemas": {
+                "scaffolding_example": {
+                    "version": 0,
+                    "block": {
+                        "attributes": {
+                            "configurable_attribute": {
+                                "type": "string",
+                                "description": "Example configurable attribute",
+                                "description_kind": "markdown",
+                                "optional": true
+                            },
+                            "defaulted": {
+                                "type": "string",
+                                "description": "Example configurable attribute with default value",
+                                "description_kind": "markdown",
+                                "optional": true,
+                                "computed": true
+                            }
+                        },
+                        "description": "Example state store",
+                        "description_kind": "markdown"
                     }
                 }
             },
