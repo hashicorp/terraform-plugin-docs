@@ -1,6 +1,6 @@
 module github.com/hashicorp/terraform-plugin-docs
 
-go 1.24.0
+go 1.25
 
 require (
 	github.com/Kunde21/markdownfmt/v3 v3.1.0
@@ -15,7 +15,7 @@ require (
 	github.com/rogpeppe/go-internal v1.14.1
 	github.com/yuin/goldmark v1.7.7
 	github.com/yuin/goldmark-meta v1.1.0
-	github.com/zclconf/go-cty v1.17.0
+	github.com/zclconf/go-cty v1.18.0
 	go.abhg.dev/goldmark/frontmatter v0.2.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 	golang.org/x/text v0.34.0
@@ -31,7 +31,7 @@ require (
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
-	github.com/cloudflare/circl v1.6.1 // indirect
+	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
