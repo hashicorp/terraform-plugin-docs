@@ -383,18 +383,18 @@ using the following data fields and functions:
 
 #### Template Functions
 
-| Function        | Description                                                                                       |
-|-----------------|---------------------------------------------------------------------------------------------------|
-| `codefile`      | Create a Markdown code block with the content of a file. Path is relative to the repository root. |
-| `lower`         | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToLower).                            |
-| `plainmarkdown` | Render Markdown content as plaintext.                                                             |
-| `prefixlines`   | Add a prefix to all (newline-separated) lines in a string.                                        |
-| `printf`        | Equivalent to [`fmt.Printf`](https://pkg.go.dev/fmt#Printf).                                      |
-| `split`         | Split string into sub-strings, by a given separator (ex. `split .Name "_"`).                      |
-| `title`         | Equivalent to [`cases.Title`](https://pkg.go.dev/golang.org/x/text/cases#Title).                  |
-| `tffile`        | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
-| `trimspace`     | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
-| `upper`         | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                            |
+| Function        | Example                                          | Description                                                                                       |
+|-----------------|--------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| `codefile`      | `{{codefile "shell" "path/to/file.sh"}}`         | Create a Markdown code block with the content of a file. Path is relative to the repository root. |
+| `lower`         | `{{"EXAMPLE STRING" \| lower}}`                  | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToLower).                            |
+| `plainmarkdown` | `{{"*example markdown*" \| plainmarkdown }}`     | Render Markdown content as plaintext.                                                             |
+| `prefixlines`   | `{{"example string" \| prefixlines "prefix: "}}` | Add a prefix to all (newline-separated) lines in a string.                                        |
+| `printf`        | `{{printf "{{tffile %q}}" .ExampleFile}}`        | Equivalent to [`fmt.Printf`](https://pkg.go.dev/fmt#Printf).                                      |
+| `split`         | `{{split "example,string" ","}}`                 | Split string into sub-strings, by a given separator.                                              |
+| `title`         | `{{"example string" \| title}}`                  | Equivalent to [`cases.Title`](https://pkg.go.dev/golang.org/x/text/cases#Title).                  |
+| `tffile`        | `{{tffile "path/to/tffile.tf"}}`                 | A special case of the `codefile` function, designed for Terraform files (i.e. `.tf`).             |
+| `trimspace`     | `{{"example string" \| trimspace}}`              | Equivalent to [`strings.TrimSpace`](https://pkg.go.dev/strings#TrimSpace).                        |
+| `upper`         | `{{"example string" \| upper}}`                  | Equivalent to [`strings.ToUpper`](https://pkg.go.dev/strings#ToUpper).                            |
 
 ## Disclaimer
 
