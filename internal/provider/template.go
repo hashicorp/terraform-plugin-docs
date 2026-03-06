@@ -346,7 +346,6 @@ description: |-
 
 ## Import
 
-Import is supported using the following syntax:
 {{- end }}
 {{- if .HasImportIdentityConfig }}
 
