@@ -22,13 +22,13 @@ import (
 //	  },
 //		 "version": 0
 //	},
-func Render(schema *tfjson.Schema, w io.Writer) error {
+func Render(schema *tfjson.Schema, w io.Writer, blocksSection bool) error {
 	_, err := io.WriteString(w, "## Schema\n\n")
 	if err != nil {
 		return err
 	}
 
-	err = writeRootBlock(w, schema.Block)
+	err = writeRootBlock(w, schema.Block, blocksSection)
 	if err != nil {
 		return fmt.Errorf("unable to render schema: %w", err)
 	}
@@ -44,7 +44,7 @@ func RenderAction(schema *tfjson.ActionSchema, w io.Writer) error {
 		return err
 	}
 
-	err = writeRootBlock(w, schema.Block)
+	err = writeRootBlock(w, schema.Block, false)
 	if err != nil {
 		return fmt.Errorf("unable to render action schema: %w", err)
 	}
@@ -182,12 +182,28 @@ var (
 	// * Required
 	// * Optional
 	// * Read-Only
-	groupFilters = []groupFilter{
+	defaultGroupFilters = []groupFilter{
 		{"### Required", "Required:", childAttributeIsRequired, childBlockIsRequired},
 		{"### Optional", "Optional:", childAttributeIsOptional, childBlockIsOptional},
 		{"### Read-Only", "Read-Only:", childAttributeIsReadOnly, childBlockIsReadOnly},
 	}
+
+	// When --blocks-section is enabled, blocks are rendered in a separate section regardless of their optional or required characteristics.
+	blocksSectionGroupFilters = []groupFilter{
+		{"### Required Attributes", "Required Attributes:", childAttributeIsRequired, omitChild[*tfjson.SchemaBlockType]},
+		{"### Optional Attributes", "Optional Attributes:", childAttributeIsOptional, omitChild[*tfjson.SchemaBlockType]},
+		{"### Blocks", "Blocks:", omitChild[*tfjson.SchemaAttribute], childBlockIsWritable},
+		{"### Read-Only", "Read-Only:", childAttributeIsReadOnly, childBlockIsReadOnly},
+	}
 )
+
+func getGroupFilters(blocksSection bool) []groupFilter {
+	if blocksSection {
+		return blocksSectionGroupFilters
+	}
+
+	return defaultGroupFilters
+}
 
 type nestedType struct {
 	anchorID  string
@@ -312,8 +328,8 @@ func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) (
 	return []nestedType{nt}, nil
 }
 
-func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
-	return writeBlockChildren(w, nil, block, true)
+func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock, blocksSection bool) error {
+	return writeBlockChildren(w, nil, block, true, blocksSection)
 }
 
 // A Block contains:
@@ -343,7 +359,7 @@ func writeRootBlock(w io.Writer, block *tfjson.SchemaBlock) error {
 //		 },
 //		 "description_kind": "plain"
 //	},
-func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock, root bool) error {
+func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock, root bool, blocksSection bool) error {
 	names := []string{}
 	for n := range block.Attributes {
 		names = append(names, n)
@@ -354,6 +370,7 @@ func writeBlockChildren(w io.Writer, parents []string, block *tfjson.SchemaBlock
 
 	groups := map[int][]string{}
 
+	groupFilters := getGroupFilters(blocksSection)
 	// Group Attributes/Blocks by characteristics.
 nameLoop:
 	for _, n := range names {
@@ -491,7 +508,7 @@ nameLoop:
 		}
 	}
 
-	err := writeNestedTypes(w, nestedTypes)
+	err := writeNestedTypes(w, nestedTypes, blocksSection)
 	if err != nil {
 		return err
 	}
@@ -499,7 +516,7 @@ nameLoop:
 	return nil
 }
 
-func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
+func writeNestedTypes(w io.Writer, nestedTypes []nestedType, blocksSection bool) error {
 	for _, nt := range nestedTypes {
 		_, err := io.WriteString(w, "<a id=\""+nt.anchorID+"\"></a>\n")
 		if err != nil {
@@ -513,17 +530,17 @@ func writeNestedTypes(w io.Writer, nestedTypes []nestedType) error {
 
 		switch {
 		case nt.block != nil:
-			err = writeBlockChildren(w, nt.path, nt.block, false)
+			err = writeBlockChildren(w, nt.path, nt.block, false, blocksSection)
 			if err != nil {
 				return err
 			}
 		case nt.object != nil:
-			err = writeObjectChildren(w, nt.path, *nt.object, nt.group)
+			err = writeObjectChildren(w, nt.path, *nt.object, nt.group, blocksSection)
 			if err != nil {
 				return err
 			}
 		case nt.attrs != nil:
-			err = writeNestedAttributeChildren(w, nt.path, nt.attrs, nt.group)
+			err = writeNestedAttributeChildren(w, nt.path, nt.attrs, nt.group, blocksSection)
 			if err != nil {
 				return err
 			}
@@ -605,7 +622,7 @@ func writeObjectAttribute(w io.Writer, path []string, att cty.Type, group groupF
 	return nestedTypes, nil
 }
 
-func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group groupFilter) error {
+func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group groupFilter, blocksSection bool) error {
 	_, err := io.WriteString(w, group.nestedTitle+"\n\n")
 	if err != nil {
 		return err
@@ -638,7 +655,7 @@ func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group group
 		return err
 	}
 
-	err = writeNestedTypes(w, nestedTypes)
+	err = writeNestedTypes(w, nestedTypes, blocksSection)
 	if err != nil {
 		return err
 	}
@@ -646,13 +663,14 @@ func writeObjectChildren(w io.Writer, parents []string, ty cty.Type, group group
 	return nil
 }
 
-func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttributes *tfjson.SchemaNestedAttributeType, group groupFilter) error {
+func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttributes *tfjson.SchemaNestedAttributeType, group groupFilter, blocksSection bool) error {
 	sortedNames := []string{}
 	for n := range nestedAttributes.Attributes {
 		sortedNames = append(sortedNames, n)
 	}
 	sort.Strings(sortedNames)
 
+	groupFilters := getGroupFilters(blocksSection)
 	groups := map[int][]string{}
 	for _, name := range sortedNames {
 		att := nestedAttributes.Attributes[name]
@@ -697,7 +715,7 @@ func writeNestedAttributeChildren(w io.Writer, parents []string, nestedAttribute
 		}
 	}
 
-	err := writeNestedTypes(w, nestedTypes)
+	err := writeNestedTypes(w, nestedTypes, blocksSection)
 	if err != nil {
 		return err
 	}
