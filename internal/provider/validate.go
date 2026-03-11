@@ -26,8 +26,8 @@ const (
 	FileExtensionMarkdown     = `.markdown`
 	FileExtensionMd           = `.md`
 
-	DocumentationGlobPattern    = `{docs/index.*,docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,list-resources,resources,functions}/**/*,website/docs/**/*}`
-	DocumentationDirGlobPattern = `{docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,list-resources,resources,functions}{,/*},website/docs/**/*}`
+	DocumentationGlobPattern    = `{docs/index.*,docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,list-resources,resources,functions,state-stores}/**/*,website/docs/**/*}`
+	DocumentationDirGlobPattern = `{docs/{,cdktf/}{actions,data-sources,ephemeral-resources,guides,list-resources,resources,functions,state-stores}{,/*},website/docs/**/*}`
 )
 
 var ValidLegacyFileExtensions = []string{
@@ -322,6 +322,10 @@ func (v *validator) validateStaticDocs() error {
 		listResourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/list-resources")
 		mismatchOpt.ListResourceEntries = listResourceFiles
 	}
+	if dirExists(v.providerFS, dir+"/state-stores") {
+		stateStoreFiles, _ := fs.ReadDir(v.providerFS, dir+"/state-stores")
+		mismatchOpt.StateStoreEntries = stateStoreFiles
+	}
 
 	v.logger.infof("running file mismatch check")
 	if err := check.NewFileMismatchCheck(mismatchOpt).Run(); err != nil {
@@ -416,6 +420,10 @@ func (v *validator) validateLegacyWebsite() error {
 	if dirExists(v.providerFS, dir+"/list-resources") {
 		listResourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/list-resources")
 		mismatchOpt.ListResourceEntries = listResourceFiles
+	}
+	if dirExists(v.providerFS, dir+"/state-stores") {
+		stateStoreFiles, _ := fs.ReadDir(v.providerFS, dir+"/state-stores")
+		mismatchOpt.StateStoreEntries = stateStoreFiles
 	}
 
 	v.logger.infof("running file mismatch check")

@@ -18,6 +18,7 @@ cmpenv templates/resources/static.md.tmpl exp-templates/resources/static.md.tmpl
 cmpenv templates/ephemeral-resources/ephemeral_static.md.tmpl exp-templates/ephemeral-resources/ephemeral_static.md.tmpl
 cmpenv templates/actions/example.md.tmpl exp-templates/actions/example.md.tmpl
 cmpenv templates/list-resources/example.md.tmpl exp-templates/list-resources/example.md.tmpl
+cmpenv templates/state-stores/example.md.tmpl exp-templates/state-stores/example.md.tmpl
 
 # Check generated example files
 cmpenv examples/example_1.tf examples/example_1.tf
@@ -50,6 +51,8 @@ cmpenv examples/actions/example/example_1.tf exp-examples/actions/example/exampl
 cmpenv examples/actions/example/example_2.tf exp-examples/actions/example/example_2.tf
 
 cmpenv examples/list-resources/example/example_1.tfquery.hcl exp-examples/list-resources/example/example_1.tfquery.hcl
+
+cmpenv examples/state-stores/example/example_1.tf exp-examples/state-stores/example/example_1.tf
 
 # Verify legacy website directory is removed
 ! exists website/
@@ -121,6 +124,12 @@ creating example file "$WORK/examples/resources/static/example_1.tf"
 creating example file "$WORK/examples/resources/static/example_2.tf"
 creating import file "$WORK/examples/resources/static/import_1.sh"
 finished creating template "$WORK/templates/resources/static.md.tmpl"
+migrating state stores directory: state-stores
+migrating file "example.html.markdown"
+extracting YAML frontmatter to "$WORK/templates/state-stores/example.md.tmpl"
+extracting code examples from "example.html.markdown"
+creating example file "$WORK/examples/state-stores/example/example_1.tf"
+finished creating template "$WORK/templates/state-stores/example.md.tmpl"
 -- website/docs/index.html.markdown --
 ---
 layout: "time"
@@ -674,6 +683,29 @@ list "scaffolding_example" "example" {
   }
 }
 ```
+-- website/docs/state-stores/example.html.markdown --
+---
+layout: "time"
+page_title: "Time: time_example"
+description: |-
+  Just a fake state store example.
+---
+
+Just a fake state store example.
+
+```terraform
+terraform {
+  required_providers {
+    time = {
+      source = "registry.terraform.io/hashicorp/time"
+    }
+  }
+  state_store "time_example" {
+    configurable_attribute = "value-1"
+    provider "time" {}
+  }
+}
+```
 -- exp-examples/example_1.tf --
 resource "time_static" "ami_update" {
   triggers = {
@@ -865,6 +897,18 @@ list "scaffolding_example" "example" {
 
   config {
     required_attr = "value-1"
+  }
+}
+-- exp-examples/state-stores/example/example_1.tf --
+terraform {
+  required_providers {
+    time = {
+      source = "registry.terraform.io/hashicorp/time"
+    }
+  }
+  state_store "time_example" {
+    configurable_attribute = "value-1"
+    provider "time" {}
   }
 }
 -- exp-templates/index.md.tmpl --
@@ -1253,3 +1297,17 @@ For example, the {{ .SchemaMarkdown }} template can be used to replace manual sc
 Just a fake example.
 
 {{tffile "examples/list-resources/example/example_1.tfquery.hcl"}}
+-- exp-templates/state-stores/example.md.tmpl --
+---
+page_title: "Time: time_example"
+description: |-
+  Just a fake state store example.
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
+Just a fake state store example.
+
+{{tffile "examples/state-stores/example/example_1.tf"}}

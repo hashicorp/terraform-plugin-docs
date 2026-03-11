@@ -83,6 +83,14 @@ var (
 		"list-resources/%s.html.markdown",
 		"list-resources/%s.html.md",
 	}
+	websiteStateStoreFile                 = "state-stores/%s.md.tmpl"
+	websiteStateStoreFallbackFile         = "state-stores.md.tmpl"
+	websiteStateStoreFileStaticCandidates = []string{
+		"state-stores/%s.md",
+		"state-stores/%s.markdown",
+		"state-stores/%s.html.markdown",
+		"state-stores/%s.html.md",
+	}
 	websiteProviderFile                 = "index.md.tmpl"
 	websiteProviderFileStaticCandidates = []string{
 		"index.markdown",
@@ -99,6 +107,7 @@ var (
 		"ephemeral-resources",
 		"actions",
 		"list-resources",
+		"state-stores",
 	}
 
 	managedWebsiteFiles = []string{
@@ -508,6 +517,42 @@ func (g *generator) generateMissingListResourceTemplate(resourceName string) err
 	return nil
 }
 
+func (g *generator) generateMissingStateStoreTemplate(stateStoreName string) error {
+	templatePath := fmt.Sprintf(websiteStateStoreFile, resourceShortName(stateStoreName, g.providerName))
+	templatePath = filepath.Join(g.TempTemplatesDir(), templatePath)
+	if fileExists(templatePath) {
+		g.infof("state store %q template exists, skipping", stateStoreName)
+		return nil
+	}
+
+	fallbackTemplatePath := filepath.Join(g.TempTemplatesDir(), websiteStateStoreFallbackFile)
+	if fileExists(fallbackTemplatePath) {
+		g.infof("state store %q fallback template exists, creating template", stateStoreName)
+		err := cp(fallbackTemplatePath, templatePath)
+		if err != nil {
+			return fmt.Errorf("unable to copy fallback template for %q: %w", stateStoreName, err)
+		}
+		return nil
+	}
+
+	for _, candidate := range websiteStateStoreFileStaticCandidates {
+		candidatePath := fmt.Sprintf(candidate, resourceShortName(stateStoreName, g.providerName))
+		candidatePath = filepath.Join(g.TempTemplatesDir(), candidatePath)
+		if fileExists(candidatePath) {
+			g.infof("state store %q static file exists, skipping", stateStoreName)
+			return nil
+		}
+	}
+
+	g.infof("generating new template for %q", stateStoreName)
+	err := writeFile(templatePath, string(defaultResourceTemplate))
+	if err != nil {
+		return fmt.Errorf("unable to write template for %q: %w", stateStoreName, err)
+	}
+
+	return nil
+}
+
 func (g *generator) generateMissingProviderTemplate() error {
 	templatePath := filepath.Join(g.TempTemplatesDir(), websiteProviderFile)
 	if fileExists(templatePath) {
@@ -659,6 +704,27 @@ func (g *generator) generateMissingTemplates(providerSchema *tfjson.ProviderSche
 		}
 	}
 
+	g.infof("generating missing state store content")
+
+	stateStoreKeys := make([]string, 0, len(providerSchema.StateStoreSchemas))
+	for key := range providerSchema.StateStoreSchemas {
+		stateStoreKeys = append(stateStoreKeys, key)
+	}
+	sort.Strings(stateStoreKeys)
+
+	for _, name := range stateStoreKeys {
+		schema := providerSchema.StateStoreSchemas[name]
+
+		if g.ignoreDeprecated && schema.Block.Deprecated {
+			continue
+		}
+
+		err := g.generateMissingStateStoreTemplate(name)
+		if err != nil {
+			return fmt.Errorf("unable to generate template for state store %q: %w", name, err)
+		}
+	}
+
 	g.infof("generating missing provider content")
 	err := g.generateMissingProviderTemplate()
 	if err != nil {
@@ -720,13 +786,14 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 		relDir, relFile := filepath.Split(rel)
 		relDir = filepath.ToSlash(relDir)
 
-		// skip special top-level generic resource, data source, function, ephemeral resource, action and list resource templates
+		// skip special top-level generic resource, data source, function, ephemeral resource, action, list resource, and state store templates
 		if relDir == "" && (relFile == "resources.md.tmpl" ||
 			relFile == "data-sources.md.tmpl" ||
 			relFile == "functions.md.tmpl" ||
 			relFile == "ephemeral-resources.md.tmpl" ||
 			relFile == "actions.md.tmpl" ||
-			relFile == "list-resources.md.tmpl") {
+			relFile == "list-resources.md.tmpl" ||
+			relFile == "state-stores.md.tmpl") {
 			return nil
 		}
 
@@ -917,6 +984,32 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				return nil
 			}
 			g.warnf("list resource entitled %q, or %q does not exist", shortName, resName)
+		case "state-stores/":
+			resSchema, resName := resourceSchema(providerSchema.StateStoreSchemas, shortName, relFile)
+
+			if resSchema != nil {
+				exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "state-stores", resName, "state-store.tf")
+				exampleFilesPattern := filepath.Join(g.ProviderExamplesDir(), "state-stores", resName, "state-store*.tf")
+				exampleFiles, err := filepath.Glob(exampleFilesPattern)
+
+				if err != nil {
+					return fmt.Errorf("unable to glob example files with pattern %q: %w", exampleFilesPattern, err)
+				}
+
+				slices.Sort(exampleFiles)
+
+				tmpl := resourceTemplate(tmplData)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "State Store", exampleFilePath, exampleFiles, "", "", "", resSchema, nil)
+				if err != nil {
+					return fmt.Errorf("unable to render state store template %q: %w", rel, err)
+				}
+				_, err = out.WriteString(render)
+				if err != nil {
+					return fmt.Errorf("unable to write rendered string: %w", err)
+				}
+				return nil
+			}
+			g.warnf("state store entitled %q, or %q does not exist", shortName, resName)
 		case "": // provider
 			if relFile == "index.md.tmpl" {
 				exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "provider", "provider.tf")

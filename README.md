@@ -119,6 +119,7 @@ When you run `tfplugindocs`, by default from the root directory of a provider co
 * Generate ephemeral resource template files, if missing (Requires Terraform v1.10.0+)
 * Generate action template files, if missing (Requires Terraform v1.14.0+)
 * Generate list resource templeate files, if missing (Requires Terraform v1.14.0+)
+* Generate state store template files, if missing (Requires Terraform v1.16.0+)
 * Copy all non-template files to the output website directory
 
 > [!NOTE]
@@ -219,6 +220,8 @@ For templates:
 | `templates/functions/<function name>.md[.tmpl]`                     | Function page (or template)                   |
 | `templates/list-resources.md[.tmpl]`                                | Generic list resource page (or template)      |
 | `templates/list-resources/<list resource name>.md[.tmpl]`           | List resource page (or template)              |
+| `templates/state-stores.md[.tmpl]`                                  | Generic state store page (or template)        |
+| `templates/state-stores/<state store name>.md[.tmpl]`               | State store page (or template)                |
 | `templates/resources.md[.tmpl]`                                     | Generic resource page (or template)           |
 | `templates/resources/<resource name>.md[.tmpl]`                     | Resource page (or template)                   |
 
@@ -238,6 +241,7 @@ For examples:
 | `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource<*>.tf` | Ephemeral resource example config(s)       |
 | `examples/functions/<function name>/function<*>.tf`                          | Function example config(s)                 |
 | `examples/list-resources/<list resource>/list-resource<*>.tfquery.hcl`       | List resource example config(s)            |
+| `examples/state-stores/<state store>/state-store<*>.tf`                      | State store example config(s)              |
 | `examples/resources/<resource name>/resource<*>.tf`                          | Resource example config(s)                 |
 | `examples/resources/<resource name>/import.sh`                               | Resource example import command            |
 | `examples/resources/<resource name>/import-by-string-id.tf`                  | Resource example import by id config       |
@@ -262,6 +266,7 @@ Legacy website directory structure:
 | `website/docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
 | `website/docs/functons/<function name>.html.markdown`                      | Functions page              |
 | `website/docs/list-resources/<list resource name>.html.markdown`           | List resource page          |
+| `website/docs/state-stores/<state store name>.html.markdown`               | State store page            |
 | `website/docs/r/<resource name>.html.markdown`                             | Resource page               |
 
 Docs website directory structure:
@@ -276,6 +281,7 @@ Docs website directory structure:
 | `docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
 | `docs/functions/<function name>.html.markdown`                     | Function page               |
 | `docs/list-resources/<list resource name>.html.markdown`           | List resource page          |
+| `docs/state-stores/<state store name>.html.markdown`               | State store page            |
 | `docs/resources/<resource name>.html.markdown`                     | Resource page               |
 
 Files named `index` (before the first `.`) in the website docs root directory and files in the `website/docs/d/`, `website/docs/r/`, `docs/data-sources/`,
@@ -380,6 +386,22 @@ using the following data fields and functions:
 | `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                                                                     |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName`                                                      |
 | `.SchemaMarkdown`       | string | a Markdown formatted list resource Schema definition                                                                                           |
+
+##### State Store Fields
+
+| Field                   | Type   | Description                                                                                                                                    |
+|-------------------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.Name`                 | string | Name of the state store (ex. `examplecloud_thing`)                                                                                           |
+| `.Type`                 | string | `State Store`                                                                                                                                |
+| `.Description`          | string | State store description                                                                                                                      |
+| `.HasExample`           | bool   | (Legacy) Is there an example file?                                                                                                             |
+| `.HasExamples`          | bool   | Are there example files? Always true if HasExample is true.                                                                                    |
+| `.ExampleFile`          | string | (Legacy) Path to the file with the terraform configuration example                                                                             |
+| `.ExampleFiles`         | string | Paths to the files with terraform configuration examples. Includes ExampleFile. |
+| `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-http`)                                                                                      |
+| `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `http`)                                                                                     |
+| `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName`                                                      |
+| `.SchemaMarkdown`       | string | a Markdown formatted state store Schema definition                                                                                           |
 
 #### Template Functions
 
