@@ -1001,7 +1001,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema, b
 				slices.Sort(exampleFiles)
 
 				tmpl := resourceTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "State Store", exampleFilePath, exampleFiles, "", "", "", resSchema, nil)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "State Store", exampleFilePath, exampleFiles, "", "", "", resSchema, nil, blocksSection)
 				if err != nil {
 					return fmt.Errorf("unable to render state store template %q: %w", rel, err)
 				}

@@ -293,7 +293,7 @@ func writeAttribute(w io.Writer, path []string, att *tfjson.SchemaAttribute, gro
 	return nestedTypes, nil
 }
 
-func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) ([]nestedType, error) {
+func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType, blocksSection bool) ([]nestedType, error) {
 	name := path[len(path)-1]
 
 	_, err := io.WriteString(w, "- `"+name+"` ")
@@ -301,7 +301,7 @@ func writeBlockType(w io.Writer, path []string, block *tfjson.SchemaBlockType) (
 		return nil, err
 	}
 
-	err = WriteBlockTypeDescription(w, block)
+	err = WriteBlockTypeDescription(w, block, blocksSection)
 	if err != nil {
 		return nil, fmt.Errorf("unable to write block description for %q: %w", name, err)
 	}
@@ -482,7 +482,7 @@ nameLoop:
 			path = append(path, name)
 
 			if childBlock, ok := block.NestedBlocks[name]; ok {
-				nt, err := writeBlockType(w, path, childBlock)
+				nt, err := writeBlockType(w, path, childBlock, blocksSection)
 				if err != nil {
 					return fmt.Errorf("unable to render block %q: %w", name, err)
 				}

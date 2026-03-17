@@ -38,8 +38,8 @@
 - `list_nested_block` (Block List) example list nested block (see [below for nested schema](#nestedblock--list_nested_block))
 - `list_nested_block_sensitive_nested_attribute` (Block List) (see [below for nested schema](#nestedblock--list_nested_block_sensitive_nested_attribute))
 - `set_nested_block` (Block Set) example set nested block (see [below for nested schema](#nestedblock--set_nested_block))
-- `single_nested_block` (Block, Optional) example single nested block (see [below for nested schema](#nestedblock--single_nested_block))
-- `single_nested_block_sensitive_nested_attribute` (Block, Optional) example sensitive single nested block (see [below for nested schema](#nestedblock--single_nested_block_sensitive_nested_attribute))
+- `single_nested_block` (Block) example single nested block (see [below for nested schema](#nestedblock--single_nested_block))
+- `single_nested_block_sensitive_nested_attribute` (Block) example sensitive single nested block (see [below for nested schema](#nestedblock--single_nested_block_sensitive_nested_attribute))
 
 ### Read-Only
 
