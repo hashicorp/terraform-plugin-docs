@@ -13,7 +13,7 @@ require (
 	github.com/hashicorp/terraform-json v0.27.3-0.20260213134036-298b8f6b673a
 	github.com/mattn/go-colorable v0.1.14
 	github.com/rogpeppe/go-internal v1.14.1
-	github.com/yuin/goldmark v1.7.7
+	github.com/yuin/goldmark v1.8.1
 	github.com/yuin/goldmark-meta v1.1.0
 	github.com/zclconf/go-cty v1.18.0
 	go.abhg.dev/goldmark/frontmatter v0.2.0
