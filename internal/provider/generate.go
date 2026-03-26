@@ -284,22 +284,6 @@ func (g *generator) Generate(ctx context.Context) error {
 	return nil
 }
 
-func (g *generator) writeProviderSchema(providerSchema *tfjson.ProviderSchema) error {
-	path := filepath.Join(g.ProviderDocsDir(), "schema.json")
-	f, err := os.Create(path)
-	if err != nil {
-		return fmt.Errorf("writeProviderSchema: error on file open for write: %w", err)
-	}
-
-	encoder := json.NewEncoder(f)
-	err = encoder.Encode(providerSchema)
-	if err != nil {
-		return fmt.Errorf("writeProviderSchema: error on JSON encode to file: %w", err)
-	}
-
-	return nil
-}
-
 // ProviderDocsDir returns the absolute path to the joined provider and
 // given website documentation directory, which defaults to "docs".
 func (g *generator) ProviderDocsDir() string {
@@ -1068,6 +1052,22 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 	})
 	if err != nil {
 		return fmt.Errorf("unable to render templated website to static markdown: %w", err)
+	}
+
+	return nil
+}
+
+func (g *generator) writeProviderSchema(providerSchema *tfjson.ProviderSchema) error {
+	path := filepath.Join(g.ProviderDocsDir(), "schema.json")
+	f, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("writeProviderSchema: error on file open for write: %w", err)
+	}
+
+	encoder := json.NewEncoder(f)
+	err = encoder.Encode(providerSchema)
+	if err != nil {
+		return fmt.Errorf("writeProviderSchema: error on JSON encode to file: %w", err)
 	}
 
 	return nil
