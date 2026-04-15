@@ -107,13 +107,20 @@ func (check *FileMismatchCheck) Run() error {
 
 // ResourceFileMismatchCheck checks for mismatched files, either missing or extraneous, against the resource/datasource schema
 func (check *FileMismatchCheck) ResourceFileMismatchCheck(files []os.DirEntry, resourceType string, schemas map[string]*tfjson.Schema) error {
-	if len(files) == 0 {
-		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing file list", resourceType)
+	if len(schemas) == 0 {
+		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing schemas", resourceType)
 		return nil
 	}
 
-	if len(schemas) == 0 {
-		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing schemas", resourceType)
+	if len(files) == 0 {
+		// No files found, report all schemas as missing documentation
+		for _, resourceName := range resourceNames(schemas) {
+			if check.IgnoreFileMissing(resourceName) {
+				continue
+			}
+			log.Printf("[DEBUG] Missing file for %s %s", resourceType, resourceName)
+			return fmt.Errorf("missing documentation file for %s: %s", resourceType, resourceName)
+		}
 		return nil
 	}
 
