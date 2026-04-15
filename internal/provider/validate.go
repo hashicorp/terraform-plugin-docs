@@ -317,21 +317,21 @@ func (v *validator) validateStaticDocs() error {
 	if dirExists(v.providerFS, dir+"/actions") {
 		actionFiles, _ := fs.ReadDir(v.providerFS, dir+"/actions")
 		mismatchOpt.ActionEntries = actionFiles
-	} else if len(v.providerSchema.ActionSchemas) > 0 {
+	} else if v.providerSchema != nil && len(v.providerSchema.ActionSchemas) > 0 {
 		// If actions exist in schema but directory doesn't, create empty slice to trigger validation
 		mismatchOpt.ActionEntries = []os.DirEntry{}
 	}
 	if dirExists(v.providerFS, dir+"/list-resources") {
 		listResourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/list-resources")
 		mismatchOpt.ListResourceEntries = listResourceFiles
-	} else if len(v.providerSchema.ListResourceSchemas) > 0 {
+	} else if v.providerSchema != nil && len(v.providerSchema.ListResourceSchemas) > 0 {
 		// If list resources exist in schema but directory doesn't, create empty slice to trigger validation
 		mismatchOpt.ListResourceEntries = []os.DirEntry{}
 	}
 	if dirExists(v.providerFS, dir+"/state-stores") {
 		stateStoreFiles, _ := fs.ReadDir(v.providerFS, dir+"/state-stores")
 		mismatchOpt.StateStoreEntries = stateStoreFiles
-	} else if len(v.providerSchema.StateStoreSchemas) > 0 {
+	} else if v.providerSchema != nil && len(v.providerSchema.StateStoreSchemas) > 0 {
 		// If state stores exist in schema but directory doesn't, create empty slice to trigger validation
 		mismatchOpt.StateStoreEntries = []os.DirEntry{}
 	}
@@ -425,21 +425,21 @@ func (v *validator) validateLegacyWebsite() error {
 	if dirExists(v.providerFS, dir+"/actions") {
 		actionFiles, _ := fs.ReadDir(v.providerFS, dir+"/actions")
 		mismatchOpt.ActionEntries = actionFiles
-	} else if len(v.providerSchema.ActionSchemas) > 0 {
+	} else if v.providerSchema != nil && len(v.providerSchema.ActionSchemas) > 0 {
 		// If actions exist in schema but directory doesn't, create empty slice to trigger validation
 		mismatchOpt.ActionEntries = []os.DirEntry{}
 	}
 	if dirExists(v.providerFS, dir+"/list-resources") {
 		listResourceFiles, _ := fs.ReadDir(v.providerFS, dir+"/list-resources")
 		mismatchOpt.ListResourceEntries = listResourceFiles
-	} else if len(v.providerSchema.ListResourceSchemas) > 0 {
+	} else if v.providerSchema != nil && len(v.providerSchema.ListResourceSchemas) > 0 {
 		// If list resources exist in schema but directory doesn't, create empty slice to trigger validation
 		mismatchOpt.ListResourceEntries = []os.DirEntry{}
 	}
 	if dirExists(v.providerFS, dir+"/state-stores") {
 		stateStoreFiles, _ := fs.ReadDir(v.providerFS, dir+"/state-stores")
 		mismatchOpt.StateStoreEntries = stateStoreFiles
-	} else if len(v.providerSchema.StateStoreSchemas) > 0 {
+	} else if v.providerSchema != nil && len(v.providerSchema.StateStoreSchemas) > 0 {
 		// If state stores exist in schema but directory doesn't, create empty slice to trigger validation
 		mismatchOpt.StateStoreEntries = []os.DirEntry{}
 	}

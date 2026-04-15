@@ -228,13 +228,20 @@ func (check *FileMismatchCheck) FunctionFileMismatchCheck(files []os.DirEntry, f
 
 // ActionFileMismatchCheck checks for mismatched files, either missing or extraneous, against the action schema
 func (check *FileMismatchCheck) ActionFileMismatchCheck(files []os.DirEntry, actionType string, schemas map[string]*tfjson.ActionSchema) error {
-	if len(files) == 0 {
-		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing file list", actionType)
+	if len(schemas) == 0 {
+		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing schemas", actionType)
 		return nil
 	}
 
-	if len(schemas) == 0 {
-		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing schemas", actionType)
+	if len(files) == 0 {
+		// No files found, report all schemas as missing documentation
+		for _, actionName := range actionNames(schemas) {
+			if check.IgnoreFileMissing(actionName) {
+				continue
+			}
+			log.Printf("[DEBUG] Missing file for %s %s", actionType, actionName)
+			return fmt.Errorf("missing documentation file for %s: %s", actionType, actionName)
+		}
 		return nil
 	}
 
