@@ -1,0 +1,5 @@
+kind: BUG FIXES
+body: 'deps: bump github.com/hashicorp/hc-install to v0.9.4'
+time: 2026-04-20T16:08:27.534959+02:00
+custom:
+    Issue: "589"
