@@ -397,8 +397,6 @@ upper: RESOURCE
 printf codefile:
 ## Import
 
-Import is supported using the following syntax:
-
 {{codefile "shell" "$WORK/examples/resources/scaffolding_example/import.sh"}}
 
 printf tffile:
@@ -408,8 +406,6 @@ printf tffile:
 
 codefile:
 ## Import
-
-Import is supported using the following syntax:
 
 ```shell
 terraform import scaffolding_example.example "id-123"
@@ -624,8 +620,6 @@ printf codefile:
 {{ if .HasImport -}}
 ## Import
 
-Import is supported using the following syntax:
-
 {{ printf "{{codefile \"shell\" %q}}" .ImportFile }}
 {{- end }}
 
@@ -639,8 +633,6 @@ printf tffile:
 codefile:
 {{ if .HasImport -}}
 ## Import
-
-Import is supported using the following syntax:
 
 {{codefile "shell" .ImportFile }}
 {{- end }}
@@ -762,8 +754,6 @@ printf codefile:
 {{ if .HasImport -}}
 ## Import
 
-Import is supported using the following syntax:
-
 {{ printf "{{codefile \"shell\" %q}}" .ImportFile }}
 {{- end }}
 
@@ -777,8 +767,6 @@ printf tffile:
 codefile:
 {{ if .HasImport -}}
 ## Import
-
-Import is supported using the following syntax:
 
 {{codefile "shell" .ImportFile }}
 {{- end }}
@@ -819,8 +807,6 @@ printf codefile:
 {{ if .HasImport -}}
 ## Import
 
-Import is supported using the following syntax:
-
 {{ printf "{{codefile \"shell\" %q}}" .ImportFile }}
 {{- end }}
 
@@ -834,8 +820,6 @@ printf tffile:
 codefile:
 {{ if .HasImport -}}
 ## Import
-
-Import is supported using the following syntax:
 
 {{codefile "shell" .ImportFile }}
 {{- end }}
