@@ -8,7 +8,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/hashicorp/cli v1.1.7
 	github.com/hashicorp/go-version v1.9.0
-	github.com/hashicorp/hc-install v0.9.4
+	github.com/hashicorp/hc-install v0.9.5
 	github.com/hashicorp/terraform-exec v0.25.1
 	github.com/hashicorp/terraform-json v0.27.3-0.20260213134036-298b8f6b673a
 	github.com/mattn/go-colorable v0.1.14
