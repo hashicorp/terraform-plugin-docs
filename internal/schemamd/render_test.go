@@ -19,45 +19,66 @@ func TestRender(t *testing.T) {
 	t.Parallel()
 
 	for _, c := range []struct {
-		name         string
-		inputFile    string
-		expectedFile string
+		name          string
+		inputFile     string
+		expectedFile  string
+		blocksSection bool
 	}{
 		{
 			"aws_route_table_association",
 			"testdata/aws_route_table_association.schema.json",
 			"testdata/aws_route_table_association.md",
+			false,
 		},
 		{
 			"aws_acm_certificate",
 			"testdata/aws_acm_certificate.schema.json",
 			"testdata/aws_acm_certificate.md",
+			false,
 		},
 		{
 			"awscc_logs_log_group",
 			"testdata/awscc_logs_log_group.schema.json",
 			"testdata/awscc_logs_log_group.md",
+			false,
 		},
 		{
 			"awscc_acmpca_certificate",
 			"testdata/awscc_acmpca_certificate.schema.json",
 			"testdata/awscc_acmpca_certificate.md",
+			false,
 		},
 		{
 			"framework_types",
 			"testdata/framework_types.schema.json",
 			"testdata/framework_types.md",
+			false,
+		},
+		{
+			"framework_types_blocks_section",
+			"testdata/framework_types.schema.json",
+			"testdata/framework_types_blocks_section.md",
+			true,
 		},
 		{
 			// Reference: https://github.com/hashicorp/terraform-plugin-docs/issues/380
 			"deep_nested_attributes",
 			"testdata/deep_nested_attributes.schema.json",
 			"testdata/deep_nested_attributes.md",
+			false,
+		},
+		{
+			// Reference: https://github.com/hashicorp/terraform-plugin-docs/issues/380
+			"deep_nested_attributes_blocks_section",
+			"testdata/deep_nested_attributes.schema.json",
+			"testdata/deep_nested_attributes_blocks_section.md",
+			true,
 		},
 		{
 			"deep_nested_write_only_attributes",
 			"testdata/deep_nested_write_only_attributes.schema.json",
 			"testdata/deep_nested_write_only_attributes.md",
+			false,
 		},
 	} {
 		t.Run(c.name, func(t *testing.T) {
@@ -81,7 +102,7 @@ func TestRender(t *testing.T) {
 			}
 
 			b := &strings.Builder{}
-			err = schemamd.Render(&schema, b)
+			err = schemamd.Render(&schema, b, c.blocksSection)
 			if err != nil {
 				t.Fatal(err)
 			}
