@@ -5,6 +5,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -271,6 +272,13 @@ func (g *generator) Generate(ctx context.Context) error {
 	err = g.renderStaticWebsite(providerSchema)
 	if err != nil {
 		return fmt.Errorf("error rendering static website: %w", err)
+	}
+
+	g.infof("writing provider schema")
+	err = g.writeProviderSchema(providerSchema)
+	if err != nil {
+		return fmt.Errorf("error writing provider schema: %w", err)
+
 	}
 
 	return nil
@@ -1044,6 +1052,22 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 	})
 	if err != nil {
 		return fmt.Errorf("unable to render templated website to static markdown: %w", err)
+	}
+
+	return nil
+}
+
+func (g *generator) writeProviderSchema(providerSchema *tfjson.ProviderSchema) error {
+	path := filepath.Join(g.ProviderDocsDir(), "schema.json")
+	f, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("writeProviderSchema: error on file open for write: %w", err)
+	}
+
+	encoder := json.NewEncoder(f)
+	err = encoder.Encode(providerSchema)
+	if err != nil {
+		return fmt.Errorf("writeProviderSchema: error on JSON encode to file: %w", err)
 	}
 
 	return nil
