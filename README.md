@@ -408,6 +408,8 @@ using the following data fields and functions:
 | Function        | Example                                          | Description                                                                                       |
 |-----------------|--------------------------------------------------|---------------------------------------------------------------------------------------------------|
 | `codefile`      | `{{codefile "shell" "path/to/file.sh"}}`         | Create a Markdown code block with the content of a file. Path is relative to the repository root. |
+| `hasPrefix`     | `{{if hasPrefix "FOO BAR" "FOO"}}`               | Equivalent to [`strings.HasPrefix`](https://pkg.go.dev/strings#HasPrefix).                            |
+| `hasSuffix`     | `{{if hasSuffix "FOO BAR" "BAR"}}`               | Equivalent to [`strings.HasSuffix`](https://pkg.go.dev/strings#HasSuffix).                            |
 | `lower`         | `{{"EXAMPLE STRING" \| lower}}`                  | Equivalent to [`strings.ToLower`](https://pkg.go.dev/strings#ToLower).                            |
 | `plainmarkdown` | `{{"*example markdown*" \| plainmarkdown }}`     | Render Markdown content as plaintext.                                                             |
 | `prefixlines`   | `{{"example string" \| prefixlines "prefix: "}}` | Add a prefix to all (newline-separated) lines in a string.                                        |
