@@ -319,6 +319,7 @@ using the following data fields and functions:
 | `.Name`                     | string | Name of the resource/data-source (ex. `tls_certificate`)                                   |
 | `.Type`                     | string | Either `Resource` or `Data Source`                                                         |
 | `.Description`              | string | Resource / Data Source description                                                         |
+| `.Deprecated`               | bool   | Is the resource/data-source deprecated?                                                    |
 | `.HasExample`               | bool   | (Legacy) Is there an example file?                                                         |
 | `.HasExamples`              | bool   | Are there example files? Always true if HasExample is true.                                |
 | `.ExampleFile`              | string | (Legacy) Path to the file with the Terraform configuration example.                        |
