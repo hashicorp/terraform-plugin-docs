@@ -939,6 +939,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 			if actionSchema != nil {
 				exampleFilePath := filepath.Join(g.ProviderExamplesDir(), "actions", resName, "action.tf")
 				exampleFilesPattern := filepath.Join(g.ProviderExamplesDir(), "actions", resName, "action*.tf")
+				invocationFilePath := filepath.Join(g.ProviderExamplesDir(), "actions", resName, "invoke.sh")
 				exampleFiles, err := filepath.Glob(exampleFilesPattern)
 
 				if err != nil {
@@ -948,7 +949,7 @@ func (g *generator) renderStaticWebsite(providerSchema *tfjson.ProviderSchema) e
 				slices.Sort(exampleFiles)
 
 				tmpl := actionTemplate(tmplData)
-				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Action", exampleFilePath, exampleFiles, actionSchema)
+				render, err := tmpl.Render(g.providerDir, resName, g.providerName, g.renderedProviderName, "Action", exampleFilePath, exampleFiles, invocationFilePath, actionSchema)
 				if err != nil {
 					return fmt.Errorf("unable to render action template %q: %w", rel, err)
 				}
