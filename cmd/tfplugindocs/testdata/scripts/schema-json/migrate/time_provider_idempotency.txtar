@@ -20,7 +20,7 @@ cmpenv templates/resources/static.md.tmpl exp-templates/resources/static.md.tmpl
 cmpenv templates/ephemeral-resources/ephemeral_static.md.tmpl exp-templates/ephemeral-resources/ephemeral_static.md.tmpl
 
 # Check generated example files
-cmpenv examples/example_1.tf examples/example_1.tf
+cmpenv examples/example_1.tf exp-examples/example_1.tf
 
 cmpenv examples/functions/rfc3339_parse/example_1.tf exp-examples/functions/rfc3339_parse/example_1.tf
 
