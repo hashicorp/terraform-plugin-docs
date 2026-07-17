@@ -21,7 +21,7 @@ cmpenv templates/list-resources/example.md.tmpl exp-templates/list-resources/exa
 cmpenv templates/state-stores/example.md.tmpl exp-templates/state-stores/example.md.tmpl
 
 # Check generated example files
-cmpenv examples/example_1.tf examples/example_1.tf
+cmpenv examples/example_1.tf exp-examples/example_1.tf
 
 cmpenv examples/functions/rfc3339_parse/example_1.tf exp-examples/functions/rfc3339_parse/example_1.tf
 
