@@ -49,7 +49,7 @@ action "scaffolding_example" "example1" {
 		},
 	}
 
-	result, err := tpl.Render("testdata/test-action-dir", "testTemplate", "test-action", "test-action", "action", "action.tf", []string{"action.tf"}, &schema)
+	result, err := tpl.Render("testdata/test-action-dir", "testTemplate", "test-action", "test-action", "action", "action.tf", []string{"action.tf"}, "", &schema)
 	if err != nil {
 		t.Error(err)
 	}
@@ -57,5 +57,35 @@ action "scaffolding_example" "example1" {
 	cleanedResult := strings.ReplaceAll(result, "```", "")
 	if !cmp.Equal(expectedString, cleanedResult) {
 		t.Errorf("expected: %+v, got: %+v", expectedString, cleanedResult)
+	}
+}
+
+func TestActionTemplate_Render_WithInvocation(t *testing.T) {
+	t.Parallel()
+
+	template := `
+Printf codefile: {{ printf "{{codefile %q %q}}" "shell" .InvocationFile }}
+codefile: {{ codefile "shell" .InvocationFile }}
+`
+	expectedString := `
+Printf codefile: {{codefile "shell" "invoke.sh"}}
+codefile: ` + "```" + `shell
+terraform run scaffolding_example.example1
+` + "```" + `
+`
+
+	tpl := actionTemplate(template)
+
+	schema := tfjson.ActionSchema{
+		Block: &tfjson.SchemaBlock{},
+	}
+
+	result, err := tpl.Render("testdata/test-action-dir", "testTemplate", "test-action", "test-action", "action", "", nil, "invoke.sh", &schema)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !cmp.Equal(expectedString, result) {
+		t.Errorf("expected: %+v, got: %+v", expectedString, result)
 	}
 }
