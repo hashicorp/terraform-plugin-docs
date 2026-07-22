@@ -10,7 +10,13 @@ import (
 )
 
 func PrefixLines(prefix, text string) string {
-	return prefix + strings.Join(strings.Split(text, "\n"), "\n"+prefix)
+	lines := strings.Split(text, "\n")
+	for i, line := range lines {
+		if line != "" {
+			lines[i] = prefix + line
+		}
+	}
+	return strings.Join(lines, "\n")
 }
 
 func CodeFile(format, file string) (string, error) {
