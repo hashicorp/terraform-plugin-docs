@@ -95,6 +95,13 @@ func childBlockContainsWriteOnly(block *tfjson.SchemaBlockType) bool {
 			return true
 		}
 	}
+	return false
+}
 
+func childBlockIsWritable(block *tfjson.SchemaBlockType) bool {
+	return !childBlockIsReadOnly(block)
+}
+
+func omitChild[T *tfjson.SchemaAttribute | *tfjson.SchemaBlockType](_ T) bool {
 	return false
 }
