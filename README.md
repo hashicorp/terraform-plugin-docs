@@ -237,6 +237,7 @@ For examples:
 | `examples/`                                                                  | Root of examples                           |
 | `examples/provider/provider<*>.tf`                                           | Provider example config(s)                 |
 | `examples/actions/<action_type>/action<*>.tf`                                | Action example config(s)                   |
+| `examples/actions/<action_type>/invoke.sh`                                   | Action example invocation command          |
 | `examples/data-sources/<data source name>/data-source<*>.tf`                 | Data source example config(s)              |
 | `examples/ephemeral-resources/<ephemeral resource>/ephemeral-resource<*>.tf` | Ephemeral resource example config(s)       |
 | `examples/functions/<function name>/function<*>.tf`                          | Function example config(s)                 |
@@ -366,6 +367,8 @@ using the following data fields and functions:
 | `.HasExamples`          | bool   | Are there example files? Always true if HasExample is true.                               |
 | `.ExampleFile`          | string | (Legacy) Path to the file with the Terraform configuration example.                       |
 | `.ExampleFiles`         | string | Paths to the files with Terraform configuration examples. Includes ExampleFile.           |
+| `.HasInvocation`        | bool   | Is there an action invocation file?                                                       |
+| `.InvocationFile`       | string | Path to the file with the action action invocation example.                               |
 | `.ProviderName`         | string | Canonical provider name (ex. `terraform-provider-random`)                                 |
 | `.ProviderShortName`    | string | Short version of the rendered provider name (ex. `random`)                                |
 | `.RenderedProviderName` | string | Value provided via argument `--rendered-provider-name`, otherwise same as `.ProviderName` |

@@ -24,6 +24,9 @@ type ActionTemplateType struct {
 	ExampleFile  string
 	ExampleFiles []string
 
+	HasInvocation  bool
+	InvocationFile string
+
 	ProviderName      string
 	ProviderShortName string
 
@@ -32,7 +35,7 @@ type ActionTemplateType struct {
 	RenderedProviderName string
 }
 
-func (t actionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, schema *tfjson.ActionSchema) (string, error) {
+func (t actionTemplate) Render(providerDir, name, providerName, renderedProviderName, typeName, exampleFile string, exampleFiles []string, invocationFile string, schema *tfjson.ActionSchema) (string, error) {
 	schemaBuffer := bytes.NewBuffer(nil)
 	err := schemamd.RenderAction(schema, schemaBuffer)
 	if err != nil {
@@ -53,6 +56,9 @@ func (t actionTemplate) Render(providerDir, name, providerName, renderedProvider
 		HasExamples:  len(exampleFiles) > 0,
 		ExampleFile:  exampleFile,
 		ExampleFiles: exampleFiles,
+
+		HasInvocation:  invocationFile != "" && fileExists(invocationFile),
+		InvocationFile: invocationFile,
 
 		ProviderName:      providerName,
 		ProviderShortName: providerShortName(renderedProviderName),
@@ -82,6 +88,12 @@ description: |-
 
 {{ tffile . }}
 {{- end }}
+{{- end }}
+{{- if .HasInvocation }}
+
+### Direct Invocation
+
+{{codefile "shell" .InvocationFile }}
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}

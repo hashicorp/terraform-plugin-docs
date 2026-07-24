@@ -1,0 +1,5 @@
+kind: ENHANCEMENTS
+body: Add support for action invocation shell examples.
+time: 2026-07-24T12:42:50.095141-04:00
+custom:
+    Issue: "614"
