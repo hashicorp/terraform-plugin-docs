@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/cli v1.1.7
 	github.com/hashicorp/go-version v1.9.0
 	github.com/hashicorp/hc-install v0.9.5
-	github.com/hashicorp/terraform-exec v0.25.2
+	github.com/hashicorp/terraform-exec v0.25.3
 	github.com/hashicorp/terraform-json v0.28.0
 	github.com/mattn/go-colorable v0.1.15
 	github.com/rogpeppe/go-internal v1.16.0
@@ -50,7 +50,7 @@ require (
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	golang.org/x/crypto v0.52.0 // indirect
+	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/mod v0.38.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/tools v0.48.0 // indirect
