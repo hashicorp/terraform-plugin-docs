@@ -8,18 +8,18 @@
 - `domain_name` (String)
 - `options` (Block List, Max: 1) (see [below for nested schema](#nestedblock--options))
 - `private_key` (String, Sensitive)
-- `subject_alternative_names` (Set of String)
-- `tags` (Map of String)
-- `tags_all` (Map of String)
+- `subject_alternative_names` (Set of Strings)
+- `tags` (Map of Strings)
+- `tags_all` (Map of Strings)
 - `validation_method` (String)
 
 ### Read-Only
 
 - `arn` (String)
-- `domain_validation_options` (Set of Object) (see [below for nested schema](#nestedatt--domain_validation_options))
+- `domain_validation_options` (Set of Objects) (see [below for nested schema](#nestedatt--domain_validation_options))
 - `id` (String) The ID of this resource.
 - `status` (String)
-- `validation_emails` (List of String)
+- `validation_emails` (List of Strings)
 
 <a id="nestedblock--options"></a>
 ### Nested Schema for `options`
