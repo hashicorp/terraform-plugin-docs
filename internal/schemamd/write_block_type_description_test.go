@@ -223,7 +223,7 @@ func TestWriteBlockTypeDescription(t *testing.T) {
 			t.Parallel()
 
 			b := &strings.Builder{}
-			err := schemamd.WriteBlockTypeDescription(b, c.bt)
+			err := schemamd.WriteBlockTypeDescription(b, c.bt, false)
 			if err != nil {
 				t.Fatal(err)
 			}
