@@ -218,6 +218,26 @@ func TestWriteBlockTypeDescription(t *testing.T) {
 				},
 			},
 		},
+
+		// multiple consecutive newlines (issue #531)
+		{
+			"(Block, Optional) First paragraph.  \nSecond paragraph with more details.",
+			&tfjson.SchemaBlockType{
+				NestingMode: tfjson.SchemaNestingModeSingle,
+				Block: &tfjson.SchemaBlock{
+					Description: "First paragraph.\n\nSecond paragraph with more details.",
+				},
+			},
+		},
+		{
+			"(Block List) Line one.  \nLine two.  \nLine three.",
+			&tfjson.SchemaBlockType{
+				NestingMode: tfjson.SchemaNestingModeList,
+				Block: &tfjson.SchemaBlock{
+					Description: "Line one.\n\nLine two.\n\nLine three.",
+				},
+			},
+		},
 	} {
 		t.Run(c.expected, func(t *testing.T) {
 			t.Parallel()
