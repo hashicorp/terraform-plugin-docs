@@ -59,6 +59,12 @@ func TestRender(t *testing.T) {
 			"testdata/deep_nested_write_only_attributes.schema.json",
 			"testdata/deep_nested_write_only_attributes.md",
 		},
+		{
+			// Reference: https://github.com/hashicorp/terraform-plugin-docs/issues/531
+			"multiline_descriptions",
+			"testdata/multiline_descriptions.schema.json",
+			"testdata/multiline_descriptions.md",
+		},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
