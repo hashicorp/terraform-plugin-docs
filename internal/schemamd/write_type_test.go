@@ -30,22 +30,22 @@ func TestWriteType(t *testing.T) {
 		// {"Number", cty.NilType},
 		// {"Number", cty.Capsule("foo", reflect.TypeOf(1))},
 
-		{"List of Boolean", cty.List(cty.Bool)},
-		{"List of Dynamic", cty.List(cty.DynamicPseudoType)},
+		{"List of Booleans", cty.List(cty.Bool)},
+		{"List of Dynamics", cty.List(cty.DynamicPseudoType)},
 
-		{"Map of Boolean", cty.Map(cty.Bool)},
+		{"Map of Booleans", cty.Map(cty.Bool)},
 
 		{"Object", cty.EmptyObject},
 		{"Object", cty.Object(map[string]cty.Type{
 			"bool": cty.Bool,
 		})},
 
-		{"Set of Boolean", cty.Set(cty.Bool)},
+		{"Set of Booleans", cty.Set(cty.Bool)},
 
 		{"Tuple", cty.EmptyTuple},
 		{"Tuple", cty.Tuple([]cty.Type{cty.Bool})},
 
-		{"List of Map of Set of Object", cty.List(cty.Map(cty.Set(cty.Object(map[string]cty.Type{
+		{"List of Map of Set of Objects", cty.List(cty.Map(cty.Set(cty.Object(map[string]cty.Type{
 			"bool": cty.Bool,
 		}))))},
 	} {
