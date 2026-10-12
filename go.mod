@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/go-version v1.9.0
 	github.com/hashicorp/hc-install v0.9.5
 	github.com/hashicorp/terraform-exec v0.25.3
-	github.com/hashicorp/terraform-json v0.28.0
+	github.com/hashicorp/terraform-json v0.29.0
 	github.com/mattn/go-colorable v0.1.15
 	github.com/rogpeppe/go-internal v1.16.0
 	github.com/yuin/goldmark v1.7.7
