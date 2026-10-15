@@ -11,7 +11,7 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
-func WriteBlockTypeDescription(w io.Writer, block *tfjson.SchemaBlockType) error {
+func WriteBlockTypeDescription(w io.Writer, block *tfjson.SchemaBlockType, noSingleNestedType bool) error {
 	_, err := io.WriteString(w, "(Block")
 	if err != nil {
 		return err
@@ -41,6 +41,8 @@ func WriteBlockTypeDescription(w io.Writer, block *tfjson.SchemaBlockType) error
 
 	if block.NestingMode == tfjson.SchemaNestingModeSingle {
 		switch {
+		case noSingleNestedType:
+			// Omit required, optional or read-only label.
 		case childBlockIsRequired(block):
 			_, err = io.WriteString(w, ", Required")
 			if err != nil {
