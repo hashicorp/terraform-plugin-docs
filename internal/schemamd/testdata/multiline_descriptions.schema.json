@@ -1,0 +1,31 @@
+{
+    "version": 0,
+    "block": {
+        "attributes": {
+            "id": {
+                "type": "string",
+                "description_kind": "plain",
+                "computed": true
+            },
+            "two_line_description": {
+                "type": "string",
+                "description": "First paragraph.\n\nSecond paragraph with more details.",
+                "description_kind": "markdown",
+                "optional": true
+            },
+            "long_description": {
+                "type": "string",
+                "description": "Line one.\n\nLine two.\n\nLine three.",
+                "description_kind": "markdown",
+                "required": true
+            },
+            "simple_description": {
+                "type": "string",
+                "description": "This is a simple single-line description.",
+                "description_kind": "markdown",
+                "optional": true
+            }
+        }
+    }
+}
+
