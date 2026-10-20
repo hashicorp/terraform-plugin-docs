@@ -382,6 +382,15 @@ func TestFileMismatchCheck(t *testing.T) {
 			},
 		},
 		"no files": {
+			ResourceFiles: fstest.MapFS{
+				"resource1.md": {},
+			},
+			FunctionFiles: fstest.MapFS{
+				"function1.md": {},
+			},
+			ActionFiles: fstest.MapFS{
+				"action1.md": {},
+			},
 			Options: &FileMismatchOptions{
 				ProviderShortName: "test",
 				Schema: &tfjson.ProviderSchema{
@@ -399,6 +408,7 @@ func TestFileMismatchCheck(t *testing.T) {
 					},
 				},
 			},
+			ExpectError: true,
 		},
 		"no schemas": {
 			ResourceFiles: fstest.MapFS{
