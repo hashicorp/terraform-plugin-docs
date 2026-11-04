@@ -265,7 +265,7 @@ Legacy website directory structure:
 | `website/docs/actions/<action type name>.html.markdown`                    | Action page                 |
 | `website/docs/d/<data source name>.html.markdown`                          | Data source page            |
 | `website/docs/ephemeral-resources/<ephemeral resource name>.html.markdown` | Ephemeral resource page     |
-| `website/docs/functons/<function name>.html.markdown`                      | Functions page              |
+| `website/docs/functions/<function name>.html.markdown`                      | Functions page              |
 | `website/docs/list-resources/<list resource name>.html.markdown`           | List resource page          |
 | `website/docs/state-stores/<state store name>.html.markdown`               | State store page            |
 | `website/docs/r/<resource name>.html.markdown`                             | Resource page               |
