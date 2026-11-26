@@ -112,6 +112,8 @@ func newTemplate(providerDir, name, text string) (*template.Template, error) {
 
 	tmpl.Funcs(map[string]interface{}{
 		"codefile":      codeFile(providerDir),
+		"hasPrefix":     strings.HasPrefix,
+		"hasSuffix":     strings.HasSuffix,
 		"lower":         strings.ToLower,
 		"plainmarkdown": mdplain.PlainMarkdown,
 		"prefixlines":   tmplfuncs.PrefixLines,
