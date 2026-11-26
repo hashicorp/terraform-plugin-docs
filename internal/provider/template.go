@@ -44,6 +44,7 @@ type ResourceTemplateType struct {
 	Type        string
 	Name        string
 	Description string
+	Deprecated  bool
 
 	HasExample   bool
 	HasExamples  bool
@@ -250,6 +251,7 @@ func (t resourceTemplate) Render(providerDir, name, providerName, renderedProvid
 		Type:        typeName,
 		Name:        name,
 		Description: schema.Block.Description,
+		Deprecated:  schema.Block.Deprecated,
 
 		HasExample:   exampleFile != "" && fileExists(exampleFile),
 		HasExamples:  len(exampleFiles) > 0,
